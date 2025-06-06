@@ -60,6 +60,9 @@
     }
 
     nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
       background: var(--nav-bg);
       color: white;
       display: flex;
@@ -157,6 +160,14 @@
       const dark = saved === null ? window.matchMedia("(prefers-color-scheme: dark)").matches : saved === "true";
       setTheme(dark);
       document.getElementById("theme-toggle").addEventListener("click", () => setTheme(!document.body.classList.contains("dark")));
+
+      let lastScrollTop = 0;
+      window.addEventListener("scroll", function () {
+        const nav = document.querySelector("nav");
+        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        nav.style.top = scrollTop > lastScrollTop ? "-80px" : "0";
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+      });
     });
   </script>
 </head>
@@ -178,6 +189,7 @@
     <a href="#vereine">Vereine</a>
     <a href="#kontakt">Kontakt</a>
     <a href="#login">Login</a>
+    <a href="news.html">News</a>
     <button id="theme-toggle">🌓</button>
   </nav>
 
@@ -189,34 +201,35 @@
   <section id="partyraum">
     <h2>Partyraum</h2>
     <div class="gallery">
-      <img src="party1.jpg" alt="Partyraum 1">
-      <img src="party2.jpg" alt="Partyraum 2">
+      <img src="img/thumbs/partyraum/01.jpg" loading="lazy" alt="Partyraum 1">
+      <img src="img/thumbs/partyraum/02.jpg" loading="lazy" alt="Partyraum 2">
     </div>
-    <p>Der Partyraum bietet Platz für Feiern mit Küche, Sitzgelegenheiten und Musikanlage.</p>
+    <p><a href="partyraum.html">Mehr Bilder ansehen →</a></p>
   </section>
 
   <section id="rooftop">
     <h2>Rooftop</h2>
     <div class="gallery">
-      <img src="rooftop1.jpg" alt="Rooftop 1">
+      <img src="img/thumbs/rooftop/01.jpg" loading="lazy" alt="Rooftop 1">
+      <img src="img/thumbs/rooftop/02.jpg" loading="lazy" alt="Rooftop 2">
     </div>
-    <p>Das Rooftop bietet eine einzigartige Aussicht über das Limmattal – ideal für Sommerabende.</p>
+    <p><a href="rooftop.html">Mehr Bilder ansehen →</a></p>
   </section>
 
   <section id="fitness">
     <h2>Fitnessraum</h2>
     <div class="gallery">
-      <img src="fitness1.jpg" alt="Fitnessraum 1">
+      <img src="img/thumbs/fitness/01.jpg" loading="lazy" alt="Fitnessraum 1">
     </div>
-    <p>Ausgestattet mit modernen Geräten – offen für Vereinsmitglieder mit Zugangscode.</p>
+    <p><a href="fitness.html">Mehr Bilder ansehen →</a></p>
   </section>
 
   <section id="spielgruppe">
     <h2>Spielgruppe Zwergmühle</h2>
     <div class="gallery">
-      <img src="spielgruppe1.jpg" alt="Spielgruppe">
+      <img src="img/thumbs/spielgruppe/01.jpg" loading="lazy" alt="Spielgruppe">
     </div>
-    <p>Unsere liebevolle Spielgruppe für Kinder von 3–5 Jahren, direkt im Quartier.</p>
+    <p><a href="spielgruppe.html">Mehr Bilder ansehen →</a></p>
   </section>
 
   <section id="sommerfest">
