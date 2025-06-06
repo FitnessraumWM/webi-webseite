@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Webermühle Verein</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://unpkg.com/lucide-static@latest/font/lucide.css" rel="stylesheet" />
   <style>
     :root {
       --background: #ffffff;
@@ -29,85 +29,66 @@
     }
 
     header {
-  background: url('webermuehle-gesamt.jpg') top/cover no-repeat;
-  height: 100vh;
-  background-attachment: fixed;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 3em;
-  text-shadow: 2px 2px 5px black;
-  position: relative;
-  text-align: center;
-}
-
-    .logos-left, .logos-right {
-      position: absolute;
-      top: 20px;
-      height: 180px;
-    }
-
-    .logos-left { left: 20px; }
-    .logos-right { right: 20px; }
-
-    .logos-left img, .logos-right img {
-      height: 100%;
-      cursor: pointer;
-      transition: transform 0.3s;
-    }
-
-    .logos-left img:hover, .logos-right img:hover {
-      transform: scale(1.05);
+      background: url('webermuehle-gesamt.jpg') center/cover no-repeat;
+      height: 100vh;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3em;
+      text-shadow: 2px 2px 5px black;
+      position: relative;
+      text-align: center;
     }
 
     nav {
-      position: absolute;
-      top: 90vh;
+      position: fixed;
+      top: 0;
       left: 0;
-      right: 0;
+      width: 100%;
       background: var(--nav-bg);
       color: white;
       display: flex;
-      flex-wrap: wrap;
       justify-content: center;
       gap: 1em;
       padding: 1em;
       z-index: 1000;
-      transition: all 0.3s ease;
+      transition: transform 0.5s ease, left 0.5s ease;
     }
 
-    .nav-icons {
-      position: fixed;
-      top: 50%;
-      left: 0;
-      transform: translateY(-50%);
-      background: var(--nav-bg);
-      padding: 0.5em;
-      display: none;
+    nav.scrolled {
+      width: auto;
       flex-direction: column;
-      gap: 1em;
-      z-index: 1000;
+      align-items: center;
+      top: 0;
+      left: 0;
+      transform: translateX(-100%);
     }
 
-    .nav-icons a {
-      color: white;
-      font-size: 1.5em;
-      text-align: center;
+    nav.visible {
+      transform: translateX(0);
     }
 
     nav a {
       color: white;
       text-decoration: none;
       font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
     }
 
-    #theme-toggle {
-      cursor: pointer;
-      background: none;
-      border: none;
-      color: white;
-      font-size: 1em;
+    nav a .lucide {
+      font-size: 1.2em;
+    }
+
+    .content {
+      padding-left: 0;
+      transition: padding-left 0.5s ease;
+    }
+
+    nav.scrolled ~ .content {
+      padding-left: 60px;
     }
 
     section {
@@ -122,130 +103,77 @@
     }
 
     .gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      display: flex;
+      flex-wrap: wrap;
       gap: 1em;
+      justify-content: center;
     }
 
     .gallery img {
       width: 100%;
+      max-width: 300px;
       border-radius: 8px;
       cursor: pointer;
     }
 
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 2000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.9);
-    }
-
-    .modal-content {
-      display: block;
-      margin: 5% auto;
-      max-width: 90%;
-    }
-
-    .close {
-      position: absolute;
-      top: 20px;
-      right: 35px;
-      color: #fff;
-      font-size: 40px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    footer {
-      background: #f2f2f2;
-      padding: 2em 1em;
-      text-align: center;
-      font-size: 0.9em;
-    }
-
     @media (max-width: 768px) {
-      .logos-left, .logos-right {
-        height: 100px;
-        top: 10px;
+      nav {
+        flex-direction: row;
+        overflow-x: auto;
+        width: 100%;
+        transform: none;
       }
 
-      nav {
-        flex-direction: column;
-        gap: 0.5em;
+      nav.scrolled {
+        position: fixed;
+        flex-direction: row;
+        width: 100%;
+        left: 0;
+        transform: none;
+      }
+
+      nav ~ .content {
+        padding-left: 0;
       }
     }
   </style>
   <script>
-    function setTheme(dark) {
-      document.body.classList.toggle("dark", dark);
-      document.querySelector(".logos-right img").src = dark ? "logo-qv-schwarz.png" : "logo-qv-weiss.png";
-      document.querySelector(".logos-left img").src = dark ? "verein-sofe-logo-s.png" : "verein-sofe-logo-w.png";
-      localStorage.setItem("darkTheme", dark);
-    }
-
     document.addEventListener("DOMContentLoaded", function () {
-      const saved = localStorage.getItem("darkTheme");
-      const dark = saved === null ? window.matchMedia("(prefers-color-scheme: dark)").matches : saved === "true";
-      setTheme(dark);
-      document.getElementById("theme-toggle").addEventListener("click", () => setTheme(!document.body.classList.contains("dark")));
-
       const nav = document.querySelector("nav");
-      const navIcons = document.querySelector(".nav-icons");
+      const content = document.querySelector(".content");
       let lastScrollTop = 0;
+      let menuVisible = false;
 
       window.addEventListener("scroll", function () {
-        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        if (scrollTop > 90) {
-          nav.style.display = 'none';
-          navIcons.style.display = 'flex';
-        } else {
-          nav.style.display = 'flex';
-          navIcons.style.display = 'none';
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        if (scrollTop > 300 && !nav.classList.contains("scrolled")) {
+          nav.classList.add("scrolled");
+          setTimeout(() => nav.classList.add("visible"), 100);
+        } else if (scrollTop < 200) {
+          nav.classList.remove("visible");
+          nav.classList.remove("scrolled");
         }
         lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
       });
-
-      const modal = document.getElementById("imgModal");
-      const modalImg = document.getElementById("modalImage");
-      const closeBtn = document.getElementById("closeModal");
-
-      document.querySelectorAll(".gallery img").forEach(img => {
-        img.addEventListener("click", () => {
-          modal.style.display = "block";
-          modalImg.src = img.src;
-        });
-      });
-
-      closeBtn.onclick = () => modal.style.display = "none";
-      window.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
     });
   </script>
 </head>
 <body>
-
   <header>
-    <a href="#" class="logos-left"><img src="verein-sofe-logo-w.png" alt="Logo SOFE Webi" /></a>
-    <a href="#" class="logos-right"><img src="logo-qv-weiss.png" alt="Logo Quartierverein" /></a>
     <div>Willkommen in der Webermühle</div>
   </header>
 
   <nav>
-    <a href="#historie">Historie</a>
-    <a href="#partyraum">Partyraum</a>
-    <a href="#rooftop">Rooftop</a>
-    <a href="#fitness">Fitnessraum</a>
-    <a href="#spielgruppe">Spielgruppe</a>
-    <a href="#sommerfest">Sommerfest</a>
-    <a href="#vereine">Vereine</a>
-    <a href="#kontakt">Kontakt</a>
-    <a href="#login">Login</a>
-    <a href="#news">News</a>
-    <button id="theme-toggle">🌓</button>
+    <a href="#historie"><i class="lucide lucide-landmark"></i></a>
+    <a href="#partyraum"><i class="lucide lucide-beer"></i></a>
+    <a href="#rooftop"><i class="lucide lucide-sun"></i></a>
+    <a href="#fitness"><i class="lucide lucide-dumbbell"></i></a>
+    <a href="#spielgruppe"><i class="lucide lucide-baby"></i></a>
+    <a href="#sommerfest"><i class="lucide lucide-party-popper"></i></a>
+    <a href="#vereine"><i class="lucide lucide-users"></i></a>
+    <a href="#kontakt"><i class="lucide lucide-mail"></i></a>
+    <a href="#login"><i class="lucide lucide-log-in"></i></a>
+    <a href="#news"><i class="lucide lucide-newspaper"></i></a>
   </nav>
 
   <div class="nav-icons">
