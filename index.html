@@ -60,10 +60,6 @@
     }
 
     nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
       background: var(--nav-bg);
       color: white;
       display: flex;
@@ -72,7 +68,7 @@
       gap: 1em;
       padding: 1em;
       z-index: 1000;
-      transition: top 0.3s ease;
+      position: relative;
     }
 
     nav a {
@@ -161,22 +157,6 @@
       const dark = saved === null ? window.matchMedia("(prefers-color-scheme: dark)").matches : saved === "true";
       setTheme(dark);
       document.getElementById("theme-toggle").addEventListener("click", () => setTheme(!document.body.classList.contains("dark")));
-
-      const nav = document.querySelector("nav");
-      let navHeight = nav.offsetHeight;
-      let lastScrollTop = 0;
-
-      window.addEventListener("scroll", function () {
-        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-        if (scrollTop > lastScrollTop && scrollTop > 50) {
-          nav.style.top = `-${navHeight}px`;
-        } else {
-          nav.style.top = "0";
-        }
-
-        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-      });
     });
   </script>
 </head>
@@ -201,7 +181,6 @@
     <a href="#news">News</a>
     <button id="theme-toggle">🌓</button>
   </nav>
-  <div style="height: 70px;"></div>
 
   <section id="rooftop">
     <h2>Rooftop</h2>
