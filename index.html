@@ -48,7 +48,8 @@
     nav {
       position: sticky;
       top: 0;
-      transition: top 0.35s cubic-bezier(.47,1.64,.41,.8);
+      /* langsamere Animation für top */
+      transition: top 0.7s cubic-bezier(.77,0,.18,1.05);
       background: #333;
       color: white;
       display: flex;
@@ -66,37 +67,35 @@
     }
 
     nav button#themeSwitcher {
-      background: #fff;
+      background: none;
       border: none;
-      color: #222;
-      font-size: 1.3em;
+      color: #fff;
+      font-size: 1.45em;  /* leicht größer */
       cursor: pointer;
       font-weight: bold;
-      margin-left: 0.7em;
-      padding: 0.15em 0.7em;
-      border-radius: 50%;
-      box-shadow: 0 2px 8px #0002;
-      transition: color 0.2s, background 0.2s, box-shadow 0.2s;
+      margin-left: 0.6em;
+      padding: 0 0.1em;
+      border-radius: 0.4em;
       outline: none;
       vertical-align: middle;
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: color 0.22s, background 0.22s;
     }
     nav button#themeSwitcher:hover,
     nav button#themeSwitcher:focus {
-      background: #ffd700;
-      color: #222;
-      box-shadow: 0 4px 16px #0004;
+      background: #444;
+      color: #ffd700;
     }
     body.dark nav button#themeSwitcher {
-      background: #444;
-      color: #fff8;
+      color: #ffe066;
+      background: none;
     }
     body.dark nav button#themeSwitcher:hover,
     body.dark nav button#themeSwitcher:focus {
-      background: #e1be26;
-      color: #222;
+      background: #333;
+      color: #ffe066;
     }
 
     section {
@@ -125,7 +124,7 @@
     }
     .gallery img:hover {
       box-shadow: 0 0 16px #444b;
-      transform: scale(1.07); /* sanftes Vergrößern */
+      transform: scale(1.07);
     }
 
     .login-links {
@@ -324,7 +323,7 @@
   </div>
 
   <script>
-    // Menü Hide on Scroll
+    // Menü Hide on Scroll, langsamere Animation
     let lastScrollY = window.scrollY;
     let nav = document.querySelector('nav');
     let navHidden = false;
@@ -396,7 +395,6 @@
         modalImg.style.transform = 'scale(0.7)';
         modalImg.style.opacity = '0';
         modal.classList.add('active');
-        // nach kurzem Timeout Animation starten
         setTimeout(() => {
           modalImg.style.transform = 'scale(1.0)';
           modalImg.style.opacity = '1';
