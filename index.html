@@ -60,19 +60,20 @@
     }
 
     nav {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--nav-bg);
-      color: white;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1em;
-      padding: 1em;
-      z-index: 1000;
-    }
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: var(--nav-bg);
+  color: white;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1em;
+  padding: 1em;
+  z-index: 1000;
+  transition: top 0.3s ease;
+}
 
     nav a {
       color: white;
@@ -150,20 +151,36 @@
     }
   </style>
   <script>
-    function setTheme(dark) {
-      document.body.classList.toggle("dark", dark);
-      document.querySelector(".logos-right img").src = dark ? "logo-qv-schwarz.png" : "logo-qv-weiss.png";
-      document.querySelector(".logos-left img").src = dark ? "verein-sofe-logo-s.png" : "verein-sofe-logo-w.png";
-      localStorage.setItem("darkTheme", dark);
-    }
+  function setTheme(dark) {
+    document.body.classList.toggle("dark", dark);
+    document.querySelector(".logos-right img").src = dark ? "logo-qv-schwarz.png" : "logo-qv-weiss.png";
+    document.querySelector(".logos-left img").src = dark ? "verein-sofe-logo-s.png" : "verein-sofe-logo-w.png";
+    localStorage.setItem("darkTheme", dark);
+  }
 
-    document.addEventListener("DOMContentLoaded", function () {
-      const saved = localStorage.getItem("darkTheme");
-      const dark = saved === null ? window.matchMedia("(prefers-color-scheme: dark)").matches : saved === "true";
-      setTheme(dark);
-      document.getElementById("theme-toggle").addEventListener("click", () => setTheme(!document.body.classList.contains("dark")));
+  document.addEventListener("DOMContentLoaded", function () {
+    const saved = localStorage.getItem("darkTheme");
+    const dark = saved === null ? window.matchMedia("(prefers-color-scheme: dark)").matches : saved === "true";
+    setTheme(dark);
+    document.getElementById("theme-toggle").addEventListener("click", () => setTheme(!document.body.classList.contains("dark")));
+
+    const nav = document.querySelector("nav");
+    let lastScrollTop = 0;
+    let navHeight = nav.offsetHeight;
+
+    window.addEventListener("scroll", function () {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+      if (scrollTop > lastScrollTop && scrollTop > navHeight) {
+        nav.style.top = `-${navHeight}px`;
+      } else {
+        nav.style.top = "0";
+      }
+
+      lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
     });
-  </script>
+  });
+</script>
 </head>
 <body>
 
