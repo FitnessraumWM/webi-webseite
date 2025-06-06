@@ -67,37 +67,37 @@
     }
 
     nav button#themeSwitcher {
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 1.45em;  /* leicht größer */
-      cursor: pointer;
-      font-weight: bold;
-      margin-left: 0.6em;
-      padding: 0 0.1em;
-      border-radius: 0.4em;
-      outline: none;
-      vertical-align: middle;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: color 0.22s, background 0.22s;
-    }
-    nav button#themeSwitcher:hover,
-    nav button#themeSwitcher:focus {
-      background: #444;
-      color: #ffd700;
-    }
-    body.dark nav button#themeSwitcher {
-      color: #ffe066;
-      background: none;
-    }
-    body.dark nav button#themeSwitcher:hover,
-    body.dark nav button#themeSwitcher:focus {
-      background: #333;
-      color: #ffe066;
-    }
-
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.25em;
+  cursor: pointer;
+  font-weight: bold;
+  margin-left: 0.4em;
+  padding: 0;
+  border-radius: 0.3em;
+  outline: none;
+  vertical-align: middle;
+  display: inline-block;
+  line-height: 1.3;
+  height: 1.35em;
+  margin-top: 1px;
+  transition: color 0.22s, background 0.22s;
+}
+nav button#themeSwitcher:hover,
+nav button#themeSwitcher:focus {
+  background: #444;
+  color: #ffd700;
+}
+body.dark nav button#themeSwitcher {
+  color: #ffe066;
+  background: none;
+}
+body.dark nav button#themeSwitcher:hover,
+body.dark nav button#themeSwitcher:focus {
+  background: #333;
+  color: #ffe066;
+}
     section {
       padding: 4em 1em;
       max-width: 1000px;
@@ -233,15 +233,17 @@
   </header>
 
   <nav>
-    <a href="#historie">Historie</a>
-    <a href="#partyraum">Partyraum</a>
-    <a href="#rooftop">Rooftop</a>
-    <a href="#fitness">Fitnessraum</a>
-    <a href="#spielgruppe">Spielgruppe</a>
-    <a href="#vereine">Vereine</a>
-    <a href="#kontakt">Kontakt</a>
-    <a href="#login">Login</a>
-    <button id="themeSwitcher" aria-label="Theme wechseln">🌙</button>
+  <a href="#historie">Historie</a>
+  <a href="#partyraum">Partyraum</a>
+  <a href="#rooftop">Rooftop</a>
+  <a href="#fitness">Fitnessraum</a>
+  <a href="#spielgruppe">Spielgruppe</a>
+  <a href="#vereine">Vereine</a>
+  <a href="#kontakt">Kontakt</a>
+  <a href="#login">Login</a>
+  <button id="themeSwitcher" aria-label="Theme wechseln">🌙</button>
+</nav>
+
   </nav>
 
   <section id="historie">
