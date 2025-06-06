@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>News – Webermühle</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #fff;
+      color: #000;
+    }
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: #222;
+      color: white;
+      padding: 1em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      transition: top 0.3s;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    main {
+      margin-top: 80px;
+      padding: 2em;
+      max-width: 800px;
+      margin-inline: auto;
+    }
+    h1 {
+      text-align: center;
+    }
+    article {
+      border-bottom: 1px solid #ccc;
+      margin-bottom: 2em;
+      padding-bottom: 1em;
+    }
+    article h2 {
+      margin: 0 0 0.3em;
+    }
+    article small {
+      color: #666;
+    }
+    article p {
+      margin-top: 0.5em;
+    }
+    footer {
+      text-align: center;
+      font-size: 0.8em;
+      margin-top: 3em;
+      padding: 1em;
+      background: #f5f5f5;
+    }
+  </style>
+  <script>
+    let lastScrollTop = 0;
+    window.addEventListener("scroll", function () {
+      const nav = document.querySelector("nav");
+      let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      nav.style.top = scrollTop > lastScrollTop ? "-80px" : "0";
+      lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+    });
+  </script>
+</head>
+<body>
+  <nav>
+    <a href="index.html">← Zurück zur Hauptseite</a>
+    <span>Neuigkeiten</span>
+  </nav>
+  <main>
+    <h1>Neuigkeiten aus der Webermühle</h1>
+
+    <article>
+      <h2><a href="blog/sommerfest-2025.html">🎉 Sommerfest 2025 angekündigt</a></h2>
+      <small>01. Juli 2025</small>
+      <p>Das nächste Sommerfest findet am 30. August statt – mit Spiel, Musik und kulinarischen Highlights. Erfahre mehr über die geplanten Aktivitäten...</p>
+    </article>
+
+    <article>
+      <h2><a href="blog/neue-spielgruppe.html">👶 Neue Spielgruppe eröffnet</a></h2>
+      <small>20. Juni 2025</small>
+      <p>Seit diesem Monat haben wir eine neue Spielgruppe für Kleinkinder! Wer betreut sie, wie funktioniert die Anmeldung – und warum es sich lohnt, mitzumachen.</p>
+    </article>
+
+  </main>
+  <footer>&copy; 2025 Verein Webermühle</footer>
+</body>
+</html>
