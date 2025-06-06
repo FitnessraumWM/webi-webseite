@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Webermühle Verein</title>
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <style>
     :root {
       --background: #ffffff;
@@ -12,162 +12,252 @@
       --nav-bg: #333;
       --link: #0077cc;
     }
+
     body.dark {
       --background: #1e1e1e;
       --text: #ffffff;
       --nav-bg: #111;
       --link: #66b2ff;
     }
+
     body {
       margin: 0;
       font-family: sans-serif;
+      scroll-behavior: smooth;
       background: var(--background);
       color: var(--text);
-      scroll-behavior: smooth;
     }
+
     header {
       background: url('webermuehle-gesamt.jpg') center/cover no-repeat;
       height: 90vh;
+      color: white;
       display: flex;
       align-items: center;
       justify-content: center;
-      text-align: center;
-      color: white;
       font-size: 3em;
       text-shadow: 2px 2px 5px black;
       position: relative;
+      text-align: center;
     }
+
     .logos-left, .logos-right {
       position: absolute;
       top: 20px;
-      height: 140px;
+      height: 180px;
     }
+
     .logos-left { left: 20px; }
     .logos-right { right: 20px; }
+
     .logos-left img, .logos-right img {
       height: 100%;
+      cursor: pointer;
+      transition: transform 0.3s;
     }
-    .sidebar {
-      position: fixed;
-      top: 0;
+
+    .logos-left img:hover, .logos-right img:hover {
+      transform: scale(1.05);
+    }
+
+    nav {
+      position: absolute;
+      top: 90vh;
       left: 0;
-      height: 100vh;
-      width: 60px;
+      right: 0;
       background: var(--nav-bg);
+      color: white;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 0.5em 0;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1em;
+      padding: 1em;
       z-index: 1000;
-      transition: width 0.3s ease;
+      transition: all 0.3s ease;
     }
-    .sidebar:hover {
-      width: 160px;
+
+    .nav-icons {
+      position: fixed;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+      background: var(--nav-bg);
+      padding: 0.5em;
+      display: none;
+      flex-direction: column;
+      gap: 1em;
+      z-index: 1000;
     }
-    .sidebar a {
+
+    .nav-icons a {
+      color: white;
+      font-size: 1.5em;
+      text-align: center;
+    }
+
+    nav a {
       color: white;
       text-decoration: none;
-      padding: 1em 0.5em;
-      display: flex;
-      align-items: center;
-      gap: 0.5em;
-      width: 100%;
-      transition: background 0.2s;
+      font-weight: bold;
     }
-    .sidebar a:hover {
-      background: rgba(255,255,255,0.1);
-    }
-    .sidebar span {
-      display: none;
-    }
-    .sidebar:hover span {
-      display: inline;
-    }
+
     #theme-toggle {
+      cursor: pointer;
       background: none;
       border: none;
       color: white;
-      margin-top: auto;
-      cursor: pointer;
-      font-size: 1.2em;
+      font-size: 1em;
     }
+
     section {
       padding: 4em 1em;
       max-width: 1000px;
       margin: auto;
     }
+
     h2 {
-      border-bottom: 2px solid #aaa;
+      border-bottom: 2px solid #ccc;
       padding-bottom: 0.5em;
     }
+
     .gallery {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 1em;
     }
+
     .gallery img {
-      max-width: 180px;
       width: 100%;
       border-radius: 8px;
       cursor: pointer;
     }
+
     .modal {
       display: none;
       position: fixed;
       z-index: 2000;
-      top: 0;
       left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0,0,0,0.8);
-      justify-content: center;
-      align-items: center;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.9);
     }
-    .modal img {
-      max-width: 90vw;
-      max-height: 90vh;
+
+    .modal-content {
+      display: block;
+      margin: 5% auto;
+      max-width: 90%;
     }
-    .modal.open {
-      display: flex;
+
+    .close {
+      position: absolute;
+      top: 20px;
+      right: 35px;
+      color: #fff;
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
     }
-    .spielgruppe-box {
-      display: flex;
-      align-items: center;
-      gap: 2em;
-      flex-wrap: wrap;
+
+    footer {
+      background: #f2f2f2;
+      padding: 2em 1em;
+      text-align: center;
+      font-size: 0.9em;
     }
-    .spielgruppe-box img {
-      max-width: 160px;
+
+    @media (max-width: 768px) {
+      .logos-left, .logos-right {
+        height: 100px;
+        top: 10px;
+      }
+
+      nav {
+        flex-direction: column;
+        gap: 0.5em;
+      }
     }
   </style>
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const themeBtn = document.getElementById("theme-toggle");
-      const modal = document.getElementById("img-modal");
-      const modalImg = modal.querySelector("img");
+    function setTheme(dark) {
+      document.body.classList.toggle("dark", dark);
+      document.querySelector(".logos-right img").src = dark ? "logo-qv-schwarz.png" : "logo-qv-weiss.png";
+      document.querySelector(".logos-left img").src = dark ? "verein-sofe-logo-s.png" : "verein-sofe-logo-w.png";
+      localStorage.setItem("darkTheme", dark);
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const saved = localStorage.getItem("darkTheme");
+      const dark = saved === null ? window.matchMedia("(prefers-color-scheme: dark)").matches : saved === "true";
+      setTheme(dark);
+      document.getElementById("theme-toggle").addEventListener("click", () => setTheme(!document.body.classList.contains("dark")));
+
+      const nav = document.querySelector("nav");
+      const navIcons = document.querySelector(".nav-icons");
+      let lastScrollTop = 0;
+
+      window.addEventListener("scroll", function () {
+        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        if (scrollTop > 90) {
+          nav.style.display = 'none';
+          navIcons.style.display = 'flex';
+        } else {
+          nav.style.display = 'flex';
+          navIcons.style.display = 'none';
+        }
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+      });
+
+      const modal = document.getElementById("imgModal");
+      const modalImg = document.getElementById("modalImage");
+      const closeBtn = document.getElementById("closeModal");
+
       document.querySelectorAll(".gallery img").forEach(img => {
         img.addEventListener("click", () => {
-          modal.classList.add("open");
+          modal.style.display = "block";
           modalImg.src = img.src;
         });
       });
-      modal.addEventListener("click", () => modal.classList.remove("open"));
+
+      closeBtn.onclick = () => modal.style.display = "none";
+      window.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
     });
   </script>
 </head>
 <body>
-  <div class="sidebar">
-    <a href="#historie"><i data-lucide="book-open"></i> <span>Historie</span></a>
-    <a href="#partyraum"><i data-lucide="party-popper"></i> <span>Partyraum</span></a>
-    <a href="#rooftop"><i data-lucide="mountain"></i> <span>Rooftop</span></a>
-    <a href="#fitness"><i data-lucide="dumbbell"></i> <span>Fitness</span></a>
-    <a href="#spielgruppe"><i data-lucide="baby"></i> <span>Spielgruppe</span></a>
-    <a href="#sommerfest"><i data-lucide="sun"></i> <span>Sommerfest</span></a>
-    <a href="#vereine"><i data-lucide="users"></i> <span>Vereine</span></a>
-    <a href="#kontakt"><i data-lucide="mail"></i> <span>Kontakt</span></a>
-    <a href="#login"><i data-lucide="log-in"></i> <span>Login</span></a>
-    <a href="#news"><i data-lucide="newspaper"></i> <span>News</span></a>
-    <button id="theme-toggle"><i data-lucide="moon"></i></button>
+
+  <header>
+    <a href="#" class="logos-left"><img src="verein-sofe-logo-w.png" alt="Logo SOFE Webi" /></a>
+    <a href="#" class="logos-right"><img src="logo-qv-weiss.png" alt="Logo Quartierverein" /></a>
+    <div>Willkommen in der Webermühle</div>
+  </header>
+
+  <nav>
+    <a href="#historie">Historie</a>
+    <a href="#partyraum">Partyraum</a>
+    <a href="#rooftop">Rooftop</a>
+    <a href="#fitness">Fitnessraum</a>
+    <a href="#spielgruppe">Spielgruppe</a>
+    <a href="#sommerfest">Sommerfest</a>
+    <a href="#vereine">Vereine</a>
+    <a href="#kontakt">Kontakt</a>
+    <a href="#login">Login</a>
+    <a href="#news">News</a>
+    <button id="theme-toggle">🌓</button>
+  </nav>
+
+  <div class="nav-icons">
+    <a href="#historie" title="Historie"><i class="bi bi-clock-history"></i></a>
+    <a href="#partyraum" title="Partyraum"><i class="bi bi-cup-straw"></i></a>
+    <a href="#rooftop" title="Rooftop"><i class="bi bi-building"></i></a>
+    <a href="#fitness" title="Fitness"><i class="bi bi-barbell"></i></a>
+    <a href="#spielgruppe" title="Spielgruppe"><i class="bi bi-emoji-smile"></i></a>
+    <a href="#sommerfest" title="Sommerfest"><i class="bi bi-sun"></i></a>
+    <a href="#vereine" title="Vereine"><i class="bi bi-people"></i></a>
+    <a href="#kontakt" title="Kontakt"><i class="bi bi-envelope"></i></a>
+    <a href="#login" title="Login"><i class="bi bi-box-arrow-in-right"></i></a>
+    <a href="#news" title="News"><i class="bi bi-megaphone"></i></a>
   </div>
 
   <header>
@@ -258,8 +348,9 @@
     </div>
   </section>
 
-  <div class="modal" id="img-modal">
-    <img src="" alt="Zoom" />
+  <div id="imgModal" class="modal">
+    <span id="closeModal" class="close">&times;</span>
+    <img class="modal-content" id="modalImage">
   </div>
   
   <footer>
