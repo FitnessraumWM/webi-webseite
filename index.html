@@ -4,13 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Webermühle Verein</title>
-  <link href="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     :root {
       --background: #ffffff;
       --text: #000000;
-      --nav-bg: #333;
+      --nav-bg: #222;
       --link: #0077cc;
     }
 
@@ -31,93 +30,56 @@
 
     header {
       background: url('webermuehle-gesamt.jpg') center/cover no-repeat;
-      height: 90vh;
+      height: 100vh;
       color: white;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 3em;
       text-shadow: 2px 2px 5px black;
-      position: relative;
       text-align: center;
     }
 
-    .logos-left, .logos-right {
-      position: absolute;
-      top: 20px;
-      height: 100px;
-    }
-
-    .logos-left { left: 20px; }
-    .logos-right { right: 20px; }
-
-    .logos-left img, .logos-right img {
-      height: 100%;
-      cursor: pointer;
-      transition: transform 0.3s;
-    }
-
-    .logos-left img:hover, .logos-right img:hover {
-      transform: scale(1.05);
-    }
-
-    nav {
+    .side-nav {
       position: fixed;
       top: 0;
       left: 0;
-      right: 0;
+      height: 100vh;
+      width: 60px;
       background: var(--nav-bg);
-      color: white;
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
+      align-items: center;
       justify-content: center;
       gap: 1em;
-      padding: 1em;
-      z-index: 1000;
-      transition: top 0.3s ease, left 0.3s ease;
+      padding: 1em 0;
+      z-index: 999;
+      transition: transform 0.3s ease;
     }
 
-    nav.sticky-left {
-      flex-direction: column;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      width: 60px;
-      height: 100vh;
-      justify-content: flex-start;
-      align-items: center;
-      gap: 1em;
-    }
-
-    nav.sticky-left a {
-      writing-mode: vertical-lr;
-      transform: rotate(180deg);
-      font-size: 0.8em;
-    }
-
-    nav a {
+    .side-nav a,
+    .side-nav button {
       color: white;
       text-decoration: none;
-      font-weight: bold;
-    }
-
-    #theme-toggle {
-      cursor: pointer;
-      background: none;
+      font-size: 1.5em;
       border: none;
-      color: white;
-      font-size: 1em;
+      background: none;
+      cursor: pointer;
     }
 
     section {
-      padding: 4em 1em;
+      padding: 4em 1em 2em 4em;
       max-width: 1000px;
       margin: auto;
     }
 
     h2 {
       border-bottom: 2px solid #ccc;
-      padding-bottom: 0.5em;
+      padding-bottom: 0.3em;
+      margin-top: 2em;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
     }
 
     .gallery {
@@ -133,11 +95,6 @@
       cursor: pointer;
     }
 
-    .login-links {
-      text-align: center;
-      font-size: 1.2em;
-    }
-
     .login-links a {
       display: inline-block;
       margin: 1em;
@@ -146,75 +103,30 @@
       font-weight: bold;
     }
 
-    .login-links a:hover {
-      text-decoration: underline;
-    }
-
-    footer {
-      background: #f2f2f2;
-      padding: 2em 1em;
-      text-align: center;
-      font-size: 0.9em;
-    }
-
     @media (max-width: 768px) {
-      .logos-left, .logos-right {
-        height: 80px;
-        top: 10px;
-      }
-      nav.sticky-left {
+      .side-nav {
         flex-direction: row;
-        width: 100%;
         height: auto;
-        justify-content: space-around;
-        writing-mode: horizontal-tb;
+        width: 100%;
+        padding: 0.5em;
+        position: fixed;
+        bottom: 0;
+        top: unset;
       }
-      nav.sticky-left a {
-        transform: none;
-        writing-mode: horizontal-tb;
+
+      section {
+        padding-left: 1em;
       }
     }
   </style>
-  <script>
-    function setTheme(dark) {
-      document.body.classList.toggle("dark", dark);
-      document.querySelector(".logos-right img").src = dark ? "logo-qv-schwarz.png" : "logo-qv-weiss.png";
-      document.querySelector(".logos-left img").src = dark ? "verein-sofe-logo-s.png" : "verein-sofe-logo-w.png";
-      localStorage.setItem("darkTheme", dark);
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-      const saved = localStorage.getItem("darkTheme");
-      const dark = saved === null ? window.matchMedia("(prefers-color-scheme: dark)").matches : saved === "true";
-      setTheme(dark);
-      document.getElementById("theme-toggle").addEventListener("click", () => setTheme(!document.body.classList.contains("dark")));
-
-      const nav = document.querySelector("nav");
-      let lastScrollTop = 0;
-
-      window.addEventListener("scroll", function () {
-        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-        if (scrollTop > 300 && !nav.classList.contains("sticky-left")) {
-          nav.classList.add("sticky-left");
-        } else if (scrollTop <= 100 && nav.classList.contains("sticky-left")) {
-          nav.classList.remove("sticky-left");
-        }
-
-        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-      });
-    });
-  </script>
 </head>
 <body>
 
   <header>
-    <a href="#" class="logos-left"><img src="verein-sofe-logo-w.png" alt="Logo SOFE Webi" /></a>
-    <a href="#" class="logos-right"><img src="logo-qv-weiss.png" alt="Logo Quartierverein" /></a>
-    <div>Willkommen in der Webermühle</div>
+    Willkommen in der Webermühle
   </header>
 
-  <nav>
+  <div class="side-nav">
     <a href="#historie" title="Historie"><i data-lucide="book-open"></i></a>
     <a href="#partyraum" title="Partyraum"><i data-lucide="glass"></i></a>
     <a href="#rooftop" title="Rooftop"><i data-lucide="sun"></i></a>
@@ -226,16 +138,10 @@
     <a href="#login" title="Login"><i data-lucide="log-in"></i></a>
     <a href="#news" title="News"><i data-lucide="newspaper"></i></a>
     <button id="theme-toggle">🌓</button>
-  </nav>
-
-  <header>
-    <a class="logos-left"><img src="verein-sofe-logo-w.png" alt="SOFE" /></a>
-    <a class="logos-right"><img src="logo-qv-weiss.png" alt="QV" /></a>
-    <div>Willkommen in der Webermühle</div>
-  </header>
+  </div>
 
   <section id="rooftop">
-    <h2>Rooftop</h2>
+    <h2><i data-lucide="sun"></i>Rooftop</h2>
     <p>Unser Dachbereich bietet eine tolle Aussicht und viel Platz für Anlässe.</p>
     <div class="gallery">
       <img src="rooftop-01.jpg" alt="Rooftop 1" />
@@ -248,30 +154,37 @@
       <img src="rooftop-08.jpg" alt="Rooftop 8" />
       <img src="rooftop-09.jpg" alt="Rooftop 9" />
       <img src="rooftop-10.jpg" alt="Rooftop 10" />
-      <img src="rooftop-11.jpg" alt="Rooftop 11" />
-      <img src="rooftop-12.jpg" alt="Rooftop 12" />
-      <img src="rooftop-13.jpg" alt="Rooftop 13" />
     </div>
   </section>
 
   <section id="spielgruppe">
-    <h2>Spielgruppe Zwergmühle</h2>
-    <div class="spielgruppe-box">
-      <img src="zwergmühle-logo.png" alt="Zwergmühle Logo" />
-      <div>
-        <p>Die Spielgruppe „Zwergmühle“ ist eine privat geführte Institution und wird vom Quartierverein Webermühle getragen. Die ausgebildeten Spielgruppenleiterinnen betreuen die Kinder in einer konstanten Gruppe von max. 7–8 Kindern (ab 2,5 Jahren bis Kindergarteneintritt) regelmässig zweimal pro Woche für 2 Stunden.</p>
-        <p><strong>Spielzeit:</strong> Montag und Donnerstag 09.00 – 11.00 Uhr<br/>
-        <strong>Ort:</strong> Webermühle 23/EG</p>
-        <p><em>Neu:</em> Sollte Ihr Kind vielleicht erst auf dem Weg zum „Trocken werden“ sein, so ist dies kein Grund, nicht die Spielgruppe zu besuchen. In diesem Fall informieren Sie die Spielgruppenleiterin und geben dem Kind einfach die Windeln mit.</p>
-        <p>Das Anmeldeformular kann unter <a href="mailto:esiino@hotmail.com">esiino@hotmail.com</a> angefordert werden oder telefonisch bei:<br/>
-        <strong>Sandra Adamovic</strong>: 076 404 06 85</p>
-        <p><strong>Adresse:</strong><br/>
-        Zwergmühle Spielgruppe<br/>
-        Webermühle 23<br/>
-        5432 Neuenhof<br/>
-        <a href="mailto:esiino@hotmail.com">esiino@hotmail.com</a></p>
-      </div>
-    </div>
+    <h2><i data-lucide="baby"></i>Spielgruppe Zwergmühle</h2>
+    <img src="zwergmuehle-logo.png" alt="Zwergmühle Logo" style="height: 80px;" />
+    <p>
+      Die Spielgruppe „Zwergmühle“ ist eine privat geführte Institution und wird vom Quartierverein Webermühle getragen.
+      Die ausgebildeten Spielgruppenleiterinnen betreuen die Kinder in einer konstanten Gruppe von max. 7–8 Kindern
+      (ab 2,5 Jahren bis Kindergarteneintritt) regelmässig zweimal pro Woche für 2 Stunden.
+    </p>
+    <p>
+      <strong>Spielzeit:</strong> Montag und Donnerstag 09.00 – 11.00 Uhr<br>
+      <strong>Ort:</strong> Webermühle 23/EG
+    </p>
+    <p>
+      <strong>Neu:</strong> Sollte Ihr Kind vielleicht erst auf dem Weg zum „Trocken werden“ sein, so ist dies kein Grund,
+      nicht die Spielgruppe zu besuchen. In diesem Fall informieren Sie die Spielgruppenleiterin und geben dem Kind einfach
+      die Windeln mit.
+    </p>
+    <p>
+      Das Anmeldeformular kann unter <a href="mailto:esiino@hotmail.com">esiino@hotmail.com</a> angefordert werden oder telefonisch bei:<br>
+      Sandra Adamovic: 076 404 06 85
+    </p>
+    <p>
+      <strong>Adresse:</strong><br>
+      Zwergmühle Spielgruppe<br>
+      Webermühle 23<br>
+      5432 Neuenhof<br>
+      <a href="mailto:esiino@hotmail.com">esiino@hotmail.com</a>
+    </p>
   </section>
 
   <section id="fitness">
@@ -320,6 +233,13 @@
     <span id="closeModal" class="close">&times;</span>
     <img class="modal-content" id="modalImage">
   </div>
+
+  <script>
+    lucide.createIcons();
+    document.getElementById("theme-toggle").addEventListener("click", function () {
+      document.body.classList.toggle("dark");
+    });
+  </script>
   
   <footer>
     &copy; 2025 Verein Webermühle &middot; Alle Rechte vorbehalten
