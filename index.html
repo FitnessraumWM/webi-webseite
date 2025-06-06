@@ -5,204 +5,374 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Webermühle Verein</title>
   <style>
-    body {
+    :root {
+      --background: #f8f8fa;
+      --text: #161616;
+      --nav-bg: #222;
+      --nav-hover: #34374a;
+      --primary: #006bb4;
+      --shadow: 1px 2px 7px #0002;
+      --box-bg: #fff;
+      --border: #ebebee;
+    }
+    body.dark {
+      --background: #181b1f;
+      --text: #fff;
+      --nav-bg: #222;
+      --nav-hover: #2d2d3c;
+      --box-bg: #22242a;
+      --border: #32323a;
+    }
+    html, body {
       margin: 0;
-      font-family: sans-serif;
+      padding: 0;
+      background: var(--background);
+      color: var(--text);
+      font-family: 'Segoe UI', Arial, sans-serif;
       scroll-behavior: smooth;
     }
-
     header {
       background: url('webermuehle-gesamt.jpg') center/cover no-repeat;
-      height: 90vh;
-      color: white;
+      height: 45vh;
+      min-height: 260px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 3em;
-      text-shadow: 2px 2px 5px black;
       position: relative;
+      overflow: hidden;
+    }
+    .logos-header {
+      position: absolute;
+      width: 100%;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 1vw 2vw;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .logos-header img {
+      height: 140px; /* Viel größer! */
+      width: 140px;
+      max-width: 33vw;
+      max-height: 33vw;
+      background: #fff7;
+      border-radius: 16px;
+      padding: 10px;
+      box-shadow: var(--shadow);
+      object-fit: contain;
+      pointer-events: auto;
+      transition: box-shadow 0.18s, background 0.2s;
+    }
+    .theme-toggle {
+      position: absolute;
+      top: 16px;
+      right: 25vw;
+      font-size: 2em;
+      background: none;
+      border: none;
+      color: #fff;
+      z-index: 3;
+      cursor: pointer;
+      padding: 0.18em 0.26em;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px #0003;
+      background: #2228;
+      transition: background 0.18s;
+    }
+    .theme-toggle:hover {
+      background: #222d;
+    }
+    .header-title {
+      margin-top: 40px;
+      color: #fff;
+      font-size: 3.3em;
+      font-weight: bold;
+      text-shadow: 2px 2px 9px #000c;
+      z-index: 2;
       text-align: center;
     }
-
-    .logos-left, .logos-right {
-      position: absolute;
-      top: 20px;
-      height: 180px;
-    }
-
-    .logos-left { left: 20px; }
-    .logos-right { right: 20px; }
-
-    .logos-left img, .logos-right img {
-      height: 100%;
-      cursor: pointer;
-      transition: transform 0.3s;
-    }
-
-    .logos-left img:hover, .logos-right img:hover {
-      transform: scale(1.05);
-    }
-
-    nav {
+    nav.nav-main {
+      display: flex;
+      justify-content: center;
+      gap: 0.6em;
+      background: var(--nav-bg);
+      color: #fff;
       position: sticky;
       top: 0;
-      background: #333;
-      color: white;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1em;
-      padding: 1em;
-      z-index: 10;
+      left: 0;
+      right: 0;
+      font-size: 1em;
+      z-index: 30;
+      transition: top 0.32s;
+      padding: 0.35em 0 0.30em 0;
+      min-width: 320px;
+      width: 100%;
+      box-shadow: 0 2px 14px #0001;
     }
-
-    nav a {
-      color: white;
+    nav.nav-main.hide {
+      top: -56px;
+    }
+    nav.nav-main a, nav.nav-main button {
+      color: #fff;
       text-decoration: none;
-      font-weight: bold;
+      background: none;
+      border: none;
+      font: inherit;
+      font-size: 0.97em;
+      padding: 0.14em 0.77em;
+      border-radius: 6px;
+      transition: background 0.17s;
+      cursor: pointer;
+      position: relative;
     }
-
+    nav.nav-main a:hover, nav.nav-main button:hover {
+      background: var(--nav-hover);
+    }
+    main {
+      width: 100vw;
+      max-width: 100vw;
+      margin: 0;
+      padding: 0;
+    }
     section {
-      padding: 4em 1em;
-      max-width: 1000px;
-      margin: auto;
+      max-width: 680px;
+      margin: 2.5em auto 0 auto;
+      padding: 1.1em 1.2em 1.5em 1.2em;
+      background: var(--box-bg);
+      border-radius: 16px;
+      box-shadow: 0 2px 10px #0001;
+      border: 1.5px solid var(--border);
+      position: relative;
+      min-height: 70px;
     }
-
-    h2 {
-      border-bottom: 2px solid #ccc;
-      padding-bottom: 0.5em;
+    section h2 {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+      font-size: 1.13em;
+      color: var(--primary);
+      font-weight: bold;
+      letter-spacing: 0.01em;
     }
-
     .gallery {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1em;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px,1fr));
+      gap: 0.7em;
+      margin: 0.7em 0;
     }
-
     .gallery img {
       width: 100%;
-      max-width: 300px;
-      border-radius: 8px;
-    }
-
-    .login-links {
-      text-align: center;
-      font-size: 1.2em;
-    }
-
-    .login-links a {
-      display: inline-block;
-      margin: 1em;
-      text-decoration: none;
-      color: #0077cc;
-      font-weight: bold;
-    }
-
-    .login-links a:hover {
-      text-decoration: underline;
-    }
-
-    footer {
+      border-radius: 7px;
+      cursor: pointer;
+      box-shadow: 0 1px 4px #0002;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      transition: transform 0.14s;
       background: #f2f2f2;
-      padding: 2em 1em;
-      text-align: center;
-      font-size: 0.9em;
+      border: 1.5px solid #ececec;
     }
-
-    @media (max-width: 768px) {
-      .logos-left, .logos-right {
-        height: 100px;
-        top: 10px;
-      }
-
-      nav {
-        flex-direction: column;
-        gap: 0.5em;
-      }
+    .gallery img:hover {
+      transform: scale(1.04);
+      z-index: 3;
+    }
+    .zwergmuehle-logo {
+      float: right;
+      margin-left: 0.9em;
+      width: 60px;
+      border-radius: 10px;
+      margin-bottom: 0.2em;
+      background: #fff;
+      box-shadow: 0 1px 5px #0001;
+    }
+    footer {
+      text-align: center;
+      margin: 3em 0 0.7em 0;
+      color: #78797e;
+      font-size: 1em;
+    }
+    @media (max-width: 1200px) {
+      .logos-header img { height: 84px; width: 84px; }
+      .theme-toggle { right: 18vw; }
+    }
+    @media (max-width: 900px) {
+      .header-title { font-size: 1.1em; margin-top: 70px;}
+      .logos-header img { height: 55px; width: 55px;}
+      nav.nav-main { font-size: 0.88em; }
+      section { padding: 0.7em 0.3em 1em 0.3em; }
+      .zwergmuehle-logo { width: 40px; }
+      .theme-toggle { font-size: 1.3em; right: 8vw; top: 7px;}
+    }
+    @media (max-width: 520px) {
+      section { margin: 1em 0.1em 0.5em 0.1em; }
+      nav.nav-main { font-size: 0.8em; gap: 0.23em; padding: 0.16em 0;}
+      .gallery { grid-template-columns: repeat(auto-fit, minmax(90px,1fr)); }
+      .header-title { margin-top: 54px; font-size: 1em;}
+      .logos-header img { height: 39px; width: 39px;}
+      .theme-toggle { font-size: 1em; right: 2vw; top: 4px;}
     }
   </style>
 </head>
 <body>
-
   <header>
-    <a href="#" class="logos-left"><img src="verein-sofe-logo.png" alt="Logo SOFE Webi" /></a>
-    <a href="#" class="logos-right"><img src="logo-qv-transparent.png" alt="Logo Quartierverein" /></a>
-    <div>Willkommen in der Webermühle</div>
+    <div class="logos-header">
+      <img id="logo-sofe" src="verein-sofe-logo-w.png" alt="SOFE Webi" />
+      <img id="logo-qv" src="logo-qv-weiss.png" alt="Quartierverein" />
+    </div>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Theme umschalten">🌓</button>
+    <div class="header-title">
+      Willkommen in der Webermühle
+    </div>
   </header>
 
-  <nav>
-    <a href="#historie">Historie</a>
-    <a href="#partyraum">Partyraum</a>
-    <a href="#rooftop">Rooftop</a>
-    <a href="#fitness">Fitnessraum</a>
-    <a href="#spielgruppe">Spielgruppe</a>
-    <a href="#vereine">Vereine</a>
-    <a href="#kontakt">Kontakt</a>
-    <a href="#login">Login</a>
+  <nav class="nav-main" id="mainMenu">
+    <a href="#historie" title="Historie">Historie</a>
+    <a href="#partyraum" title="Partyraum">Partyraum</a>
+    <a href="#rooftop" title="Rooftop">Rooftop</a>
+    <a href="#fitness" title="Fitnessraum">Fitness</a>
+    <a href="#spielgruppe" title="Spielgruppe">Spielgruppe</a>
+    <a href="#sommerfest" title="Sommerfest">Sommerfest</a>
+    <a href="#vereine" title="Vereine">Vereine</a>
+    <a href="#kontakt" title="Kontakt">Kontakt</a>
+    <a href="#login" title="Login">Login</a>
+    <a href="#news" title="News">News</a>
   </nav>
 
-  <section id="historie">
-    <h2>Historie der Webermühle</h2>
-    <p>Die Webermühle in Neuenhof hat eine lange Geschichte als Wohnsiedlung mit besonderem Charakter. Die moderne Entwicklung begann in den 2010er Jahren mit dem Ziel, ein vielfältiges, lebendiges Quartier für Menschen aller Generationen zu schaffen.</p>
-  </section>
+  <main>
+    <section id="rooftop">
+      <h2>Rooftop</h2>
+      <p>Unser Dachbereich bietet eine tolle Aussicht und viel Platz für Anlässe.</p>
+      <div class="gallery" id="rooftop-gallery"></div>
+    </section>
 
-  <section id="partyraum">
-    <h2>Partyraum</h2>
-    <div class="gallery">
-      <img src="party1.jpg" alt="Partyraum 1">
-      <img src="party2.jpg" alt="Partyraum 2">
-    </div>
-    <p>Der Partyraum bietet Platz für Feiern mit Küche, Sitzgelegenheiten und Musikanlage.</p>
-  </section>
+    <section id="spielgruppe">
+      <h2>Spielgruppe Zwergmühle</h2>
+      <img src="zwergmuehle-logo.png" alt="Zwergmühle Logo" class="zwergmuehle-logo" />
+      <p>
+        Die Spielgruppe „Zwergmühle“ ist eine privat geführte Institution und wird vom Quartierverein Webermühle getragen.
+        Die ausgebildeten Spielgruppenleiterinnen betreuen die Kinder in einer konstanten Gruppe von max. 7–8 Kindern
+        (ab 2,5 Jahren bis Kindergarteneintritt) regelmässig zweimal pro Woche für 2 Stunden.
+      </p>
+      <p>
+        <b>Spielzeit:</b> Montag und Donnerstag 09.00 – 11.00 Uhr<br>
+        <b>Ort:</b> Webermühle 23/EG
+      </p>
+      <p>
+        <b>Neu:</b> Sollte Ihr Kind vielleicht erst auf dem Weg zum „Trocken werden“ sein, so ist dies kein Grund, nicht die Spielgruppe zu besuchen. In diesem Fall informieren Sie die Spielgruppenleiterin und geben dem Kind einfach die Windeln mit.
+      </p>
+      <p>
+        Das Anmeldeformular kann unter <a href="mailto:esiino@hotmail.com">esiino@hotmail.com</a> angefordert werden oder telefonisch bei:<br>
+        <b>Sandra Adamovic:</b> 076 404 06 85
+      </p>
+      <p>
+        <b>Adresse:</b><br>
+        Zwergmühle Spielgruppe<br>
+        Webermühle 23<br>
+        5432 Neuenhof<br>
+        <a href="mailto:esiino@hotmail.com">esiino@hotmail.com</a>
+      </p>
+    </section>
 
-  <section id="rooftop">
-    <h2>Rooftop</h2>
-    <div class="gallery">
-      <img src="rooftop1.jpg" alt="Rooftop 1">
-    </div>
-    <p>Das Rooftop bietet eine einzigartige Aussicht über das Limmattal – ideal für Sommerabende.</p>
-  </section>
+    <section id="fitness">
+      <h2>Fitnessraum</h2>
+      <p><b>Fitnessraum 1</b></p>
+      <p>Ausgestattet mit modernen Geräten – offen für Vereinsmitglieder mit Zugangscode.</p>
+      <a href="#">Mehr Bilder ansehen →</a>
+    </section>
 
-  <section id="fitness">
-    <h2>Fitnessraum</h2>
-    <div class="gallery">
-      <img src="fitness1.jpg" alt="Fitnessraum 1">
-    </div>
-    <p>Ausgestattet mit modernen Geräten – offen für Vereinsmitglieder mit Zugangscode.</p>
-  </section>
+    <section id="sommerfest">
+      <h2>Sommerfest</h2>
+      <p>
+        Das Sommerfest ist eine langjährige Tradition der Webermühle. Organisiert durch den Verein SOFE Webi bringt es Bewohner*innen zusammen und fördert das Gemeinschaftsgefühl mit Spiel, Musik und Genuss.
+      </p>
+    </section>
 
-  <section id="spielgruppe">
-    <h2>Spielgruppe Zwergmühle</h2>
-    <div class="gallery">
-      <img src="spielgruppe1.jpg" alt="Spielgruppe">
-    </div>
-    <p>Unsere liebevolle Spielgruppe für Kinder von 3–5 Jahren, direkt im Quartier.</p>
-  </section>
+    <section id="vereine">
+      <h2>Vereine</h2>
+      <p>
+        <b>SOFE Webi:</b> wurde gegründet, um das Sommerfest zu organisieren und dauerhaft zu betreuen.<br><br>
+        <b>Quartierverein Webermühle-Klosterrüti:</b> engagiert sich für Gemeinschaft, Integration und Lebensqualität im Quartier.
+      </p>
+    </section>
 
-  <section id="vereine">
-    <h2>Vereine</h2>
-    <p><strong>SOFE Webi:</strong> wurde gegründet, um das Sommerfest zu organisieren und dauerhaft zu betreuen.</p>
-    <p><strong>Quartierverein Webermühle-Klosterrüti:</strong> engagiert sich für Gemeinschaft, Integration und Lebensqualität im Quartier.</p>
-  </section>
+    <section id="kontakt">
+      <h2>Kontakt</h2>
+      <p>
+        Bei Fragen oder Anliegen wende dich bitte an:<br><br>
+        <b>SOFE Webi:</b> <a href="mailto:sommerfest@webi.family">sommerfest@webi.family</a><br>
+        <b>Quartierverein:</b> <a href="mailto:qv@webi.family">qv@webi.family</a>
+      </p>
+    </section>
 
-  <section id="kontakt">
-    <h2>Kontakt</h2>
-    <p>Bei Fragen oder Anliegen wende dich bitte an:</p>
-    <p><strong>SOFE Webi:</strong> <a href="mailto:sommerfest@webi.family">sommerfest@webi.family</a><br />
-       <strong>Quartierverein:</strong> <a href="mailto:qv@webi.family">qv@webi.family</a></p>
-  </section>
+    <section id="login">
+      <h2>Interner Bereich</h2>
+      <p>
+        <a href="https://github.com/FitnessraumWM/webi-webseite" target="_blank">🔗 GitHub Repository</a><br>
+        <a href="mailto:verein@webi.family">📧 Vereins-E-Mail öffnen</a>
+      </p>
+    </section>
 
-  <section id="login">
-    <h2>Interner Bereich</h2>
-    <div class="login-links">
-      <p><a href="https://github.com/dein-verein" target="_blank">🔗 GitHub Repository</a></p>
-      <p><a href="https://mail.zoho.eu/zm/">📧 Vereins-E-Mail öffnen</a></p>
-    </div>
-  </section>
+    <section id="news">
+      <h2>News</h2>
+      <p>
+        <!-- Neuigkeiten/News werden hier ergänzt -->
+        <i>Bald findest du hier aktuelle Neuigkeiten und Infos rund um die Webermühle!</i>
+      </p>
+    </section>
+  </main>
 
   <footer>
-    &copy; 2025 Verein Webermühle &middot; Alle Rechte vorbehalten
+    © 2025 Verein Webermühle · Alle Rechte vorbehalten
   </footer>
 
+  <script>
+    // Rooftop Bilder einfügen (nur 10 Stück)
+    const gallery = document.getElementById('rooftop-gallery');
+    for (let i = 1; i <= 10; i++) {
+      const img = document.createElement('img');
+      img.src = `rooftop-0${i}.jpg`;
+      img.alt = `Rooftop ${i}`;
+      img.loading = "lazy";
+      gallery.appendChild(img);
+    }
+
+    // Menü beim Scrollen ausblenden/anzeigen
+    let lastScroll = 0;
+    let ticking = false;
+    const nav = document.getElementById('mainMenu');
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrolled = window.scrollY || document.documentElement.scrollTop;
+          if (scrolled > lastScroll && scrolled > 60) {
+            nav.classList.add("hide");
+          } else {
+            nav.classList.remove("hide");
+          }
+          lastScroll = scrolled <= 0 ? 0 : scrolled;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    // Theme Umschalten & Logo-Wechsel
+    function setTheme(dark) {
+      document.body.classList.toggle("dark", dark);
+      document.getElementById("logo-qv").src = dark ? "logo-qv-schwarz.png" : "logo-qv-weiss.png";
+      document.getElementById("logo-sofe").src = dark ? "verein-sofe-logo-s.png" : "verein-sofe-logo-w.png";
+      localStorage.setItem("darkTheme", dark);
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+      const saved = localStorage.getItem("darkTheme");
+      const dark = saved === null ? window.matchMedia("(prefers-color-scheme: dark)").matches : saved === "true";
+      setTheme(dark);
+      document.getElementById("theme-toggle").addEventListener("click", () =>
+        setTheme(!document.body.classList.contains("dark"))
+      );
+    });
+  </script>
 </body>
 </html>
