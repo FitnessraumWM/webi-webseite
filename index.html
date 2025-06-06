@@ -9,6 +9,8 @@
       margin: 0;
       font-family: sans-serif;
       scroll-behavior: smooth;
+      background: #fff;
+      color: #222;
     }
 
     header {
@@ -46,7 +48,7 @@
     nav {
       position: sticky;
       top: 0;
-      transition: top 0.35s cubic-bezier(.47,1.64,.41,.8); /* smooth Animation */
+      transition: top 0.35s cubic-bezier(.47,1.64,.41,.8);
       background: #333;
       color: white;
       display: flex;
@@ -61,6 +63,24 @@
       color: white;
       text-decoration: none;
       font-weight: bold;
+    }
+
+    nav button#themeSwitcher {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.25em;
+      cursor: pointer;
+      font-weight: bold;
+      margin-left: 0.5em;
+      padding: 0 0.5em;
+      transition: color 0.2s, background 0.2s;
+      outline: none;
+    }
+    nav button#themeSwitcher:hover {
+      color: #ffd700;
+      background: #444;
+      border-radius: 0.5em;
     }
 
     section {
@@ -84,6 +104,11 @@
       width: 100%;
       max-width: 300px;
       border-radius: 8px;
+      cursor: zoom-in;
+      transition: box-shadow 0.2s;
+    }
+    .gallery img:hover {
+      box-shadow: 0 0 12px #444b;
     }
 
     .login-links {
@@ -110,61 +135,70 @@
       font-size: 0.9em;
     }
 
+    /* Modal für Bildvorschau */
+    #modalOverlay {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.85);
+      align-items: center;
+      justify-content: center;
+    }
+    #modalOverlay.active {
+      display: flex;
+    }
+    #modalOverlay img {
+      max-width: 90vw;
+      max-height: 85vh;
+      border-radius: 12px;
+      box-shadow: 0 0 30px #000b;
+      background: #fff;
+      object-fit: contain;
+    }
+    #modalOverlay .closeModal {
+      position: absolute;
+      top: 30px; right: 45px;
+      font-size: 3rem;
+      color: #fff;
+      cursor: pointer;
+      font-family: Arial, sans-serif;
+      z-index: 10;
+      user-select: none;
+    }
+
+    /* Darkmode */
+    body.dark {
+      background: #181a1b;
+      color: #ddd;
+    }
+    body.dark header {
+      color: #fff;
+      text-shadow: 2px 2px 8px #111a;
+    }
+    body.dark nav {
+      background: #222;
+      color: #eee;
+    }
+    body.dark section, body.dark footer {
+      background: #222;
+      color: #ddd;
+    }
+
     @media (max-width: 768px) {
       .logos-left, .logos-right {
         height: 100px;
         top: 10px;
       }
-
       nav {
         flex-direction: column;
         gap: 0.5em;
       }
+      .gallery {
+        flex-direction: column;
+        align-items: center;
+      }
     }
-    /* Modal für Bildvorschau */
-#modalOverlay {
-  display: none;
-  position: fixed;
-  z-index: 10000;
-  left: 0; top: 0; width: 100vw; height: 100vh;
-  background: rgba(0,0,0,0.85);
-  align-items: center;
-  justify-content: center;
-}
-#modalOverlay.active {
-  display: flex;
-}
-#modalOverlay img {
-  max-width: 90vw;
-  max-height: 85vh;
-  border-radius: 12px;
-  box-shadow: 0 0 30px #000b;
-}
-#modalOverlay .closeModal {
-  position: absolute;
-  top: 30px; right: 45px;
-  font-size: 3rem;
-  color: #fff;
-  cursor: pointer;
-  font-family: Arial, sans-serif;
-  z-index: 10;
-}
-  body.dark {
-  background: #181a1b;
-  color: #ddd;
-}
-body.dark header {
-  color: #fff;
-  text-shadow: 2px 2px 8px #111a;
-}
-body.dark nav {
-  background: #222;
-  color: #eee;
-}
-body.dark section, body.dark footer {
-  background: #222;
-  color: #ddd;
-}
   </style>
 </head>
 <body>
@@ -173,7 +207,6 @@ body.dark section, body.dark footer {
     <a href="#" class="logos-left"><img src="verein-sofe-logo-w.png" alt="Logo SOFE Webi" /></a>
     <a href="#" class="logos-right"><img src="logo-qv-weiss.png" alt="Logo Quartierverein" /></a>
     <div>Willkommen in der Webermühle</div>
-    <button id="themeSwitcher" style="position:absolute;bottom:30px;right:50%;transform:translateX(50%);font-size:1.5em;cursor:pointer;background:none;border:none;color:#fff;" aria-label="Theme wechseln">🌓</button>
   </header>
 
   <nav>
@@ -185,6 +218,7 @@ body.dark section, body.dark footer {
     <a href="#vereine">Vereine</a>
     <a href="#kontakt">Kontakt</a>
     <a href="#login">Login</a>
+    <button id="themeSwitcher" aria-label="Theme wechseln">🌓</button>
   </nav>
 
   <section id="historie">
@@ -259,29 +293,97 @@ body.dark section, body.dark footer {
     &copy; 2025 Verein Webermühle &middot; Alle Rechte vorbehalten
   </footer>
 
-  <script>
-let lastScrollY = window.scrollY;
-let nav = document.querySelector('nav');
-let navHidden = false;
-let navHeight = nav.offsetHeight;
+  <!-- Modal für Bildvorschau -->
+  <div id="modalOverlay">
+    <span class="closeModal" title="Schließen">&times;</span>
+    <img src="" alt="Vorschau" />
+  </div>
 
-window.addEventListener('scroll', () => {
-  if (window.scrollY > lastScrollY && window.scrollY > navHeight) {
-    // Runter: Menü weiter nach oben schieben
-    if (!navHidden) {
-      nav.style.top = `-${navHeight + 30}px`; // 30px extra, damit es „mehr scrollt“
-      navHidden = true;
+  <script>
+    // Menü Hide on Scroll
+    let lastScrollY = window.scrollY;
+    let nav = document.querySelector('nav');
+    let navHidden = false;
+    let navHeight = nav.offsetHeight;
+
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > lastScrollY && window.scrollY > navHeight) {
+        if (!navHidden) {
+          nav.style.top = `-${navHeight + 30}px`;
+          navHidden = true;
+        }
+      } else {
+        if (navHidden) {
+          nav.style.top = '0';
+          navHidden = false;
+        }
+      }
+      lastScrollY = window.scrollY;
+    });
+
+    // Theme Switcher inkl. Logo-Wechsel
+    const themeBtn = document.getElementById('themeSwitcher');
+    const body = document.body;
+    const logos = {
+      sofe: {
+        hell: "verein-sofe-logo-w.png",
+        dunkel: "verein-sofe-logo-s.png"
+      },
+      qv: {
+        hell: "logo-qv-weiss.png",
+        dunkel: "logo-qv-schwarz.png"
+      }
+    };
+
+    function setTheme(mode) {
+      if (mode === 'dark') {
+        body.classList.add('dark');
+        document.querySelector('.logos-left img').src = logos.sofe.dunkel;
+        document.querySelector('.logos-right img').src = logos.qv.dunkel;
+        localStorage.setItem('theme', 'dark');
+        themeBtn.textContent = "🌞";
+      } else {
+        body.classList.remove('dark');
+        document.querySelector('.logos-left img').src = logos.sofe.hell;
+        document.querySelector('.logos-right img').src = logos.qv.hell;
+        localStorage.setItem('theme', 'light');
+        themeBtn.textContent = "🌙";
+      }
     }
-  } else {
-    // Hoch: Menü wieder sichtbar machen
-    if (navHidden) {
-      nav.style.top = '0';
-      navHidden = false;
-    }
-  }
-  lastScrollY = window.scrollY;
-});
-</script>
+
+    themeBtn.onclick = () => {
+      setTheme(body.classList.contains('dark') ? 'light' : 'dark');
+    };
+
+    (function() {
+      const theme = localStorage.getItem('theme') ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      setTheme(theme);
+    })();
+
+    // Modale Bildvorschau (Lightbox)
+    document.querySelectorAll('.gallery img').forEach(img => {
+      img.addEventListener('click', () => {
+        const modal = document.getElementById('modalOverlay');
+        modal.classList.add('active');
+        const modalImg = modal.querySelector('img');
+        modalImg.src = img.src;
+        modalImg.alt = img.alt;
+      });
+    });
+
+    document.querySelector('#modalOverlay .closeModal').onclick = function() {
+      const modal = document.getElementById('modalOverlay');
+      modal.classList.remove('active');
+      modal.querySelector('img').src = '';
+    };
+    document.getElementById('modalOverlay').onclick = function(e) {
+      if (e.target === this) this.classList.remove('active');
+    };
+    document.addEventListener('keydown', function(e) {
+      if (e.key === "Escape") document.getElementById('modalOverlay').classList.remove('active');
+    });
+  </script>
 
 </body>
 </html>
