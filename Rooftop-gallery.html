@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rooftop Galerie – Webermühle</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      background: #fff;
+      color: #000;
+    }
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: #222;
+      color: white;
+      padding: 1em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: top 0.3s;
+      z-index: 1000;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    main {
+      margin-top: 80px;
+      padding: 2em;
+      max-width: 1000px;
+      margin-inline: auto;
+    }
+    h1 {
+      text-align: center;
+    }
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1em;
+      justify-content: center;
+    }
+    .gallery img {
+      max-width: 300px;
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    footer {
+      margin-top: 4em;
+      text-align: center;
+      font-size: 0.8em;
+      padding: 1em;
+      background: #f5f5f5;
+    }
+  </style>
+  <script>
+    let lastScrollTop = 0;
+    window.addEventListener("scroll", function () {
+      const nav = document.querySelector("nav");
+      let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      nav.style.top = scrollTop > lastScrollTop ? "-80px" : "0";
+      lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+    });
+  </script>
+</head>
+<body>
+  <nav>
+    <a href="index.html">← Zurück zur Hauptseite</a>
+    <span>Rooftop Galerie</span>
+  </nav>
+  <main>
+    <h1>Rooftop Galerie</h1>
+    <div class="gallery">
+      <img src="img/rooftop/01.jpg" alt="Rooftop 1" loading="lazy">
+      <img src="img/rooftop/02.jpg" alt="Rooftop 2" loading="lazy">
+      <img src="img/rooftop/03.jpg" alt="Rooftop 3" loading="lazy">
+      <img src="img/rooftop/04.jpg" alt="Rooftop 4" loading="lazy">
+      <img src="img/rooftop/05.jpg" alt="Rooftop 5" loading="lazy">
+      <img src="img/rooftop/06.jpg" alt="Rooftop 6" loading="lazy">
+      <img src="img/rooftop/07.jpg" alt="Rooftop 7" loading="lazy">
+      <img src="img/rooftop/08.jpg" alt="Rooftop 8" loading="lazy">
+      <img src="img/rooftop/09.jpg" alt="Rooftop 9" loading="lazy">
+      <img src="img/rooftop/10.jpg" alt="Rooftop 10" loading="lazy">
+    </div>
+  </main>
+  <footer>&copy; 2025 Verein Webermühle</footer>
+</body>
+</html>
