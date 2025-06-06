@@ -80,6 +80,14 @@
       font-weight: bold;
     }
 
+    #theme-toggle {
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1em;
+    }
+
     section {
       padding: 4em 1em;
       max-width: 1000px;
@@ -140,14 +148,17 @@
     }
   </style>
   <script>
+    function setTheme(dark) {
+      document.body.classList.toggle("dark", dark);
+      document.querySelector(".logos-right img").src = dark ? "logo-qv-schwarz.png" : "logo-qv-weiss.png";
+      localStorage.setItem("darkTheme", dark);
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      if (prefersDark) {
-        document.body.classList.add("dark");
-        document.querySelector(".logos-right img").src = "logo-qv-schwarz.png";
-      } else {
-        document.querySelector(".logos-right img").src = "logo-qv-weiss.png";
-      }
+      const saved = localStorage.getItem("darkTheme");
+      const dark = saved === null ? window.matchMedia("(prefers-color-scheme: dark)").matches : saved === "true";
+      setTheme(dark);
+      document.getElementById("theme-toggle").addEventListener("click", () => setTheme(!document.body.classList.contains("dark")));
     });
 
     let lastScrollTop = 0;
@@ -173,9 +184,11 @@
     <a href="#rooftop">Rooftop</a>
     <a href="#fitness">Fitnessraum</a>
     <a href="#spielgruppe">Spielgruppe</a>
+    <a href="#sommerfest">Sommerfest</a>
     <a href="#vereine">Vereine</a>
     <a href="#kontakt">Kontakt</a>
     <a href="#login">Login</a>
+    <button id="theme-toggle">🌓</button>
   </nav>
 
   <section id="historie">
@@ -214,6 +227,11 @@
       <img src="spielgruppe1.jpg" alt="Spielgruppe">
     </div>
     <p>Unsere liebevolle Spielgruppe für Kinder von 3–5 Jahren, direkt im Quartier.</p>
+  </section>
+
+  <section id="sommerfest">
+    <h2>Sommerfest</h2>
+    <p>Das Sommerfest ist eine langjährige Tradition der Webermühle. Organisiert durch den Verein SOFE Webi bringt es Bewohner*innen zusammen und fördert das Gemeinschaftsgefühl mit Spiel, Musik und Genuss.</p>
   </section>
 
   <section id="vereine">
