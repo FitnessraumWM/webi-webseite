@@ -162,14 +162,15 @@
       setTheme(dark);
       document.getElementById("theme-toggle").addEventListener("click", () => setTheme(!document.body.classList.contains("dark")));
 
-      let lastScrollTop = 0;
       const nav = document.querySelector("nav");
+      let navHeight = nav.offsetHeight;
+      let lastScrollTop = 0;
 
       window.addEventListener("scroll", function () {
         let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-        if (scrollTop > lastScrollTop && scrollTop > 100) {
-          nav.style.top = "-120px";
+        if (scrollTop > lastScrollTop && scrollTop > 50) {
+          nav.style.top = `-${navHeight}px`;
         } else {
           nav.style.top = "0";
         }
