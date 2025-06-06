@@ -60,8 +60,6 @@
     }
 
     nav {
-      position: sticky;
-      top: 0;
       background: var(--nav-bg);
       color: white;
       display: flex;
@@ -159,14 +157,6 @@
       const dark = saved === null ? window.matchMedia("(prefers-color-scheme: dark)").matches : saved === "true";
       setTheme(dark);
       document.getElementById("theme-toggle").addEventListener("click", () => setTheme(!document.body.classList.contains("dark")));
-
-      let lastScrollTop = 0;
-      window.addEventListener("scroll", function () {
-        const nav = document.querySelector("nav");
-        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        nav.style.top = scrollTop > lastScrollTop ? "-80px" : "0";
-        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-      });
     });
   </script>
 </head>
@@ -178,7 +168,6 @@
     <div>Willkommen in der Webermühle</div>
   </header>
 
-  <!-- Move nav here to be after header -->
   <nav>
     <a href="#historie">Historie</a>
     <a href="#partyraum">Partyraum</a>
@@ -189,7 +178,6 @@
     <a href="#vereine">Vereine</a>
     <a href="#kontakt">Kontakt</a>
     <a href="#login">Login</a>
-    <a href="news.html">News</a>
     <button id="theme-toggle">🌓</button>
   </nav>
 
