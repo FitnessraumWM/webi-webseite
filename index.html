@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Webermühle Verein</title>
-  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     :root {
       --background: #f8f8fa;
@@ -63,7 +62,7 @@
     nav.nav-main {
       display: flex;
       justify-content: center;
-      gap: 0.8em;
+      gap: 0.6em;
       background: var(--nav-bg);
       color: #fff;
       position: sticky;
@@ -82,16 +81,13 @@
       top: -56px; /* verstecken beim Scrollen runter */
     }
     nav.nav-main a, nav.nav-main button {
-      display: flex;
-      align-items: center;
-      gap: 0.35em;
       color: #fff;
       text-decoration: none;
       background: none;
       border: none;
       font: inherit;
-      font-size: 0.99em;
-      padding: 0.18em 0.8em;
+      font-size: 0.97em;
+      padding: 0.14em 0.77em;
       border-radius: 6px;
       transition: background 0.17s;
       cursor: pointer;
@@ -100,21 +96,12 @@
     nav.nav-main a:hover, nav.nav-main button:hover {
       background: var(--nav-hover);
     }
-    nav.nav-main i {
-      font-size: 1.2em;
-      vertical-align: middle;
-    }
-    nav.nav-main span {
-      display: inline-block;
-      font-size: 0.96em;
-    }
     main {
       width: 100vw;
       max-width: 100vw;
       margin: 0;
       padding: 0;
     }
-    /* Sections modern und kompakt */
     section {
       max-width: 680px;
       margin: 2.5em auto 0 auto;
@@ -130,9 +117,6 @@
       margin-top: 0.2em;
       margin-bottom: 0.7em;
       font-size: 1.13em;
-      display: flex;
-      align-items: center;
-      gap: 0.4em;
       color: var(--primary);
       font-weight: bold;
       letter-spacing: 0.01em;
@@ -158,7 +142,6 @@
       transform: scale(1.04);
       z-index: 3;
     }
-    /* Zwergmühle Logo */
     .zwergmuehle-logo {
       float: right;
       margin-left: 0.9em;
@@ -168,14 +151,12 @@
       background: #fff;
       box-shadow: 0 1px 5px #0001;
     }
-    /* Footer */
     footer {
       text-align: center;
       margin: 3em 0 0.7em 0;
       color: #78797e;
       font-size: 1em;
     }
-    /* Responsive */
     @media (max-width: 900px) {
       .header-title { font-size: 1.1em; margin-top: 70px;}
       .logos-header img { height: 40px; }
@@ -203,27 +184,27 @@
   </header>
 
   <nav class="nav-main" id="mainMenu">
-    <a href="#historie" title="Historie"><i data-lucide="book-open"></i><span>Historie</span></a>
-    <a href="#partyraum" title="Partyraum"><i data-lucide="glass"></i><span>Partyraum</span></a>
-    <a href="#rooftop" title="Rooftop"><i data-lucide="sun"></i><span>Rooftop</span></a>
-    <a href="#fitness" title="Fitnessraum"><i data-lucide="dumbbell"></i><span>Fitness</span></a>
-    <a href="#spielgruppe" title="Spielgruppe"><i data-lucide="baby"></i><span>Spielgruppe</span></a>
-    <a href="#sommerfest" title="Sommerfest"><i data-lucide="calendar"></i><span>Sommerfest</span></a>
-    <a href="#vereine" title="Vereine"><i data-lucide="users"></i><span>Vereine</span></a>
-    <a href="#kontakt" title="Kontakt"><i data-lucide="mail"></i><span>Kontakt</span></a>
-    <a href="#login" title="Login"><i data-lucide="log-in"></i><span>Login</span></a>
-    <a href="#news" title="News"><i data-lucide="newspaper"></i><span>News</span></a>
+    <a href="#historie" title="Historie">Historie</a>
+    <a href="#partyraum" title="Partyraum">Partyraum</a>
+    <a href="#rooftop" title="Rooftop">Rooftop</a>
+    <a href="#fitness" title="Fitnessraum">Fitness</a>
+    <a href="#spielgruppe" title="Spielgruppe">Spielgruppe</a>
+    <a href="#sommerfest" title="Sommerfest">Sommerfest</a>
+    <a href="#vereine" title="Vereine">Vereine</a>
+    <a href="#kontakt" title="Kontakt">Kontakt</a>
+    <a href="#login" title="Login">Login</a>
+    <a href="#news" title="News">News</a>
   </nav>
 
   <main>
     <section id="rooftop">
-      <h2><i data-lucide="sun"></i>Rooftop</h2>
+      <h2>Rooftop</h2>
       <p>Unser Dachbereich bietet eine tolle Aussicht und viel Platz für Anlässe.</p>
       <div class="gallery" id="rooftop-gallery"></div>
     </section>
 
     <section id="spielgruppe">
-      <h2><i data-lucide="baby"></i>Spielgruppe Zwergmühle</h2>
+      <h2>Spielgruppe Zwergmühle</h2>
       <img src="zwergmuehle-logo.png" alt="Zwergmühle Logo" class="zwergmuehle-logo" />
       <p>
         Die Spielgruppe „Zwergmühle“ ist eine privat geführte Institution und wird vom Quartierverein Webermühle getragen.
@@ -251,21 +232,21 @@
     </section>
 
     <section id="fitness">
-      <h2><i data-lucide="dumbbell"></i>Fitnessraum</h2>
+      <h2>Fitnessraum</h2>
       <p><b>Fitnessraum 1</b></p>
       <p>Ausgestattet mit modernen Geräten – offen für Vereinsmitglieder mit Zugangscode.</p>
       <a href="#">Mehr Bilder ansehen →</a>
     </section>
 
     <section id="sommerfest">
-      <h2><i data-lucide="calendar"></i>Sommerfest</h2>
+      <h2>Sommerfest</h2>
       <p>
         Das Sommerfest ist eine langjährige Tradition der Webermühle. Organisiert durch den Verein SOFE Webi bringt es Bewohner*innen zusammen und fördert das Gemeinschaftsgefühl mit Spiel, Musik und Genuss.
       </p>
     </section>
 
     <section id="vereine">
-      <h2><i data-lucide="users"></i>Vereine</h2>
+      <h2>Vereine</h2>
       <p>
         <b>SOFE Webi:</b> wurde gegründet, um das Sommerfest zu organisieren und dauerhaft zu betreuen.<br><br>
         <b>Quartierverein Webermühle-Klosterrüti:</b> engagiert sich für Gemeinschaft, Integration und Lebensqualität im Quartier.
@@ -273,7 +254,7 @@
     </section>
 
     <section id="kontakt">
-      <h2><i data-lucide="mail"></i>Kontakt</h2>
+      <h2>Kontakt</h2>
       <p>
         Bei Fragen oder Anliegen wende dich bitte an:<br><br>
         <b>SOFE Webi:</b> <a href="mailto:sommerfest@webi.family">sommerfest@webi.family</a><br>
@@ -282,15 +263,15 @@
     </section>
 
     <section id="login">
-      <h2><i data-lucide="log-in"></i>Interner Bereich</h2>
+      <h2>Interner Bereich</h2>
       <p>
         <a href="https://github.com/FitnessraumWM/webi-webseite" target="_blank">🔗 GitHub Repository</a><br>
-        <a href="https://mail.zoho.eu/zm/">📧 Vereins-E-Mail öffnen</a>
+        <a href="mailto:verein@webi.family">📧 Vereins-E-Mail öffnen</a>
       </p>
     </section>
 
     <section id="news">
-      <h2><i data-lucide="newspaper"></i>News</h2>
+      <h2>News</h2>
       <p>
         <!-- Neuigkeiten/News werden hier ergänzt -->
         <i>Bald findest du hier aktuelle Neuigkeiten und Infos rund um die Webermühle!</i>
@@ -303,8 +284,6 @@
   </footer>
 
   <script>
-    lucide.createIcons();
-
     // Rooftop Bilder einfügen (nur 10 Stück)
     const gallery = document.getElementById('rooftop-gallery');
     for (let i = 1; i <= 10; i++) {
