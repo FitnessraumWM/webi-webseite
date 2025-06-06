@@ -4,129 +4,273 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Webermühle Verein</title>
+  <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     :root {
-      --background: #ffffff;
-      --text: #000000;
-      --nav-bg: #222;
-      --link: #0077cc;
+      --background: #fff;
+      --text: #111;
+      --nav-bg: #333;
+      --nav-hover: #444;
+      --primary: #0077cc;
+      --shadow: 2px 2px 5px #0008;
     }
-
-    body.dark {
-      --background: #1e1e1e;
-      --text: #ffffff;
-      --nav-bg: #111;
-      --link: #66b2ff;
-    }
-
     body {
       margin: 0;
       font-family: sans-serif;
-      scroll-behavior: smooth;
       background: var(--background);
       color: var(--text);
+      scroll-behavior: smooth;
     }
-
+    /* Header mit Logos */
     header {
       background: url('webermuehle-gesamt.jpg') center/cover no-repeat;
-      height: 100vh;
+      height: 60vh;
+      min-height: 350px;
       color: white;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
-      font-size: 3em;
-      text-shadow: 2px 2px 5px black;
+      position: relative;
       text-align: center;
     }
-
-    .side-nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 100vh;
-      width: 60px;
-      background: var(--nav-bg);
+    .header-center {
+      width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 1em;
-      padding: 1em 0;
-      z-index: 999;
-      transition: transform 0.3s ease;
+      margin-top: 3em;
     }
-
-    .side-nav a,
-    .side-nav button {
-      color: white;
-      text-decoration: none;
-      font-size: 1.5em;
-      border: none;
-      background: none;
-      cursor: pointer;
+    .logos-header {
+      position: absolute;
+      width: 100%;
+      top: 30px;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 3vw;
+      z-index: 1;
     }
-
-    section {
-      padding: 4em 1em 2em 4em;
-      max-width: 1000px;
-      margin: auto;
+    .logos-header img {
+      height: 80px;
+      background: rgba(255,255,255,0.7);
+      border-radius: 12px;
+      padding: 6px;
+      box-shadow: var(--shadow);
     }
-
-    h2 {
-      border-bottom: 2px solid #ccc;
-      padding-bottom: 0.3em;
-      margin-top: 2em;
+    .header-title {
+      font-size: 3em;
+      font-weight: 600;
+      text-shadow: var(--shadow);
+      margin-top: 50px;
+    }
+    /* Menüsteuerung */
+    .nav-main {
+      display: flex;
+      justify-content: center;
+      gap: 1.5em;
+      background: var(--nav-bg);
+      color: #fff;
+      position: relative;
+      padding: 0.8em 0 0.7em 0;
+      font-size: 1.08em;
+      z-index: 100;
+      transition: all 0.3s;
+    }
+    .nav-main a, .nav-main button {
       display: flex;
       align-items: center;
       gap: 0.5em;
+      color: inherit;
+      text-decoration: none;
+      background: none;
+      border: none;
+      font: inherit;
+      padding: 0.2em 1em;
+      border-radius: 8px;
+      transition: background 0.15s;
+      cursor: pointer;
+      position: relative;
     }
-
-    .gallery {
+    .nav-main a:hover, .nav-main button:hover {
+      background: var(--nav-hover);
+    }
+    .nav-main i {
+      font-size: 1.4em;
+      vertical-align: middle;
+    }
+    .nav-main span {
+      display: inline-block;
+      min-width: 65px;
+    }
+    /* Tooltips */
+    .nav-main a[title]:hover::after,
+    .nav-side a[title]:hover::after {
+      content: attr(title);
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #222;
+      color: #fff;
+      padding: 0.3em 1em;
+      border-radius: 8px;
+      margin-left: 0.5em;
+      font-size: 0.95em;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0.97;
+      z-index: 10000;
+    }
+    /* Sticky Seitenmenü */
+    .nav-side {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 65px;
+      background: var(--nav-bg);
       display: flex;
-      flex-wrap: wrap;
-      gap: 1em;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5em;
+      padding: 1.1em 0 1.1em 0;
+      z-index: 1200;
+      box-shadow: 2px 0 14px #0002;
+      transform: translateX(-100%);
+      transition: transform 0.3s;
+      pointer-events: none;
     }
-
+    .nav-side.show {
+      transform: translateX(0);
+      pointer-events: all;
+    }
+    .nav-side a, .nav-side button {
+      background: none;
+      border: none;
+      color: #fff;
+      padding: 0.6em 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 1.22em;
+      cursor: pointer;
+      position: relative;
+    }
+    .nav-side i {
+      font-size: 1.7em;
+    }
+    .nav-side span {
+      display: none;
+    }
+    /* --- Sections --- */
+    section {
+      max-width: 1000px;
+      margin: 4em auto 0 auto;
+      padding: 2.5em 1.1em;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 2px 18px #0001;
+      position: relative;
+    }
+    h2 {
+      font-size: 2em;
+      margin-top: 0.7em;
+      display: flex;
+      align-items: center;
+      gap: 0.45em;
+      border-bottom: 2px solid #bbb;
+      padding-bottom: 0.2em;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+      gap: 1.2em;
+      margin: 1.2em 0;
+    }
     .gallery img {
       width: 100%;
-      max-width: 300px;
       border-radius: 8px;
       cursor: pointer;
+      box-shadow: 0 1px 7px #0001;
+      transition: transform 0.16s;
+      aspect-ratio: 4/3;
+      object-fit: cover;
     }
-
-    .login-links a {
-      display: inline-block;
-      margin: 1em;
-      text-decoration: none;
-      color: var(--link);
-      font-weight: bold;
+    .gallery img:hover {
+      transform: scale(1.05);
+      z-index: 3;
     }
-
-    @media (max-width: 768px) {
-      .side-nav {
-        flex-direction: row;
-        height: auto;
-        width: 100%;
-        padding: 0.5em;
-        position: fixed;
-        bottom: 0;
-        top: unset;
-      }
-
-      section {
-        padding-left: 1em;
-      }
+    /* Spielgruppe Logo */
+    .zwergmuehle-logo {
+      float: right;
+      margin-left: 1em;
+      width: 100px;
+      border-radius: 14px;
+      margin-bottom: 0.4em;
+      background: #fff;
+      box-shadow: 0 1px 8px #0002;
+    }
+    /* Modal Bildvorschau */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2001;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.77);
+      align-items: center; justify-content: center;
+    }
+    .modal.show { display: flex; }
+    .modal img {
+      max-width: 95vw; max-height: 93vh;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px #0008;
+      background: #fff;
+    }
+    /* Responsive */
+    @media (max-width: 800px) {
+      .header-title { font-size: 2em; }
+      .logos-header img { height: 48px; }
+      .nav-main { font-size: 0.98em; }
+      section { padding: 1.2em 0.2em; }
+      .zwergmuehle-logo { width: 64px; }
+      .gallery { grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); }
+    }
+    @media (max-width: 600px) {
+      .header-title { font-size: 1.3em; margin-top: 1.6em;}
+      .nav-main { gap: 0.3em; font-size: 0.89em; padding: 0.5em 0;}
+      section { margin: 1.7em 0.1em 0.2em 0.1em; }
     }
   </style>
 </head>
 <body>
-
   <header>
-    Willkommen in der Webermühle
+    <div class="logos-header">
+      <img src="verein-sofe-logo-w.png" alt="SOFE Webi" />
+      <img src="logo-qv-weiss.png" alt="Quartierverein" />
+    </div>
+    <div class="header-center">
+      <div class="header-title">Willkommen in der Webermühle</div>
+    </div>
   </header>
 
-  <div class="side-nav">
+  <!-- Hauptmenü unter dem Bild -->
+  <nav class="nav-main" id="mainMenu">
+    <a href="#historie" title="Historie"><i data-lucide="book-open"></i><span>Historie</span></a>
+    <a href="#partyraum" title="Partyraum"><i data-lucide="glass"></i><span>Partyraum</span></a>
+    <a href="#rooftop" title="Rooftop"><i data-lucide="sun"></i><span>Rooftop</span></a>
+    <a href="#fitness" title="Fitnessraum"><i data-lucide="dumbbell"></i><span>Fitnessraum</span></a>
+    <a href="#spielgruppe" title="Spielgruppe"><i data-lucide="baby"></i><span>Spielgruppe</span></a>
+    <a href="#sommerfest" title="Sommerfest"><i data-lucide="calendar"></i><span>Sommerfest</span></a>
+    <a href="#vereine" title="Vereine"><i data-lucide="users"></i><span>Vereine</span></a>
+    <a href="#kontakt" title="Kontakt"><i data-lucide="mail"></i><span>Kontakt</span></a>
+    <a href="#login" title="Login"><i data-lucide="log-in"></i><span>Login</span></a>
+    <a href="#news" title="News"><i data-lucide="newspaper"></i><span>News</span></a>
+    <button id="theme-toggle" title="Dark/Light">🌓</button>
+  </nav>
+
+  <!-- Seitenmenü (nur nach Scroll) -->
+  <nav class="nav-side" id="sideMenu">
     <a href="#historie" title="Historie"><i data-lucide="book-open"></i></a>
     <a href="#partyraum" title="Partyraum"><i data-lucide="glass"></i></a>
     <a href="#rooftop" title="Rooftop"><i data-lucide="sun"></i></a>
@@ -137,55 +281,44 @@
     <a href="#kontakt" title="Kontakt"><i data-lucide="mail"></i></a>
     <a href="#login" title="Login"><i data-lucide="log-in"></i></a>
     <a href="#news" title="News"><i data-lucide="newspaper"></i></a>
-    <button id="theme-toggle">🌓</button>
-  </div>
+    <button id="theme-toggle2" title="Dark/Light">🌓</button>
+  </nav>
 
-  <section id="rooftop">
-    <h2><i data-lucide="sun"></i>Rooftop</h2>
-    <p>Unser Dachbereich bietet eine tolle Aussicht und viel Platz für Anlässe.</p>
-    <div class="gallery">
-      <img src="rooftop-01.jpg" alt="Rooftop 1" />
-      <img src="rooftop-02.jpg" alt="Rooftop 2" />
-      <img src="rooftop-03.jpg" alt="Rooftop 3" />
-      <img src="rooftop-04.jpg" alt="Rooftop 4" />
-      <img src="rooftop-05.jpg" alt="Rooftop 5" />
-      <img src="rooftop-06.jpg" alt="Rooftop 6" />
-      <img src="rooftop-07.jpg" alt="Rooftop 7" />
-      <img src="rooftop-08.jpg" alt="Rooftop 8" />
-      <img src="rooftop-09.jpg" alt="Rooftop 9" />
-      <img src="rooftop-10.jpg" alt="Rooftop 10" />
-    </div>
-  </section>
-
-  <section id="spielgruppe">
-    <h2><i data-lucide="baby"></i>Spielgruppe Zwergmühle</h2>
-    <img src="zwergmuehle-logo.png" alt="Zwergmühle Logo" style="height: 80px;" />
-    <p>
-      Die Spielgruppe „Zwergmühle“ ist eine privat geführte Institution und wird vom Quartierverein Webermühle getragen.
-      Die ausgebildeten Spielgruppenleiterinnen betreuen die Kinder in einer konstanten Gruppe von max. 7–8 Kindern
-      (ab 2,5 Jahren bis Kindergarteneintritt) regelmässig zweimal pro Woche für 2 Stunden.
-    </p>
-    <p>
-      <strong>Spielzeit:</strong> Montag und Donnerstag 09.00 – 11.00 Uhr<br>
-      <strong>Ort:</strong> Webermühle 23/EG
-    </p>
-    <p>
-      <strong>Neu:</strong> Sollte Ihr Kind vielleicht erst auf dem Weg zum „Trocken werden“ sein, so ist dies kein Grund,
-      nicht die Spielgruppe zu besuchen. In diesem Fall informieren Sie die Spielgruppenleiterin und geben dem Kind einfach
-      die Windeln mit.
-    </p>
-    <p>
-      Das Anmeldeformular kann unter <a href="mailto:esiino@hotmail.com">esiino@hotmail.com</a> angefordert werden oder telefonisch bei:<br>
-      Sandra Adamovic: 076 404 06 85
-    </p>
-    <p>
-      <strong>Adresse:</strong><br>
-      Zwergmühle Spielgruppe<br>
-      Webermühle 23<br>
-      5432 Neuenhof<br>
-      <a href="mailto:esiino@hotmail.com">esiino@hotmail.com</a>
-    </p>
-  </section>
+  <!-- Inhalt -->
+  <main>
+    <section id="rooftop">
+      <h2><i data-lucide="sun"></i>Rooftop</h2>
+      <p>Unser Dachbereich bietet eine tolle Aussicht und viel Platz für Anlässe.</p>
+      <div class="gallery" id="rooftop-gallery">
+        <!-- Bilder werden mit JS eingefügt -->
+      </div>
+    </section>
+    <section id="spielgruppe">
+      <h2><i data-lucide="baby"></i>Spielgruppe Zwergmühle</h2>
+      <img src="zwergmuehle-logo.png" alt="Zwergmühle Logo" class="zwergmuehle-logo" />
+      <p>
+        Die Spielgruppe „Zwergmühle“ ist eine privat geführte Institution und wird vom Quartierverein Webermühle getragen.
+        Die ausgebildeten Spielgruppenleiterinnen betreuen die Kinder in einer konstanten Gruppe von max. 7–8 Kindern
+        (ab 2,5 Jahren bis Kindergarteneintritt) regelmässig zweimal pro Woche für 2 Stunden.
+      </p>
+      <p>
+        <b>Spielzeit:</b> Montag und Donnerstag 09.00 – 11.00 Uhr<br>
+        <b>Ort:</b> Webermühle 23/EG
+      </p>
+      <p>
+        <b>Neu:</b> Sollte Ihr Kind vielleicht erst auf dem Weg zum „Trocken werden“ sein, so ist dies kein Grund, nicht die Spielgruppe zu besuchen. In diesem Fall informieren Sie die Spielgruppenleiterin und geben dem Kind einfach die Windeln mit.
+      </p>
+      <p>
+        Das Anmeldeformular kann unter <a href="mailto:esiino@hotmail.com">esiino@hotmail.com</a> angefordert werden oder telefonisch bei:<br>
+        <b>Sandra Adamovic:</b> 076 404 06 85
+      </p>
+      <p>
+        <b>Adresse:</b><br>
+        Zwergmühle Spielgruppe<br>
+        Webermühle 23<br>
+        5432 Neuenhof<br>
+        <a href="mailto:esiino@hotmail.com">esiino@hotmail.com</a>
+      </p>
 
   <section id="fitness">
     <h2>Fitnessraum</h2>
@@ -229,16 +362,72 @@
     </div>
   </section>
 
-  <div id="imgModal" class="modal">
-    <span id="closeModal" class="close">&times;</span>
-    <img class="modal-content" id="modalImage">
+  <div class="modal" id="modal">
+    <img src="" alt="Bildvorschau" id="modal-img">
   </div>
 
   <script>
+    // Lucide Icons laden
     lucide.createIcons();
-    document.getElementById("theme-toggle").addEventListener("click", function () {
-      document.body.classList.toggle("dark");
+
+    // Rooftop Bilder dynamisch einfügen
+    const gallery = document.getElementById('rooftop-gallery');
+    for (let i = 1; i <= 10; i++) {
+      const img = document.createElement('img');
+      img.src = `rooftop-0${i}.jpg`;
+      img.alt = `Rooftop ${i}`;
+      img.tabIndex = 0;
+      img.onclick = () => showModal(img.src, img.alt);
+      gallery.appendChild(img);
+    }
+
+    // Modal Vorschau
+    const modal = document.getElementById('modal');
+    const modalImg = document.getElementById('modal-img');
+    function showModal(src, alt) {
+      modalImg.src = src;
+      modalImg.alt = alt;
+      modal.classList.add('show');
+    }
+    modal.onclick = () => modal.classList.remove('show');
+
+    // Menü Sticky/Side-Mode Steuerung
+    const mainMenu = document.getElementById('mainMenu');
+    const sideMenu = document.getElementById('sideMenu');
+    let switchToSide = false;
+    window.addEventListener('scroll', () => {
+      const trigger = window.innerHeight * 0.47;
+      if (window.scrollY > trigger && !switchToSide) {
+        mainMenu.style.opacity = "0";
+        sideMenu.classList.add('show');
+        switchToSide = true;
+      } else if (window.scrollY <= trigger && switchToSide) {
+        mainMenu.style.opacity = "1";
+        sideMenu.classList.remove('show');
+        switchToSide = false;
+      }
     });
+
+    // Dark/Light Mode Umschalter
+    function toggleTheme() {
+      document.body.classList.toggle('dark');
+    }
+    document.getElementById('theme-toggle').onclick = toggleTheme;
+    document.getElementById('theme-toggle2').onclick = toggleTheme;
+
+    // Dark-Theme Farben optional (Bonus)
+    const darkCSS = document.createElement('style');
+    darkCSS.textContent = `
+      body.dark {
+        --background: #1a1c1e;
+        --text: #f2f2f2;
+        --nav-bg: #16191e;
+        --nav-hover: #22242b;
+      }
+      body.dark section { background: #23262b; color: #fafaff; }
+      body.dark .gallery img { background: #222; }
+    `;
+    document.head.appendChild(darkCSS);
   </script>
   
   <footer>
