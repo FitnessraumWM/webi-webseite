@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="de">
+<!DOCTYPE html>
+<html lang="de">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,175 +9,120 @@
       margin: 0;
       font-family: sans-serif;
       scroll-behavior: smooth;
-    }header {
-  background: url('webermuehle-gesamt.jpg') center/cover no-repeat;
-  height: 90vh;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 3em;
-  text-shadow: 2px 2px 5px black;
-  position: relative;
-  text-align: center;
-}
+    }
 
-.logos-left, .logos-right {
-  position: absolute;
-  top: 20px;
-  height: 180px;
-}
+    header {
+      background: url('webermuehle-gesamt.jpg') center/cover no-repeat;
+      height: 90vh;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3em;
+      text-shadow: 2px 2px 5px black;
+      position: relative;
+      text-align: center;
+    }
 
-.logos-left { left: 20px; }
-.logos-right { right: 20px; }
+    .logos-left, .logos-right {
+      position: absolute;
+      top: 20px;
+      height: 180px;
+    }
 
-.logos-left img, .logos-right img {
-  height: 100%;
-  cursor: pointer;
-  transition: transform 0.3s;
-}
+    .logos-left { left: 20px; }
+    .logos-right { right: 20px; }
 
-.logos-left img:hover, .logos-right img:hover {
-  transform: scale(1.05);
-}
+    .logos-left img, .logos-right img {
+      height: 100%;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
 
-nav {
-  position: sticky;
-  top: 0;
-  background: #333;
-  color: white;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1em;
-  padding: 1em;
-  z-index: 10;
-}
+    .logos-left img:hover, .logos-right img:hover {
+      transform: scale(1.05);
+    }
 
-nav a {
-  color: white;
-  text-decoration: none;
-  font-weight: bold;
-}
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: #333;
+      color: white;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1em;
+      padding: 1em;
+      z-index: 10;
+      transition: top 0.3s;
+    }
 
-section {
-  padding: 4em 1em;
-  max-width: 1000px;
-  margin: auto;
-}
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
 
-h2 {
-  border-bottom: 2px solid #ccc;
-  padding-bottom: 0.5em;
-}
+    section {
+      padding: 4em 1em;
+      max-width: 1000px;
+      margin: auto;
+    }
 
-.gallery {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1em;
-}
+    h2 {
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 0.5em;
+    }
 
-.gallery img {
-  width: 100%;
-  max-width: 300px;
-  border-radius: 8px;
-}
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1em;
+    }
 
-.login-links {
-  text-align: center;
-  font-size: 1.2em;
-}
+    .gallery img {
+      width: 100%;
+      max-width: 300px;
+      border-radius: 8px;
+    }
 
-.login-links a {
-  display: inline-block;
-  margin: 1em;
-  text-decoration: none;
-  color: #0077cc;
-  font-weight: bold;
-}
+    .login-links {
+      text-align: center;
+      font-size: 1.2em;
+    }
 
-.login-links a:hover {
-  text-decoration: underline;
-}
+    .login-links a {
+      display: inline-block;
+      margin: 1em;
+      text-decoration: none;
+      color: #0077cc;
+      font-weight: bold;
+    }
 
-footer {
-  background: #f2f2f2;
-  padding: 2em 1em;
-  text-align: center;
-  font-size: 0.9em;
-}
+    .login-links a:hover {
+      text-decoration: underline;
+    }
 
-@media (max-width: 768px) {
-  .logos-left, .logos-right {
-    height: 100px;
-    top: 10px;
-  }
+    footer {
+      background: #f2f2f2;
+      padding: 2em 1em;
+      text-align: center;
+      font-size: 0.9em;
+    }
 
-  nav {
-    flex-direction: column;
-    gap: 0.5em;
-  }
-}
+    @media (max-width: 768px) {
+      .logos-left, .logos-right {
+        height: 100px;
+        top: 10px;
+      }
 
+      nav {
+        flex-direction: column;
+        gap: 0.5em;
+      }
+    }
   </style>
-</head>
-<body>  <header>
-    <a href="#" class="logos-left"><img src="verein-sofe-logo.png" alt="Logo SOFE Webi" /></a>
-    <a href="#" class="logos-right"><img src="logo-qv.png" alt="Logo Quartierverein" /></a>
-    <div>Willkommen in der Webermühle</div>
-  </header>  <nav>
-    <a href="#historie">Historie</a>
-    <a href="#partyraum">Partyraum</a>
-    <a href="#rooftop">Rooftop</a>
-    <a href="#fitness">Fitnessraum</a>
-    <a href="#spielgruppe">Spielgruppe</a>
-    <a href="#vereine">Vereine</a>
-    <a href="#kontakt">Kontakt</a>
-    <a href="#login">Login</a>
-  </nav>  <section id="historie">
-    <h2>Historie der Webermühle</h2>
-    <p>Die Webermühle in Neuenhof hat eine lange Geschichte als Wohnsiedlung mit besonderem Charakter. Die moderne Entwicklung begann in den 2010er Jahren mit dem Ziel, ein vielfältiges, lebendiges Quartier für Menschen aller Generationen zu schaffen.</p>
-  </section>  <section id="partyraum">
-    <h2>Partyraum</h2>
-    <div class="gallery">
-      <img src="party1.jpg" alt="Partyraum 1">
-      <img src="party2.jpg" alt="Partyraum 2">
-    </div>
-    <p>Der Partyraum bietet Platz für Feiern mit Küche, Sitzgelegenheiten und Musikanlage.</p>
-  </section>  <section id="rooftop">
-    <h2>Rooftop</h2>
-    <div class="gallery">
-      <img src="rooftop1.jpg" alt="Rooftop 1">
-    </div>
-    <p>Das Rooftop bietet eine einzigartige Aussicht über das Limmattal – ideal für Sommerabende.</p>
-  </section>  <section id="fitness">
-    <h2>Fitnessraum</h2>
-    <div class="gallery">
-      <img src="fitness1.jpg" alt="Fitnessraum 1">
-    </div>
-    <p>Ausgestattet mit modernen Geräten – offen für Vereinsmitglieder mit Zugangscode.</p>
-  </section>  <section id="spielgruppe">
-    <h2>Spielgruppe Zwergmühle</h2>
-    <div class="gallery">
-      <img src="spielgruppe1.jpg" alt="Spielgruppe">
-    </div>
-    <p>Unsere liebevolle Spielgruppe für Kinder von 3–5 Jahren, direkt im Quartier.</p>
-  </section>  <section id="vereine">
-    <h2>Vereine</h2>
-    <p><strong>SOFE Webi:</strong> wurde gegründet, um das Sommerfest zu organisieren und dauerhaft zu betreuen.</p>
-    <p><strong>Quartierverein Webermühle-Klosterrüti:</strong> engagiert sich für Gemeinschaft, Integration und Lebensqualität im Quartier.</p>
-  </section>  <section id="kontakt">
-    <h2>Kontakt</h2>
-    <p>Bei Fragen oder Anliegen wende dich bitte an:</p>
-    <p><strong>SOFE Webi:</strong> <a href="mailto:sommerfest@webi.family">sommerfest@webi.family</a><br />
-       <strong>Quartierverein:</strong> <a href="mailto:qv@webi.family">qv@webi.family</a></p>
-  </section>  <section id="login">
-    <h2>Interner Bereich</h2>
-    <div class="login-links">
-      <p><a href="https://github.com/FitnessraumWM/webi-webseite" target="_blank">🔗 GitHub Repository</a></p>
-      <p><a href="https://mail.zoho.eu/zm/">📧 Vereins-E-Mail öffnen</a></p>
-    </div>
-  </section>  <footer>
-    &copy; 2025 Verein Webermühle &middot; Alle Rechte vorbehalten
-  </footer></body>
-</html>
+  <script>
+    let lastScrollTop = 0;
+    window.addEventListener
