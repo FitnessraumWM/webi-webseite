@@ -21,55 +21,75 @@
     body {
       margin: 0;
       font-family: sans-serif;
-      scroll-behavior: smooth;
       background: var(--background);
       color: var(--text);
+      scroll-behavior: smooth;
     }
     header {
       background: url('webermuehle-gesamt.jpg') center/cover no-repeat;
       height: 90vh;
-      color: white;
       display: flex;
       align-items: center;
       justify-content: center;
+      text-align: center;
+      color: white;
       font-size: 3em;
       text-shadow: 2px 2px 5px black;
       position: relative;
-      text-align: center;
     }
     .logos-left, .logos-right {
       position: absolute;
       top: 20px;
-      height: 180px;
+      height: 140px;
     }
     .logos-left { left: 20px; }
     .logos-right { right: 20px; }
     .logos-left img, .logos-right img {
       height: 100%;
-      cursor: pointer;
-      transition: transform 0.3s;
     }
-    .logos-left img:hover, .logos-right img:hover {
-      transform: scale(1.05);
-    }
-    nav {
+    .sidebar {
       position: fixed;
       top: 0;
       left: 0;
-      right: 0;
+      height: 100vh;
+      width: 60px;
       background: var(--nav-bg);
-      color: white;
       display: flex;
-      justify-content: center;
-      gap: 1em;
-      padding: 1em;
+      flex-direction: column;
+      align-items: center;
+      padding: 0.5em 0;
       z-index: 1000;
-      transition: top 0.3s ease;
+      transition: width 0.3s ease;
     }
-    nav a {
+    .sidebar:hover {
+      width: 160px;
+    }
+    .sidebar a {
       color: white;
       text-decoration: none;
-      font-weight: bold;
+      padding: 1em 0.5em;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    .sidebar a:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .sidebar span {
+      display: none;
+    }
+    .sidebar:hover span {
+      display: inline;
+    }
+    #theme-toggle {
+      background: none;
+      border: none;
+      color: white;
+      margin-top: auto;
+      cursor: pointer;
+      font-size: 1.2em;
     }
     section {
       padding: 4em 1em;
@@ -77,126 +97,123 @@
       margin: auto;
     }
     h2 {
-      border-bottom: 2px solid #ccc;
+      border-bottom: 2px solid #aaa;
       padding-bottom: 0.5em;
     }
     .gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      display: flex;
+      flex-wrap: wrap;
       gap: 1em;
     }
     .gallery img {
+      max-width: 180px;
       width: 100%;
       border-radius: 8px;
-    }
-    .spielgruppe-logo {
-      float: right;
-      max-width: 150px;
-      margin-left: 1em;
-    }
-    .sidebar-toggle {
-      position: fixed;
-      left: 1em;
-      top: 1em;
-      z-index: 2000;
-      background: var(--nav-bg);
-      border: none;
-      color: white;
-      font-size: 1.5em;
-      padding: 0.5em;
       cursor: pointer;
-      border-radius: 0.5em;
     }
-    .sidebar {
+    .modal {
+      display: none;
       position: fixed;
+      z-index: 2000;
       top: 0;
-      left: -220px;
-      width: 200px;
-      height: 100%;
-      background: var(--nav-bg);
-      padding-top: 5em;
-      display: flex;
-      flex-direction: column;
-      gap: 1em;
-      transition: left 0.3s ease;
-      z-index: 1500;
-    }
-    .sidebar.open {
       left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
     }
-    .sidebar a {
-      color: white;
-      text-decoration: none;
-      padding: 0.5em 1em;
+    .modal img {
+      max-width: 90vw;
+      max-height: 90vh;
+    }
+    .modal.open {
+      display: flex;
+    }
+    .spielgruppe-box {
       display: flex;
       align-items: center;
-      gap: 0.5em;
+      gap: 2em;
+      flex-wrap: wrap;
+    }
+    .spielgruppe-box img {
+      max-width: 160px;
     }
   </style>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const themeBtn = document.getElementById("theme-toggle");
+      const modal = document.getElementById("img-modal");
+      const modalImg = modal.querySelector("img");
+      document.querySelectorAll(".gallery img").forEach(img => {
+        img.addEventListener("click", () => {
+          modal.classList.add("open");
+          modalImg.src = img.src;
+        });
+      });
+      modal.addEventListener("click", () => modal.classList.remove("open"));
+    });
+  </script>
 </head>
 <body>
+  <div class="sidebar">
+    <a href="#historie"><i data-lucide="book-open"></i> <span>Historie</span></a>
+    <a href="#partyraum"><i data-lucide="party-popper"></i> <span>Partyraum</span></a>
+    <a href="#rooftop"><i data-lucide="mountain"></i> <span>Rooftop</span></a>
+    <a href="#fitness"><i data-lucide="dumbbell"></i> <span>Fitness</span></a>
+    <a href="#spielgruppe"><i data-lucide="baby"></i> <span>Spielgruppe</span></a>
+    <a href="#sommerfest"><i data-lucide="sun"></i> <span>Sommerfest</span></a>
+    <a href="#vereine"><i data-lucide="users"></i> <span>Vereine</span></a>
+    <a href="#kontakt"><i data-lucide="mail"></i> <span>Kontakt</span></a>
+    <a href="#login"><i data-lucide="log-in"></i> <span>Login</span></a>
+    <a href="#news"><i data-lucide="newspaper"></i> <span>News</span></a>
+    <button id="theme-toggle"><i data-lucide="moon"></i></button>
+  </div>
+
   <header>
-    <a href="#" class="logos-left"><img src="verein-sofe-logo-w.png" alt="Logo SOFE Webi" /></a>
-    <a href="#" class="logos-right"><img src="logo-qv-weiss.png" alt="Logo Quartierverein" /></a>
+    <a class="logos-left"><img src="verein-sofe-logo-w.png" alt="SOFE" /></a>
+    <a class="logos-right"><img src="logo-qv-weiss.png" alt="QV" /></a>
     <div>Willkommen in der Webermühle</div>
   </header>
-
-  <button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">
-    <i data-lucide="menu"></i>
-  </button>
-  <div class="sidebar">
-    <a href="#historie"><i data-lucide="book-open"></i> Historie</a>
-    <a href="#partyraum"><i data-lucide="wine"></i> Partyraum</a>
-    <a href="#rooftop"><i data-lucide="mountain"></i> Rooftop</a>
-    <a href="#fitness"><i data-lucide="dumbbell"></i> Fitness</a>
-    <a href="#spielgruppe"><i data-lucide="baby"></i> Spielgruppe</a>
-    <a href="#sommerfest"><i data-lucide="sun"></i> Sommerfest</a>
-    <a href="#vereine"><i data-lucide="users"></i> Vereine</a>
-    <a href="#kontakt"><i data-lucide="mail"></i> Kontakt</a>
-    <a href="#login"><i data-lucide="log-in"></i> Login</a>
-    <a href="#news"><i data-lucide="newspaper"></i> News</a>
-  </div>
 
   <section id="rooftop">
     <h2>Rooftop</h2>
     <p>Unser Dachbereich bietet eine tolle Aussicht und viel Platz für Anlässe.</p>
     <div class="gallery">
-      <img src="rooftop-01.jpg" alt="Rooftop 1">
-      <img src="rooftop-02.jpg" alt="Rooftop 2">
-      <img src="rooftop-03.jpg" alt="Rooftop 3">
-      <img src="rooftop-04.jpg" alt="Rooftop 4">
-      <img src="rooftop-05.jpg" alt="Rooftop 5">
-      <img src="rooftop-06.jpg" alt="Rooftop 6">
-      <img src="rooftop-07.jpg" alt="Rooftop 7">
-      <img src="rooftop-08.jpg" alt="Rooftop 8">
-      <img src="rooftop-09.jpg" alt="Rooftop 9">
-      <img src="rooftop-10.jpg" alt="Rooftop 10">
-      <img src="rooftop-11.jpg" alt="Rooftop 11">
-      <img src="rooftop-12.jpg" alt="Rooftop 12">
-      <img src="rooftop-13.jpg" alt="Rooftop 13">
+      <img src="rooftop-01.jpg" alt="Rooftop 1" />
+      <img src="rooftop-02.jpg" alt="Rooftop 2" />
+      <img src="rooftop-03.jpg" alt="Rooftop 3" />
+      <img src="rooftop-04.jpg" alt="Rooftop 4" />
+      <img src="rooftop-05.jpg" alt="Rooftop 5" />
+      <img src="rooftop-06.jpg" alt="Rooftop 6" />
+      <img src="rooftop-07.jpg" alt="Rooftop 7" />
+      <img src="rooftop-08.jpg" alt="Rooftop 8" />
+      <img src="rooftop-09.jpg" alt="Rooftop 9" />
+      <img src="rooftop-10.jpg" alt="Rooftop 10" />
+      <img src="rooftop-11.jpg" alt="Rooftop 11" />
+      <img src="rooftop-12.jpg" alt="Rooftop 12" />
+      <img src="rooftop-13.jpg" alt="Rooftop 13" />
     </div>
   </section>
 
   <section id="spielgruppe">
     <h2>Spielgruppe Zwergmühle</h2>
-    <img src="zwergmühle-logo.png" alt="Zwergmühle Logo" class="spielgruppe-logo">
-    <p>
-      Die Spielgruppe „Zwergmühle“ ist eine privat geführte Institution und wird vom Quartierverein Webermühle getragen.<br>
-      Die ausgebildeten Spielgruppenleiterinnen betreuen die Kinder in einer konstanten Gruppe von max. 7–8 Kindern (ab 2,5 Jahren bis Kindergarteneintritt)
-      regelmässig zweimal pro Woche für 2 Stunden.
-    </p>
-    <p><strong>Spielzeit:</strong> Montag und Donnerstag 09.00 – 11.00 Uhr<br>
-    <strong>Ort:</strong> Webermühle 23/EG</p>
-    <p><strong>Neu:</strong> Sollte Ihr Kind vielleicht erst auf dem Weg zum „Trocken werden“ sein, so ist dies kein Grund, nicht die Spielgruppe zu besuchen.<br>
-    In diesem Fall informieren Sie die Spielgruppenleiterin und geben dem Kind einfach die Windeln mit.</p>
-    <p>Das Anmeldeformular kann unter <a href="mailto:esiino@hotmail.com">esiino@hotmail.com</a> angefordert werden oder telefonisch bei der Spielgruppenleiterin:<br>
-    <strong>Sandra Adamovic</strong> – 076 404 06 85</p>
-    <p>
-      Zwergmühle Spielgruppe<br>
-      Webermühle 23<br>
-      5432 Neuenhof<br>
-      <a href="mailto:esiino@hotmail.com">esiino@hotmail.com</a>
-    </p>
+    <div class="spielgruppe-box">
+      <img src="zwergmühle-logo.png" alt="Zwergmühle Logo" />
+      <div>
+        <p>Die Spielgruppe „Zwergmühle“ ist eine privat geführte Institution und wird vom Quartierverein Webermühle getragen. Die ausgebildeten Spielgruppenleiterinnen betreuen die Kinder in einer konstanten Gruppe von max. 7–8 Kindern (ab 2,5 Jahren bis Kindergarteneintritt) regelmässig zweimal pro Woche für 2 Stunden.</p>
+        <p><strong>Spielzeit:</strong> Montag und Donnerstag 09.00 – 11.00 Uhr<br/>
+        <strong>Ort:</strong> Webermühle 23/EG</p>
+        <p><em>Neu:</em> Sollte Ihr Kind vielleicht erst auf dem Weg zum „Trocken werden“ sein, so ist dies kein Grund, nicht die Spielgruppe zu besuchen. In diesem Fall informieren Sie die Spielgruppenleiterin und geben dem Kind einfach die Windeln mit.</p>
+        <p>Das Anmeldeformular kann unter <a href="mailto:esiino@hotmail.com">esiino@hotmail.com</a> angefordert werden oder telefonisch bei:<br/>
+        <strong>Sandra Adamovic</strong>: 076 404 06 85</p>
+        <p><strong>Adresse:</strong><br/>
+        Zwergmühle Spielgruppe<br/>
+        Webermühle 23<br/>
+        5432 Neuenhof<br/>
+        <a href="mailto:esiino@hotmail.com">esiino@hotmail.com</a></p>
+      </div>
+    </div>
   </section>
 
   <section id="fitness">
@@ -241,6 +258,10 @@
     </div>
   </section>
 
+  <div class="modal" id="img-modal">
+    <img src="" alt="Zoom" />
+  </div>
+  
   <footer>
     &copy; 2025 Verein Webermühle &middot; Alle Rechte vorbehalten
   </footer>
