@@ -44,9 +44,8 @@
     }
 
     nav {
-      position: fixed;
+      position: sticky;
       top: 0;
-      width: 100%;
       background: #333;
       color: white;
       display: flex;
@@ -55,7 +54,6 @@
       gap: 1em;
       padding: 1em;
       z-index: 10;
-      transition: top 0.3s;
     }
 
     nav a {
@@ -123,19 +121,6 @@
       }
     }
   </style>
-  <script>
-    let lastScrollTop = 0;
-    window.addEventListener("scroll", function () {
-      const nav = document.querySelector("nav");
-      let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      if (scrollTop > lastScrollTop) {
-        nav.style.top = "-80px";
-      } else {
-        nav.style.top = "0";
-      }
-      lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-    });
-  </script>
 </head>
 <body>
 
@@ -211,7 +196,7 @@
     <h2>Interner Bereich</h2>
     <div class="login-links">
       <p><a href="https://github.com/FitnessraumWM/webi-webseite" target="_blank">🔗 GitHub Repository</a></p>
-      <p><a href="https://mail.zoho.eu/zm/" target="_blank">📧 Vereins-E-Mail öffnen</a></p>
+      <p><a href="mailto:sommerfest@webi.family">📧 Vereins-E-Mail öffnen</a></p>
     </div>
   </section>
 
