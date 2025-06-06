@@ -121,6 +121,50 @@
         gap: 0.5em;
       }
     }
+    /* Modal für Bildvorschau */
+#modalOverlay {
+  display: none;
+  position: fixed;
+  z-index: 10000;
+  left: 0; top: 0; width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.85);
+  align-items: center;
+  justify-content: center;
+}
+#modalOverlay.active {
+  display: flex;
+}
+#modalOverlay img {
+  max-width: 90vw;
+  max-height: 85vh;
+  border-radius: 12px;
+  box-shadow: 0 0 30px #000b;
+}
+#modalOverlay .closeModal {
+  position: absolute;
+  top: 30px; right: 45px;
+  font-size: 3rem;
+  color: #fff;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  z-index: 10;
+}
+  body.dark {
+  background: #181a1b;
+  color: #ddd;
+}
+body.dark header {
+  color: #fff;
+  text-shadow: 2px 2px 8px #111a;
+}
+body.dark nav {
+  background: #222;
+  color: #eee;
+}
+body.dark section, body.dark footer {
+  background: #222;
+  color: #ddd;
+}
   </style>
 </head>
 <body>
@@ -129,6 +173,7 @@
     <a href="#" class="logos-left"><img src="verein-sofe-logo-w.png" alt="Logo SOFE Webi" /></a>
     <a href="#" class="logos-right"><img src="logo-qv-weiss.png" alt="Logo Quartierverein" /></a>
     <div>Willkommen in der Webermühle</div>
+    <button id="themeSwitcher" style="position:absolute;bottom:30px;right:50%;transform:translateX(50%);font-size:1.5em;cursor:pointer;background:none;border:none;color:#fff;" aria-label="Theme wechseln">🌓</button>
   </header>
 
   <nav>
