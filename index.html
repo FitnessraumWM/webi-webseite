@@ -60,8 +60,6 @@
     }
 
     nav {
-      position: sticky;
-      top: 0;
       background: var(--nav-bg);
       color: white;
       display: flex;
@@ -150,6 +148,7 @@
     function setTheme(dark) {
       document.body.classList.toggle("dark", dark);
       document.querySelector(".logos-right img").src = dark ? "logo-qv-schwarz.png" : "logo-qv-weiss.png";
+      document.querySelector(".logos-left img").src = dark ? "verein-sofe-logo-s.png" : "verein-sofe-logo-w.png";
       localStorage.setItem("darkTheme", dark);
     }
 
@@ -164,8 +163,8 @@
 <body>
 
   <header>
-    <a href="#" class="logos-left"><img src="verein-sofe-logo.png" alt="Logo SOFE Webi" /></a>
-    <a href="#" class="logos-right"><img src="" alt="Logo Quartierverein" /></a>
+    <a href="#" class="logos-left"><img src="verein-sofe-logo-w.png" alt="Logo SOFE Webi" /></a>
+    <a href="#" class="logos-right"><img src="logo-qv-weiss.png" alt="Logo Quartierverein" /></a>
     <div>Willkommen in der Webermühle</div>
   </header>
 
