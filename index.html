@@ -48,7 +48,6 @@
     nav {
       position: sticky;
       top: 0;
-      /* langsamere Animation für top */
       transition: top 0.7s cubic-bezier(.77,0,.18,1.05);
       background: #333;
       color: white;
@@ -67,37 +66,40 @@
     }
 
     nav button#themeSwitcher {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 1.25em;
-  cursor: pointer;
-  font-weight: bold;
-  margin-left: 0.4em;
-  padding: 0;
-  border-radius: 0.3em;
-  outline: none;
-  vertical-align: middle;
-  display: inline-block;
-  line-height: 1.3;
-  height: 1.35em;
-  margin-top: 1px;
-  transition: color 0.22s, background 0.22s;
-}
-nav button#themeSwitcher:hover,
-nav button#themeSwitcher:focus {
-  background: #444;
-  color: #ffd700;
-}
-body.dark nav button#themeSwitcher {
-  color: #ffe066;
-  background: none;
-}
-body.dark nav button#themeSwitcher:hover,
-body.dark nav button#themeSwitcher:focus {
-  background: #333;
-  color: #ffe066;
-}
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.45em;
+      cursor: pointer;
+      font-weight: bold;
+      margin-left: 0.6em;
+      padding: 0 0.1em;
+      border-radius: 0.4em;
+      outline: none;
+      vertical-align: middle;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.22s, background 0.22s;
+      line-height: 1.3;
+      height: 1.35em;
+      margin-top: 1px;
+    }
+    nav button#themeSwitcher:hover,
+    nav button#themeSwitcher:focus {
+      background: #444;
+      color: #ffd700;
+    }
+    body.dark nav button#themeSwitcher {
+      color: #ffe066;
+      background: none;
+    }
+    body.dark nav button#themeSwitcher:hover,
+    body.dark nav button#themeSwitcher:focus {
+      background: #333;
+      color: #ffe066;
+    }
+
     section {
       padding: 4em 1em;
       max-width: 1000px;
@@ -142,6 +144,19 @@ body.dark nav button#themeSwitcher:focus {
 
     .login-links a:hover {
       text-decoration: underline;
+    }
+
+    .spielgruppe-logo {
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: 1em;
+      margin-top: 0.5em;
+    }
+    .spielgruppe-logo img {
+      max-height: 55px;
+      height: auto;
+      width: auto;
+      display: block;
     }
 
     footer {
@@ -221,6 +236,9 @@ body.dark nav button#themeSwitcher:focus {
         flex-direction: column;
         align-items: center;
       }
+      .spielgruppe-logo {
+        justify-content: center;
+      }
     }
   </style>
 </head>
@@ -233,22 +251,22 @@ body.dark nav button#themeSwitcher:focus {
   </header>
 
   <nav>
-  <a href="#historie">Historie</a>
-  <a href="#partyraum">Partyraum</a>
-  <a href="#rooftop">Rooftop</a>
-  <a href="#fitness">Fitnessraum</a>
-  <a href="#spielgruppe">Spielgruppe</a>
-  <a href="#vereine">Vereine</a>
-  <a href="#kontakt">Kontakt</a>
-  <a href="#login">Login</a>
-  <button id="themeSwitcher" aria-label="Theme wechseln">🌙</button>
-</nav>
-
+    <a href="#historie">Historie</a>
+    <a href="#partyraum">Partyraum</a>
+    <a href="#rooftop">Rooftop</a>
+    <a href="#fitness">Fitnessraum</a>
+    <a href="#spielgruppe">Spielgruppe</a>
+    <a href="#vereine">Vereine</a>
+    <a href="#kontakt">Kontakt</a>
+    <a href="#login">Login</a>
+    <button id="themeSwitcher" aria-label="Theme wechseln">🌙</button>
   </nav>
 
   <section id="historie">
     <h2>Historie der Webermühle</h2>
-    <p>Die Webermühle in Neuenhof hat eine lange Geschichte als Wohnsiedlung mit besonderem Charakter. Die moderne Entwicklung begann in den 2010er Jahren mit dem Ziel, ein vielfältiges, lebendiges Quartier für Menschen aller Generationen zu schaffen.</p>
+    <p>
+      Die Webermühle blickt auf eine bewegte Geschichte zurück: Von ihren industriellen Wurzeln bis zur heutigen modernen Wohnsiedlung hat sich die Webermühle stets weiterentwickelt. Heute steht sie für ein lebendiges Miteinander, starke Nachbarschaft und vielfältige Aktivitäten. Wir knüpfen an die Tradition an und gestalten gemeinsam das Leben im Quartier.
+    </p>
   </section>
 
   <section id="partyraum">
@@ -257,12 +275,17 @@ body.dark nav button#themeSwitcher:focus {
       <img src="party1.jpg" alt="Partyraum 1">
       <img src="party2.jpg" alt="Partyraum 2">
     </div>
-    <p>Der Partyraum bietet Platz für Feiern mit Küche, Sitzgelegenheiten und Musikanlage.</p>
+    <p>
+      Der Partyraum der Webermühle kann von allen Bewohner*innen für Feiern, Kindergeburtstage und Versammlungen genutzt werden. Neben einer kleinen Küche stehen Bluetooth-Lautsprecher sowie ein moderner Beamer zur Verfügung – ideal für Präsentationen oder Filmabende.<br>
+      <strong>Buchung und Infos:</strong> Ansprechpartner Michal Jancovic, Tel. 076 709 08 01, <a href="mailto:michal.jancovic@gmail.com">michal.jancovic@gmail.com</a>
+    </p>
   </section>
 
   <section id="rooftop">
     <h2>Rooftop</h2>
-    <p>Das Rooftop bietet eine einzigartige Aussicht über das Limmattal – ideal für Sommerabende.</p>
+    <p>
+      Unsere grosse Dachterrasse ist der perfekte Ort, um den Tag ausklingen zu lassen – mit Grill, Liegestühlen und tollem Blick ins Limmattal. Hier finden regelmässig Quartier-Events und offene Treffen statt.
+    </p>
     <div class="gallery">
       <img src="rooftop-01.jpg" alt="Rooftop 01">
       <img src="rooftop-02.jpg" alt="Rooftop 02">
@@ -282,28 +305,54 @@ body.dark nav button#themeSwitcher:focus {
     <div class="gallery">
       <img src="fitness1.jpg" alt="Fitnessraum 1">
     </div>
-    <p>Ausgestattet mit modernen Geräten – offen für Vereinsmitglieder mit Zugangscode.</p>
+    <p>
+      Im Fitnessraum der Webermühle können Bewohner*innen eigenständig trainieren.<br>
+      <strong>Reservierung:</strong> Online-Terminbuchung erforderlich!<br>
+      <strong>Wichtig:</strong> Vor der ersten Nutzung bitte beim Quartierverein Webermühle-Klosterrüti anmelden.<br>
+      <strong>Kontakt:</strong> <a href="mailto:qv@webi.family">qv@webi.family</a>
+    </p>
   </section>
 
   <section id="spielgruppe">
     <h2>Spielgruppe Zwergmühle</h2>
+    <div class="spielgruppe-logo">
+      <img src="zwegrmühle-logo.png" alt="Logo Zwergmühle" />
+    </div>
     <div class="gallery">
       <img src="spielgruppe1.jpg" alt="Spielgruppe">
     </div>
-    <p>Unsere liebevolle Spielgruppe für Kinder von 3–5 Jahren, direkt im Quartier.</p>
+    <p>
+      Die Spielgruppe Zwergmühle ist eine privat geführte Institution und wird vom Quartierverein Webermühle getragen.<br>
+      <strong>Betreuung:</strong> Qualifizierte Spielgruppenleiterinnen betreuen Kinder in kleinen, konstanten Gruppen von max. 7–8 Kindern (ab 2,5 Jahren bis Kindergarteneintritt), jeweils Montag und Donnerstag 09:00–11:00 Uhr.<br>
+      <strong>Ort:</strong> Webermühle 23/EG, 5432 Neuenhof<br>
+      Auch Kinder, die noch nicht ganz trocken sind, sind willkommen – einfach Windeln mitgeben und die Leitung informieren.
+    </p>
+    <p>
+      <strong>Kontakt und Anmeldung:</strong><br>
+      Leitung: Sandra Adamovic, Tel. 076 404 06 85<br>
+      E-Mail: <a href="mailto:esiino@hotmail.com">esiino@hotmail.com</a><br>
+      Das Anmeldeformular kann per E-Mail oder telefonisch angefordert werden.
+    </p>
   </section>
 
   <section id="vereine">
     <h2>Vereine</h2>
-    <p><strong>SOFE Webi:</strong> wurde gegründet, um das Sommerfest zu organisieren und dauerhaft zu betreuen.</p>
-    <p><strong>Quartierverein Webermühle-Klosterrüti:</strong> engagiert sich für Gemeinschaft, Integration und Lebensqualität im Quartier.</p>
+    <p>
+      Die Webermühle ist Heimat verschiedener Vereine und Interessengruppen – von Musik und Sport bis Nachbarschaftshilfe und Quartierfeste. Engagiere dich, gründe einen eigenen Verein oder lerne andere Bewohner*innen kennen.<br>
+      <strong>Kontakt Quartierverein:</strong> <a href="mailto:qv@webi.family">qv@webi.family</a><br>
+      <strong>Kontakt Sommerfest &amp; SOFE Webi:</strong> <a href="mailto:sommerfest@webi.family">sommerfest@webi.family</a>
+    </p>
   </section>
 
   <section id="kontakt">
     <h2>Kontakt</h2>
-    <p>Bei Fragen oder Anliegen wende dich bitte an:</p>
-    <p><strong>SOFE Webi:</strong> <a href="mailto:sommerfest@webi.family">sommerfest@webi.family</a><br />
-       <strong>Quartierverein:</strong> <a href="mailto:qv@webi.family">qv@webi.family</a></p>
+    <p>
+      Du hast Fragen, möchtest einen Raum buchen oder hast ein Anliegen?<br><br>
+      <strong>Quartierverein:</strong> <a href="mailto:qv@webi.family">qv@webi.family</a><br>
+      <strong>Partyraum:</strong> Michal Jancovic, Tel. 076 709 08 01<br>
+      <strong>Spielgruppe:</strong> Sandra Adamovic, Tel. 076 404 06 85, <a href="mailto:esiino@hotmail.com">esiino@hotmail.com</a><br>
+      <strong>Sommerfest/SOFE Webi:</strong> <a href="mailto:sommerfest@webi.family">sommerfest@webi.family</a>
+    </p>
   </section>
 
   <section id="login">
@@ -404,25 +453,4 @@ body.dark nav button#themeSwitcher:focus {
       });
     });
 
-    document.querySelector('#modalOverlay .closeModal').onclick = function() {
-      closeModal();
-    };
-    document.getElementById('modalOverlay').onclick = function(e) {
-      if (e.target === this) closeModal();
-    };
-    document.addEventListener('keydown', function(e) {
-      if (e.key === "Escape") closeModal();
-    });
-    function closeModal() {
-      const modal = document.getElementById('modalOverlay');
-      const modalImg = modal.querySelector('img');
-      modalImg.style.transform = 'scale(0.7)';
-      modalImg.style.opacity = '0';
-      setTimeout(() => {
-        modal.classList.remove('active');
-        modalImg.src = '';
-      }, 180);
-    }
-  </script>
-</body>
-</html>
+    document.querySelector('#modalOverlay .closeModal').
