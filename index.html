@@ -66,21 +66,37 @@
     }
 
     nav button#themeSwitcher {
-      background: none;
+      background: #fff;
       border: none;
-      color: white;
-      font-size: 1.25em;
+      color: #222;
+      font-size: 1.3em;
       cursor: pointer;
       font-weight: bold;
-      margin-left: 0.5em;
-      padding: 0 0.5em;
-      transition: color 0.2s, background 0.2s;
+      margin-left: 0.7em;
+      padding: 0.15em 0.7em;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px #0002;
+      transition: color 0.2s, background 0.2s, box-shadow 0.2s;
       outline: none;
+      vertical-align: middle;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    nav button#themeSwitcher:hover {
-      color: #ffd700;
+    nav button#themeSwitcher:hover,
+    nav button#themeSwitcher:focus {
+      background: #ffd700;
+      color: #222;
+      box-shadow: 0 4px 16px #0004;
+    }
+    body.dark nav button#themeSwitcher {
       background: #444;
-      border-radius: 0.5em;
+      color: #fff8;
+    }
+    body.dark nav button#themeSwitcher:hover,
+    body.dark nav button#themeSwitcher:focus {
+      background: #e1be26;
+      color: #222;
     }
 
     section {
@@ -105,10 +121,11 @@
       max-width: 300px;
       border-radius: 8px;
       cursor: zoom-in;
-      transition: box-shadow 0.2s;
+      transition: box-shadow 0.2s, transform 0.25s cubic-bezier(.22,1,.36,1.07);
     }
     .gallery img:hover {
-      box-shadow: 0 0 12px #444b;
+      box-shadow: 0 0 16px #444b;
+      transform: scale(1.07); /* sanftes Vergrößern */
     }
 
     .login-links {
@@ -155,6 +172,13 @@
       box-shadow: 0 0 30px #000b;
       background: #fff;
       object-fit: contain;
+      transform: scale(0.7);
+      opacity: 0;
+      transition: transform 0.23s cubic-bezier(.22,1,.36,1.07), opacity 0.18s;
+    }
+    #modalOverlay.active img {
+      transform: scale(1.0);
+      opacity: 1;
     }
     #modalOverlay .closeModal {
       position: absolute;
@@ -218,7 +242,7 @@
     <a href="#vereine">Vereine</a>
     <a href="#kontakt">Kontakt</a>
     <a href="#login">Login</a>
-    <button id="themeSwitcher" aria-label="Theme wechseln">🌓</button>
+    <button id="themeSwitcher" aria-label="Theme wechseln">🌙</button>
   </nav>
 
   <section id="historie">
@@ -361,29 +385,44 @@
       setTheme(theme);
     })();
 
-    // Modale Bildvorschau (Lightbox)
+    // Modale Bildvorschau (Lightbox) mit Zoom-Animation
     document.querySelectorAll('.gallery img').forEach(img => {
       img.addEventListener('click', () => {
         const modal = document.getElementById('modalOverlay');
-        modal.classList.add('active');
         const modalImg = modal.querySelector('img');
         modalImg.src = img.src;
         modalImg.alt = img.alt;
+        // Trick für Animation: vor dem Aktivieren zurücksetzen
+        modalImg.style.transform = 'scale(0.7)';
+        modalImg.style.opacity = '0';
+        modal.classList.add('active');
+        // nach kurzem Timeout Animation starten
+        setTimeout(() => {
+          modalImg.style.transform = 'scale(1.0)';
+          modalImg.style.opacity = '1';
+        }, 10);
       });
     });
 
     document.querySelector('#modalOverlay .closeModal').onclick = function() {
-      const modal = document.getElementById('modalOverlay');
-      modal.classList.remove('active');
-      modal.querySelector('img').src = '';
+      closeModal();
     };
     document.getElementById('modalOverlay').onclick = function(e) {
-      if (e.target === this) this.classList.remove('active');
+      if (e.target === this) closeModal();
     };
     document.addEventListener('keydown', function(e) {
-      if (e.key === "Escape") document.getElementById('modalOverlay').classList.remove('active');
+      if (e.key === "Escape") closeModal();
     });
+    function closeModal() {
+      const modal = document.getElementById('modalOverlay');
+      const modalImg = modal.querySelector('img');
+      modalImg.style.transform = 'scale(0.7)';
+      modalImg.style.opacity = '0';
+      setTimeout(() => {
+        modal.classList.remove('active');
+        modalImg.src = '';
+      }, 180);
+    }
   </script>
-
 </body>
 </html>
