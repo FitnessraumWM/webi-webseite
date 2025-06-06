@@ -453,4 +453,25 @@
       });
     });
 
-    document.querySelector('#modalOverlay .closeModal').
+    document.querySelector('#modalOverlay .closeModal').onclick = function() {
+      closeModal();
+    };
+    document.getElementById('modalOverlay').onclick = function(e) {
+      if (e.target === this) closeModal();
+    };
+    document.addEventListener('keydown', function(e) {
+      if (e.key === "Escape") closeModal();
+    });
+    function closeModal() {
+      const modal = document.getElementById('modalOverlay');
+      const modalImg = modal.querySelector('img');
+      modalImg.style.transform = 'scale(0.7)';
+      modalImg.style.opacity = '0';
+      setTimeout(() => {
+        modal.classList.remove('active');
+        modalImg.src = '';
+      }, 180);
+    }
+  </script>
+</body>
+</html>
