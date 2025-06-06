@@ -5,10 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Webermühle Verein</title>
   <style>
+    :root {
+      --background: #ffffff;
+      --text: #000000;
+      --nav-bg: #333;
+      --link: #0077cc;
+    }
+
+    body.dark {
+      --background: #1e1e1e;
+      --text: #ffffff;
+      --nav-bg: #111;
+      --link: #66b2ff;
+    }
+
     body {
       margin: 0;
       font-family: sans-serif;
       scroll-behavior: smooth;
+      background: var(--background);
+      color: var(--text);
     }
 
     header {
@@ -47,7 +63,7 @@
       position: fixed;
       top: 0;
       width: 100%;
-      background: #333;
+      background: var(--nav-bg);
       color: white;
       display: flex;
       flex-wrap: wrap;
@@ -96,7 +112,7 @@
       display: inline-block;
       margin: 1em;
       text-decoration: none;
-      color: #0077cc;
+      color: var(--link);
       font-weight: bold;
     }
 
@@ -124,15 +140,21 @@
     }
   </style>
   <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      if (prefersDark) {
+        document.body.classList.add("dark");
+        document.querySelector(".logos-right img").src = "logo-qv-schwarz.png";
+      } else {
+        document.querySelector(".logos-right img").src = "logo-qv-weiss.png";
+      }
+    });
+
     let lastScrollTop = 0;
     window.addEventListener("scroll", function () {
       const nav = document.querySelector("nav");
       let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      if (scrollTop > lastScrollTop) {
-        nav.style.top = "-80px";
-      } else {
-        nav.style.top = "0";
-      }
+      nav.style.top = scrollTop > lastScrollTop ? "-80px" : "0";
       lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
     });
   </script>
@@ -141,7 +163,7 @@
 
   <header>
     <a href="#" class="logos-left"><img src="verein-sofe-logo.png" alt="Logo SOFE Webi" /></a>
-    <a href="#" class="logos-right"><img src="logo-qv.png" alt="Logo Quartierverein" /></a>
+    <a href="#" class="logos-right"><img src="" alt="Logo Quartierverein" /></a>
     <div>Willkommen in der Webermühle</div>
   </header>
 
