@@ -528,18 +528,23 @@
 
     // Besucherzähler counterapi.dev
     async function updateCounterInfo() {
-      const [all, today, week, month] = await Promise.all([
-        fetch("https://api.counterapi.dev/v1/webi-webermuehle/visits").then(r => r.json()),
-        fetch("https://api.counterapi.dev/v1/webi-webermuehle-today/visits").then(r => r.json()),
-        fetch("https://api.counterapi.dev/v1/webi-webermuehle-week/visits").then(r => r.json()),
-        fetch("https://api.counterapi.dev/v1/webi-webermuehle-month/visits").then(r => r.json())
-      ]);
-      let text = `Seitenbesuche gesamt: ${all.count}<br>
-                  Heute: ${today.count}<br>
-                  Diese Woche: ${week.count}<br>
-                  Diesen Monat: ${month.count}`;
-      document.getElementById("besucherinfo").innerHTML = text;
+      try {
+        const [all, today, week, month] = await Promise.all([
+          fetch("https://api.counterapi.dev/v1/webi-webermuehle/visits").then(r => r.json()),
+          fetch("https://api.counterapi.dev/v1/webi-webermuehle-today/visits").then(r => r.json()),
+          fetch("https://api.counterapi.dev/v1/webi-webermuehle-week/visits").then(r => r.json()),
+          fetch("https://api.counterapi.dev/v1/webi-webermuehle-month/visits").then(r => r.json())
+        ]);
+        let text = `Seitenbesuche gesamt: ${all.count}<br>
+        Heute: ${today.count}<br>
+        Diese Woche: ${week.count}<br>
+        Diesen Monat: ${month.count}`;
+        document.getElementById("besucherinfo").innerHTML = text;
+      } catch(e) {
+        document.getElementById("besucherinfo").textContent = "Besucherzähler offline";
+      }
     }
+    // Zähler hochzählen (aber erst DANN abfragen!)
     Promise.all([
       fetch("https://api.counterapi.dev/v1/webi-webermuehle/visits/incr"),
       fetch("https://api.counterapi.dev/v1/webi-webermuehle-today/visits/incr"),
