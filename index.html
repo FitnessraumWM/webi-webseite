@@ -5,6 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Verein Webermühle - Klosterrüti </title>
   <style>
+    /* Kontakt-Links wie normaler Text */
+.contact-link {
+  color: inherit !important;
+  text-decoration: underline dotted #aaa; /* oder einfach: none; */
+  font-weight: bold;
+  cursor: pointer;
+}
+.contact-link:hover,
+.contact-link:focus {
+  color: #888;
+  text-decoration: underline solid #888;
+}
+
+/* Galerie-Bilder im gleichmäßigen Raster */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1em;
+}
+.gallery img {
+  width: 100%;
+  aspect-ratio: 1/1;    /* Quadratische Thumbnails */
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: zoom-in;
+  transition: box-shadow 0.2s, transform 0.25s cubic-bezier(.22,1,.36,1.07);
+}
+    
     body {
       margin: 0;
       font-family: sans-serif;
@@ -307,7 +336,9 @@ body.dark nav button#themeSwitcher:focus {
     <h2>Partyraum</h2>
     <p>
       Der Partyraum der Webermühle kann von allen Bewohner*innen für Feiern, Kindergeburtstage und Versammlungen genutzt werden. Neben einer kleinen Küche stehen Bluetooth-Lautsprecher sowie ein moderner Beamer zur Verfügung – ideal für Präsentationen oder Filmabende.<br>
-      <strong>Buchung und Infos:</strong> Ansprechpartner Michal Jančovič, Tel. <a href="tel:+41767090801">076 709 08 01 </a> ,<a href="mailto:qv@webi.family">Mail an Quartierverein</a>
+      <strong>Buchung und Infos:</strong> Ansprechpartner Michal Jančovič, Tel. <a href="tel:+41767090801" class="contact-link">076 709 08 01</a>
+        <a href="mailto:qv@webi.family" class="contact-link">Mail an Quartierverein</a>
+
     </p>
     <div class="gallery">
       <img src="partyraum01.jpg" alt="Partyraum 1">
