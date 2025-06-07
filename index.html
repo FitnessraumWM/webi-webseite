@@ -3,235 +3,195 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Verein Webermühle - Klosterrüti</title>
+  <title>Verein Webermühle – Klosterrüti</title>
   <style>
     html, body {
       margin: 0;
+      padding: 0;
       font-family: sans-serif;
-      scroll-behavior: smooth;
       background: #fff;
       color: #222;
+      scroll-behavior: smooth;
     }
+
     header {
       background: url('webermuehle-gesamt.jpg') center/cover no-repeat;
-      height: 90vh;
+      min-height: 92vh;
       color: white;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 3em;
-      text-shadow: 2px 2px 5px black;
+      text-shadow: 2px 2px 7px #000c;
       position: relative;
       text-align: center;
-      flex-direction: column;
     }
+
     .logos-left, .logos-right {
       position: absolute;
-      top: 20px;
-      height: 180px;
-      z-index: 2;
+      top: 22px;
+      height: 138px;
+      z-index: 5;
     }
-    .logos-left { left: 20px; }
-    .logos-right { right: 20px; }
-    .logos-left img, .logos-right img {
-      height: 100%;
-      cursor: pointer;
-      transition: transform 0.3s;
-      user-select: none;
-    }
-    .logos-left img:hover, .logos-right img:hover {
-      transform: scale(1.05);
-    }
+    .logos-left { left: 24px; }
+    .logos-right { right: 24px; }
+    .logos-left img, .logos-right img { height: 100%; }
+
     nav {
-      position: sticky;
-      top: 0;
-      transition: top 0.7s cubic-bezier(.77,0,.18,1.05);
-      background: #333;
+      position: sticky; top: 0;
+      background: #2d2d2d;
       color: white;
       display: flex;
-      flex-wrap: wrap;
       justify-content: center;
-      gap: 1em;
-      padding: 0.45em 1em;
+      gap: 2em;
+      font-size: 1.2em;
+      font-weight: bold;
+      padding: 0.5em 1em 0.5em 1em;
       z-index: 10;
+      transition: top 0.7s cubic-bezier(.77,0,.18,1.05);
     }
     nav a {
       color: white;
       text-decoration: none;
-      font-weight: bold;
-      line-height: 1.4;
+      transition: color 0.2s;
+      border-radius: 3px;
+      padding: 0 0.2em;
+    }
+    nav a:hover {
+      color: #ffe066;
+      text-decoration: underline;
     }
     nav button#themeSwitcher {
       background: none;
       border: none;
       color: #fff;
-      font-size: 1.15em;
+      font-size: 1.1em;
       cursor: pointer;
-      font-weight: bold;
-      margin-left: 0.45em;
-      padding: 0 0.18em;
-      border-radius: 0.3em;
-      outline: none;
-      vertical-align: middle;
-      line-height: 1.1;
-      height: 1.25em;
-      transition: color 0.22s, background 0.22s;
+      margin-left: 0.4em;
+      border-radius: 6px;
+      padding: 0.1em 0.2em;
+      transition: background 0.22s, color 0.22s;
     }
-    nav button#themeSwitcher:hover,
-    nav button#themeSwitcher:focus {
-      background: #444;
-      color: #ffd700;
-    }
-    body.dark nav button#themeSwitcher {
-      color: #ffe066;
-      background: none;
-    }
-    body.dark nav button#themeSwitcher:hover,
-    body.dark nav button#themeSwitcher:focus {
-      background: #333;
-      color: #ffe066;
-    }
-    section {
-      padding: 4em 1em;
-      max-width: 1000px;
-      margin: auto;
-    }
-    h2 {
-      border-bottom: 2px solid #ccc;
-      padding-bottom: 0.5em;
-    }
-    /* --- Sommerfest Timer --- */
+    nav button#themeSwitcher:hover { background: #444; color: #ffd700; }
+
     .sommerfest-timer-container {
       position: absolute;
-      left: 19vw;
-      top: 32vh;
-      transform: rotate(-10deg);
-      z-index: 3;
-      background: rgba(30,30,30,0.84);
+      left: 50%;
+      top: 30vh;
+      transform: translate(-50%, 0) rotate(-12deg);
+      z-index: 6;
+      background: rgba(25,25,25,0.85);
       border-radius: 1.2em;
-      box-shadow: 0 0 14px #0007;
-      padding: 0.35em 1.2em 0.55em 1.2em;
-      max-width: 58vw;
+      box-shadow: 0 0 16px #000a;
+      padding: 0.7em 2.2em 1em 2.2em;
       color: #fff;
-      text-align: center;
+      min-width: 320px;
+      max-width: 580px;
+      width: 44vw;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     .sommerfest-label {
-      color: #ffe067;
-      font-size: 1.25em;
+      color: #ffe066;
+      font-size: 1.35em;
       font-weight: 900;
-      letter-spacing: 0.03em;
-      text-shadow: 1px 2px 6px #000d;
-      margin-bottom: 0.13em;
-      display: block;
+      letter-spacing: 0.02em;
+      text-shadow: 1px 2px 6px #000c;
+      margin-bottom: 0.25em;
     }
     .sommerfest-countdown {
+      font-size: 1.16em;
       color: #fff;
-      font-size: 1.2em;
-      font-family: 'Consolas', 'Courier New', monospace;
+      font-family: 'Consolas', monospace;
       font-weight: 800;
-      text-shadow: 1px 2px 10px #000b, 0 0 1em #ffb40344;
       letter-spacing: 0.03em;
-      margin-top: 0.5em;
-      display: block;
+      text-shadow: 1px 1px 10px #000b, 0 0 1em #ffe06633;
+      margin-top: 0.2em;
     }
-    @media (max-width: 1000px) {
+
+    @media (max-width: 900px) {
       .sommerfest-timer-container {
-        left: 10vw;
         top: 20vh;
-        max-width: 80vw;
-        font-size: 0.95em;
+        width: 85vw;
+        min-width: 0;
+        max-width: 95vw;
+        font-size: 0.97em;
+        padding: 0.3em 0.5em 0.5em 0.5em;
       }
     }
-    @media (max-width: 700px) {
-      .logos-left, .logos-right {
-        height: 100px;
-        top: 10px;
-      }
-      nav {
-        flex-direction: column;
-        gap: 0.5em;
-      }
-      .sommerfest-timer-container {
-        left: 5vw;
-        top: 20vh;
-        max-width: 90vw;
-        padding: 0.18em 0.3em 0.5em 0.3em;
-        font-size: 0.9em;
-      }
-      .gallery {
-        flex-direction: column;
-        align-items: center;
-      }
-      .spielgruppe-logo {
-        justify-content: center;
-      }
+
+    section {
+      padding: 3em 1em 1.2em 1em;
+      max-width: 1000px;
+      margin: auto;
+      background: #fff;
+      color: #222;
     }
-    /* --- Galerie Bilder --- */
+    h2 {
+      border-bottom: 2px solid #d4d4d4;
+      padding-bottom: 0.38em;
+      margin-top: 0;
+    }
+
+    /* Galerie-Bilder einheitlich */
     .gallery {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
       gap: 1em;
+      margin-top: 1em;
     }
     .gallery img {
       width: 100%;
       aspect-ratio: 1/1;
-      height: auto;
       object-fit: cover;
       border-radius: 8px;
+      box-shadow: 0 0 6px #aaa3;
       cursor: zoom-in;
-      transition: box-shadow 0.2s, transform 0.25s cubic-bezier(.22,1,.36,1.07);
+      transition: box-shadow 0.2s, transform 0.23s cubic-bezier(.22,1,.36,1.07);
     }
     .gallery img:hover {
-      box-shadow: 0 0 16px #444b;
-      transform: scale(1.07);
+      box-shadow: 0 0 18px #444b;
+      transform: scale(1.05);
     }
-    /* --- Spielgruppe Logo --- */
+
     .spielgruppe-logo {
-      display: flex;
-      justify-content: flex-start;
-      margin-bottom: 1em;
-      margin-top: 0.5em;
+      margin-bottom: 0.5em;
     }
     .spielgruppe-logo img {
-      max-height: 110px;
-      height: auto;
+      height: 85px;
       width: auto;
-      display: block;
+      margin-bottom: 0.5em;
+      margin-top: 0.2em;
     }
-    /* --- Kontakt Links (Telefon/Mail) --- */
-    .contact-link, a[href^="mailto:"], a[href^="tel:"] {
+
+    .contact-link {
       color: inherit !important;
-      text-decoration: underline dotted #aaa !important;
+      text-decoration: underline dotted #aaa;
       font-weight: bold;
       cursor: pointer;
-      transition: color 0.16s;
+      transition: color 0.2s;
     }
-    .contact-link:hover, a[href^="mailto:"]:hover, a[href^="tel:"]:hover {
-      color: #888 !important;
-      text-decoration: underline solid #888 !important;
+    .contact-link:hover, .contact-link:focus {
+      color: #888;
+      text-decoration: underline solid #888;
     }
-    /* --- Login Links --- */
-    .login-links {
+
+    footer {
+      background: #f2f2f2;
+      padding: 2em 1em 1.3em 1em;
       text-align: center;
-      font-size: 1.2em;
+      font-size: 1em;
+      color: #333;
     }
-    .login-links a {
-      display: inline-block;
-      margin: 1em;
-      text-decoration: none;
-      color: #0077cc;
-      font-weight: bold;
-    }
-    .login-links a:hover {
-      text-decoration: underline;
-    }
-    /* --- Modal für Bildvorschau --- */
+
+    /* Modal für Bildvorschau */
     #modalOverlay {
       display: none;
       position: fixed;
       z-index: 10000;
       left: 0; top: 0; width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.85);
+      background: rgba(0,0,0,0.89);
       align-items: center;
       justify-content: center;
     }
@@ -240,12 +200,11 @@
       max-width: 90vw;
       max-height: 85vh;
       border-radius: 12px;
-      box-shadow: 0 0 30px #000b;
       background: #fff;
       object-fit: contain;
       transform: scale(0.7);
       opacity: 0;
-      transition: transform 0.23s cubic-bezier(.22,1,.36,1.07), opacity 0.18s;
+      transition: transform 0.22s cubic-bezier(.22,1,.36,1.07), opacity 0.16s;
     }
     #modalOverlay.active img {
       transform: scale(1.0);
@@ -261,45 +220,42 @@
       z-index: 10;
       user-select: none;
     }
-    /* --- Footer --- */
-    footer {
-      background: #f2f2f2;
-      padding: 2em 1em;
-      text-align: center;
-      font-size: 0.9em;
-      color: #222;
-    }
-    /* --- Darkmode --- */
+
+    /* Darkmode */
     body.dark {
-      background: #181a1b;
+      background: #16191c;
       color: #ddd;
-    }
-    body.dark header {
-      color: #fff;
-      text-shadow: 2px 2px 8px #111a;
-    }
-    body.dark nav {
-      background: #222;
-      color: #eee;
     }
     body.dark section, body.dark footer {
       background: #222;
       color: #ddd;
     }
-    body.dark .sommerfest-timer-container {
-      background: rgba(34,34,34,0.88);
-      color: #fff9e7;
+    body.dark nav { background: #232323; color: #eee; }
+    body.dark nav a { color: #eee; }
+    body.dark nav a:hover { color: #ffe066; }
+    body.dark .sommerfest-timer-container { background: rgba(15,15,15,0.92); }
+    body.dark .sommerfest-label { color: #ffe066; }
+    body.dark footer { color: #bbb; }
+
+    @media (max-width: 700px) {
+      .logos-left, .logos-right { height: 65px; top: 8px; }
+      .gallery { grid-template-columns: 1fr; }
+      .sommerfest-timer-container { top: 17vw; font-size: 0.90em;}
+      section { padding: 2em 2vw 1em 2vw; }
     }
   </style>
 </head>
 <body>
+
   <header>
     <a href="#" class="logos-left"><img src="verein-sofe-logo-w.png" alt="Logo SOFE Webi" /></a>
     <a href="#" class="logos-right"><img src="logo-qv-weiss.png" alt="Logo Quartierverein" /></a>
-    <div>Willkommen in der Webermühle</div>
-    <div class="sommerfest-timer-container">
-      <span class="sommerfest-label">nächstes SOMMERFEST in</span>
-      <span class="sommerfest-countdown" id="sommerfest-countdown">00 Tage 00:00:00</span>
+    <div style="width:100%">
+      <div class="sommerfest-timer-container" id="sommerfest-timer">
+        <span class="sommerfest-label">nächstes <b>SOMMERFEST</b> in</span>
+        <span class="sommerfest-countdown" id="sommerfest-countdown">00 Tage 00:00:00</span>
+      </div>
+      <div style="font-size:2.3rem; font-weight:900; margin-top:35vh; letter-spacing:0.03em; text-shadow:2px 2px 8px #000c;">Willkommen in der Webermühle</div>
     </div>
   </header>
 
@@ -316,94 +272,144 @@
     <button id="themeSwitcher" aria-label="Theme wechseln">🌓</button>
   </nav>
 
-  <!-- Historie -->
   <section id="historie">
     <h2>Historie der Webermühle</h2>
-    <p>Die Webermühle in Neuenhof blickt auf eine bewegte Geschichte zurück, die bis ins 19. Jahrhundert reicht...</p>
-    <!-- ... Dein restlicher Text ... -->
+    <p>Die Webermühle in Neuenhof blickt auf eine bewegte Geschichte zurück, die bis ins 19. Jahrhundert reicht.</p>
+    <p>1865 erhielt Johann Wild, Gründer der Spinnerei Wettingen, eine Konzession zur Nutzung der Wasserkraft auf der linken Limmatseite. In der Folge entstanden dort eine Weberei und eine Spinnerei, die das Industrieareal Damsau prägten. 1901 errichtete Henry Zweifel, Nachfolger von Johann Wild, oberhalb des Areals die repräsentative Jugendstilvilla Ermitage.</p>
+    <p>1970 musste die Weberei ihren Betrieb einstellen. Noch im selben Jahr übernahm die Zürcher Generalbauunternehmung Ernst Göhner AG das rund sechs Hektar grosse Areal mit 25 Gebäuden. Ziel war die Umgestaltung des Perimeters zu einem modernen Wohnquartier.</p>
+    <p>Zwischen 1974 und 1981 entstand die Grosssiedlung Webermühle mit insgesamt 368 Wohnungen für etwa 1'500 Bewohnerinnen und Bewohner. Der Entwurf stammt vom Architekten Toni Marti. Die Siedlung besteht aus vier Hochhauszeilen unterschiedlicher Länge, die kreuzförmig zueinander angeordnet sind. Die Scheibenhochhäuser sind zwischen 30 und 150 Meter lang und erreichen eine maximale Höhe von 13 Geschossen. Um das gewaltige Volumen zu brechen, sind sie in der Vertikalen wie auch in der Tiefe gestaffelt. Am Kreuzungspunkt sind die Zeilen lediglich sechs Geschosse hoch. Hier befindet sich die sogenannte Arena, der wichtigste Begegnungsort und das Herzstück der Grosssiedlung. Der kreisförmig gestaltete Platz wird durch zehn markante Entlüftungsrohre aus rostigem Stahl akzentuiert, die auf die weitläufigen Untergeschosse der Überbauung hinweisen.</p>
+    <p>Die Bauweise erfolgte im Elementbausystem mit vorfabrizierten Betonelementen. Ein Farbkonzept sah ursprünglich ein Puzzle aus Kuben in verschiedenen Beige- und Orangefarbtönen vor. Seit 2012 sind die Fassaden grau-weiss gestaltet und in Felder geteilt, die mit einem Rillenputz eine feine Gliederung erhalten.</p>
+    <p>1982 wurde ein Kindergarten mit integriertem Hort errichtet. Das Bauvolumen besteht aus einer feingliedrigen Sichtbetonfassade aus Ortbeton, während die Wohnzeilen im Baukastenprinzip errichtet wurden.</p>
+    <p>Seit 2008 befindet sich die Webermühle im Besitz eines Immobilienfonds der Credit Suisse (heute UBS). 2012 begann eine umfassende Renovation des gesamten Areals, bei der insbesondere Badezimmer, Küchen, Wärmedämmung und Schallschutz modernisiert wurden.</p>
+    <p>Die flügelradartige Anordnung der Wohnblöcke erinnert an die ehemalige Weberei und gab dem Quartier seinen Namen: Webermühle.</p>
     <div class="gallery">
       <img src="historie01.jpg" alt="Historisches Bild 1">
       <img src="historie02.jpg" alt="Historisches Bild 2">
-      <!-- ... weitere Fotos ... -->
+      <img src="historie03.jpg" alt="Historisches Bild 3">
+      <img src="historie04.jpg" alt="Historisches Bild 4">
+      <img src="historie05.jpg" alt="Historisches Bild 5">
+      <img src="historie06.jpg" alt="Historisches Bild 6">
+      <img src="historie07.jpg" alt="Historisches Bild 7">
+      <img src="historie08.jpg" alt="Historisches Bild 8">
+      <img src="historie09.jpg" alt="Historisches Bild 9">
+      <img src="historie10.jpg" alt="Historisches Bild 10">
+      <img src="historie11.jpg" alt="Historisches Bild 11">
+      <img src="historie12.jpg" alt="Historisches Bild 12">
     </div>
   </section>
 
-  <!-- Partyraum -->
   <section id="partyraum">
     <h2>Partyraum</h2>
-    <p>Der Partyraum ... Ansprechpartner Michal Jančovič, Tel. <a href="tel:+41767090801" class="contact-link">076 709 08 01</a>, 
-      <a href="mailto:qv@webi.family" class="contact-link">Mail an Quartierverein</a></p>
+    <p>
+      Der Partyraum der Webermühle kann von allen Bewohner*innen für Feiern, Kindergeburtstage und Versammlungen genutzt werden. Neben einer kleinen Küche stehen Bluetooth-Lautsprecher sowie ein moderner Beamer zur Verfügung – ideal für Präsentationen oder Filmabende.<br>
+      <b>Buchung und Infos:</b> Ansprechpartner Michal Jančovič, Tel. <a href="tel:+41767090801" class="contact-link">076 709 08 01</a>, oder per <a href="mailto:qv@webi.family" class="contact-link">Mail an Quartierverein</a>
+    </p>
     <div class="gallery">
       <img src="partyraum01.jpg" alt="Partyraum 1">
-      <!-- ... weitere Fotos ... -->
+      <img src="partyraum02.jpg" alt="Partyraum 2">
+      <img src="partyraum03.jpg" alt="Partyraum 3">
+      <img src="partyraum04.jpg" alt="Partyraum 4">
+      <img src="partyraum05.jpg" alt="Partyraum 5">
     </div>
   </section>
 
-  <!-- Rooftop -->
   <section id="rooftop">
     <h2>Rooftop</h2>
-    <p>Unsere grosse Dachterrasse ist der perfekte Ort, um ...</p>
+    <p>
+      Unsere grosse Dachterrasse ist der perfekte Ort, um den Tag ausklingen zu lassen – mit Grill, Liegestühlen und tollem Blick ins Limmattal. Hier finden regelmässig Quartier-Events und offene Treffen statt.
+    </p>
     <div class="gallery">
       <img src="rooftop-01.jpg" alt="Rooftop 01">
-      <!-- ... weitere Fotos ... -->
+      <img src="rooftop-02.jpg" alt="Rooftop 02">
+      <img src="rooftop-03.jpg" alt="Rooftop 03">
+      <img src="rooftop-04.jpg" alt="Rooftop 04">
+      <img src="rooftop-05.jpg" alt="Rooftop 05">
+      <img src="rooftop-06.jpg" alt="Rooftop 06">
+      <img src="rooftop-07.jpg" alt="Rooftop 07">
+      <img src="rooftop-08.jpg" alt="Rooftop 08">
+      <img src="rooftop-09.jpg" alt="Rooftop 09">
+      <img src="rooftop-10.jpg" alt="Rooftop 10">
     </div>
   </section>
 
-  <!-- Fitnessraum -->
   <section id="fitness">
     <h2>Fitnessraum</h2>
     <div class="gallery">
       <img src="fitness1.jpg" alt="Fitnessraum 1">
     </div>
-    <p>Im Fitnessraum ... <a href="mailto:qv@webi.family" class="contact-link">qv@webi.family</a></p>
+    <p>
+      Im Fitnessraum der Webermühle können Bewohner*innen eigenständig trainieren.<br>
+      <b>Reservierung:</b> Online-Terminbuchung erforderlich!<br>
+      <b>Wichtig:</b> Vor der ersten Nutzung bitte beim Quartierverein Webermühle-Klosterrüti anmelden.<br>
+      <b>Kontakt:</b> <a href="mailto:qv@webi.family" class="contact-link">qv@webi.family</a>
+    </p>
   </section>
 
-  <!-- Spielgruppe -->
   <section id="spielgruppe">
     <h2>Spielgruppe Zwergmühle</h2>
     <div class="spielgruppe-logo">
-      <img alt="zwergmuehle-logo.png" src="https://github.com/FitnessraumWM/webi-webseite/blob/main/zwergmuehle-logo.png?raw=true">
+      <img src="https://github.com/FitnessraumWM/webi-webseite/blob/main/zwergmuehle-logo.png?raw=true" alt="Logo Zwergmühle" />
     </div>
-    <p>Die Spielgruppe ... <br>
-      Leitung: Sandra Adamovic, Tel. <a href="tel:+41764040685" class="contact-link">076 404 06 85</a>, 
-      <a href="mailto:esiino@hotmail.com" class="contact-link">esiino@hotmail.com</a>
+    <p>
+      Die Spielgruppe Zwergmühle ist eine privat geführte Institution und wird vom Quartierverein Webermühle getragen.<br>
+      <b>Betreuung:</b> Qualifizierte Spielgruppenleiterinnen betreuen Kinder in kleinen, konstanten Gruppen von max. 7–8 Kindern (ab 2,5 Jahren bis Kindergarteneintritt), jeweils Montag und Donnerstag 09:00–11:00 Uhr.<br>
+      <b>Ort:</b> Webermühle 23/EG, 5432 Neuenhof<br>
+      Auch Kinder, die noch nicht ganz trocken sind, sind willkommen – einfach Windeln mitgeben und die Leitung informieren.
+    </p>
+    <p>
+      <b>Kontakt und Anmeldung:</b><br>
+      Leitung: Sandra Adamovic, Tel. <a href="tel:+41764040685" class="contact-link">076 404 06 85</a><br>
+      E-Mail: <a href="mailto:esiino@hotmail.com" class="contact-link">esiino@hotmail.com</a><br>
+      Das Anmeldeformular kann per E-Mail oder telefonisch angefordert werden.
     </p>
     <div class="gallery">
-      <img src="spielgruppe01.jpg" alt="Spielgruppe">
-      <!-- ... weitere Fotos ... -->
+      <img src="spielgruppe01.jpg" alt="Spielgruppe 1">
+      <img src="spielgruppe02.jpg" alt="Spielgruppe 2">
+      <img src="spielgruppe03.jpg" alt="Spielgruppe 3">
+      <img src="spielgruppe04.jpg" alt="Spielgruppe 4">
     </div>
   </section>
 
-  <!-- Vereine -->
   <section id="vereine">
     <h2>Vereine</h2>
-    <p>Die Webermühle ist Heimat verschiedener Vereine ... 
-      <a href="mailto:qv@webi.family" class="contact-link">qv@webi.family</a>,
-      <a href="mailto:sommerfest@webi.family" class="contact-link">sommerfest@webi.family</a>
+    <p>
+      Die Webermühle ist Heimat verschiedener Vereine und Interessengruppen – von Musik und Sport bis Nachbarschaftshilfe und Quartierfeste. Engagiere dich, gründe einen eigenen Verein oder lerne andere Bewohner*innen kennen.<br>
+      <b>Kontakt Quartierverein:</b> <a href="mailto:qv@webi.family" class="contact-link">qv@webi.family</a><br>
+      <b>Kontakt Sommerfest &amp; Verein SOFE Webi:</b> <a href="mailto:sommerfest@webi.family" class="contact-link">sommerfest@webi.family</a>
     </p>
   </section>
 
-  <!-- Sommerfest -->
   <section id="sommerfest">
     <h2>Sommerfest Webermühle</h2>
-    <p>Das Sommerfest ... <strong>Kontakt:</strong>
-      <a href="mailto:sommerfest@webi.family" class="contact-link">sommerfest@webi.family</a>
+    <p>
+      Das Sommerfest in der Webermühle ist längst zu einer beliebten Tradition geworden und bringt Nachbar*innen aller Generationen zusammen. Einmal im Jahr verwandelt sich der Dorfplatz vor Haus 21 in einen lebendigen Treffpunkt voller Spiel, Musik und guter Laune.
+    </p>
+    <p>
+      Organisiert wird das Fest von SOFE Webi, unterstützt durch den Quartierverein Webermühle-Klosterrüti sowie viele freiwillige Helfer*innen aus dem Quartier. Neben einem vielfältigen kulinarischen Angebot gibt es ein buntes Programm für Kinder und Erwachsene – von Sportturnieren und Kreativ-Workshops über Kinderschminken bis hin zu Live-Musik und Tombola.
+    </p>
+    <p>
+      Das Sommerfest ist mehr als nur ein Fest: Es ist die perfekte Gelegenheit, neue Nachbarinnen kennenzulernen, Freundschaften zu vertiefen und gemeinsam unvergessliche Momente zu erleben. Für viele Bewohnerinnen ist es das Highlight des Jahres!
+    </p>
+    <p>
+      Mitmachen ist ausdrücklich erwünscht! Ob als Besucher*in, beim Kuchenbuffet, am Grill, als Sponsor oder mit einer eigenen kleinen Aktion – das Sommerfest lebt vom Engagement aller.
+    </p>
+    <p>
+      <b>Kontakt für Fragen, Anregungen oder Unterstützung:</b><br>
+      SOFE Webi – <a href="mailto:sommerfest@webi.family" class="contact-link">sommerfest@webi.family</a>
     </p>
   </section>
 
-  <!-- Kontakt -->
   <section id="kontakt">
     <h2>Kontakt</h2>
     <p>
-      <strong>Quartierverein:</strong> <a href="mailto:qv@webi.family" class="contact-link">qv@webi.family</a><br>
-      <strong>Partyraum:</strong> Michal Jančovič, Tel. <a href="tel:+41767090801" class="contact-link">076 709 08 01</a><br>
-      <strong>Spielgruppe:</strong> Sandra Adamovic, Tel. <a href="tel:+41764040685" class="contact-link">076 404 06 85</a>, 
-      <a href="mailto:esiino@hotmail.com" class="contact-link">esiino@hotmail.com</a><br>
-      <strong>Sommerfest/SOFE Webi:</strong> <a href="mailto:sommerfest@webi.family" class="contact-link">sommerfest@webi.family</a>
+      Du hast Fragen, möchtest einen Raum buchen oder hast ein Anliegen?<br><br>
+      <b>Quartierverein:</b> <a href="mailto:qv@webi.family" class="contact-link">qv@webi.family</a><br>
+      <b>Partyraum:</b> Michal Jancovic, Tel. <a href="tel:+41767090801" class="contact-link">076 709 08 01</a><br>
+      <b>Spielgruppe:</b> Sandra Adamovic, Tel. <a href="tel:+41764040685" class="contact-link">076 404 06 85</a>, <a href="mailto:esiino@hotmail.com" class="contact-link">esiino@hotmail.com</a><br>
+      <b>Sommerfest/SOFE Webi:</b> <a href="mailto:sommerfest@webi.family" class="contact-link">sommerfest@webi.family</a>
     </p>
   </section>
 
-  <!-- Login -->
   <section id="login">
     <h2>Interner Bereich</h2>
     <div class="login-links">
@@ -423,24 +429,17 @@
     <img src="" alt="Vorschau" />
   </div>
 
+  <!-- Scripte -->
   <script>
-    // Menü Hide on Scroll, langsamere Animation
+    // Menü Hide on Scroll
     let lastScrollY = window.scrollY;
     let nav = document.querySelector('nav');
-    let navHidden = false;
-    let navHeight = nav.offsetHeight;
-
+    let navHidden = false, navHeight = nav.offsetHeight;
     window.addEventListener('scroll', () => {
       if (window.scrollY > lastScrollY && window.scrollY > navHeight) {
-        if (!navHidden) {
-          nav.style.top = `-${navHeight + 30}px`;
-          navHidden = true;
-        }
+        if (!navHidden) { nav.style.top = `-${navHeight+30}px`; navHidden = true; }
       } else {
-        if (navHidden) {
-          nav.style.top = '0';
-          navHidden = false;
-        }
+        if (navHidden) { nav.style.top = '0'; navHidden = false; }
       }
       lastScrollY = window.scrollY;
     });
@@ -449,14 +448,8 @@
     const themeBtn = document.getElementById('themeSwitcher');
     const body = document.body;
     const logos = {
-      sofe: {
-        hell: "verein-sofe-logo-w.png",
-        dunkel: "verein-sofe-logo-s.png"
-      },
-      qv: {
-        hell: "logo-qv-weiss.png",
-        dunkel: "logo-qv-schwarz.png"
-      }
+      sofe: { hell: "verein-sofe-logo-w.png", dunkel: "verein-sofe-logo-s.png" },
+      qv: { hell: "logo-qv-weiss.png", dunkel: "logo-qv-schwarz.png" }
     };
     function setTheme(mode) {
       if (mode === 'dark') {
@@ -473,22 +466,18 @@
         themeBtn.textContent = "🌙";
       }
     }
-    themeBtn.onclick = () => {
-      setTheme(body.classList.contains('dark') ? 'light' : 'dark');
-    };
+    themeBtn.onclick = () => setTheme(body.classList.contains('dark') ? 'light' : 'dark');
     (function() {
-      const theme = localStorage.getItem('theme') ||
-        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
       setTheme(theme);
     })();
 
-    // Modale Bildvorschau (Lightbox) mit Zoom-Animation
+    // Modale Bildvorschau
     document.querySelectorAll('.gallery img').forEach(img => {
       img.addEventListener('click', () => {
         const modal = document.getElementById('modalOverlay');
         const modalImg = modal.querySelector('img');
-        modalImg.src = img.src;
-        modalImg.alt = img.alt;
+        modalImg.src = img.src; modalImg.alt = img.alt;
         modalImg.style.transform = 'scale(0.7)';
         modalImg.style.opacity = '0';
         modal.classList.add('active');
@@ -498,7 +487,7 @@
         }, 10);
       });
     });
-    document.querySelector('#modalOverlay .closeModal').onclick = function() { closeModal(); };
+    document.querySelector('#modalOverlay .closeModal').onclick = closeModal;
     document.getElementById('modalOverlay').onclick = function(e) { if (e.target === this) closeModal(); };
     document.addEventListener('keydown', function(e) { if (e.key === "Escape") closeModal(); });
     function closeModal() {
@@ -506,28 +495,24 @@
       const modalImg = modal.querySelector('img');
       modalImg.style.transform = 'scale(0.7)';
       modalImg.style.opacity = '0';
-      setTimeout(() => {
-        modal.classList.remove('active');
-        modalImg.src = '';
-      }, 180);
+      setTimeout(() => { modal.classList.remove('active'); modalImg.src = ''; }, 180);
     }
 
-    // Sommerfest Countdown
+    // Sommerfest-Countdown
     function updateSommerfestCountdown() {
-      // Ziel: 30. August 2025, 14:00
-      const target = new Date(2025, 7, 30, 14, 0, 0);
+      const target = new Date(2025, 7, 30, 14, 0, 0); // 30. August 2025, 14:00 Uhr
       const now = new Date();
       let diff = target - now;
       if (diff < 0) {
         document.getElementById('sommerfest-countdown').innerText = "Das Sommerfest läuft!";
         return;
       }
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      diff -= days * 1000 * 60 * 60 * 24;
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      diff -= hours * 1000 * 60 * 60;
-      const mins = Math.floor(diff / (1000 * 60));
-      diff -= mins * 1000 * 60;
+      const days = Math.floor(diff / (1000*60*60*24));
+      diff -= days * 1000*60*60*24;
+      const hours = Math.floor(diff / (1000*60*60));
+      diff -= hours * 1000*60*60;
+      const mins = Math.floor(diff / (1000*60));
+      diff -= mins * 1000*60;
       const secs = Math.floor(diff / 1000);
       document.getElementById('sommerfest-countdown').innerText =
         days.toString().padStart(2, '0') + " Tage " +
@@ -538,7 +523,7 @@
     updateSommerfestCountdown();
     setInterval(updateSommerfestCountdown, 1000);
 
-    // Besucherzähler
+    // Besucherzähler counterapi.dev
     async function updateCounterInfo() {
       const res = await fetch("https://api.counterapi.dev/v1/webi-webermuehle/visits");
       const data = await res.json();
@@ -553,7 +538,6 @@
               "<br>Diesen Monat: " + month.count;
       document.getElementById("besucherinfo").innerHTML = text;
     }
-    // Hochzählen bei Seitenaufruf
     fetch("https://api.counterapi.dev/v1/webi-webermuehle/visits/incr");
     fetch("https://api.counterapi.dev/v1/webi-webermuehle-today/visits/incr");
     fetch("https://api.counterapi.dev/v1/webi-webermuehle-week/visits/incr");
