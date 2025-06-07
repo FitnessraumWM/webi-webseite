@@ -171,6 +171,7 @@
       nav { gap: 0.37em; font-size: 0.92em; flex-wrap: wrap; }
     }
 
+    
     section {
       padding: 3em 1em 1.2em 1em;
       max-width: 1000px;
@@ -273,6 +274,20 @@
     body.dark .sommerfest-timer-container { background: rgba(15,15,15,0.92); }
     body.dark .sommerfest-label { color: #ffe066; }
     body.dark footer { color: #bbb; }
+
+    #scrollTopBtn {
+    text-decoration: none;
+     background: none;
+    border: none;
+    color: #ffe066;
+    padding: 0 0.4em 0 0.1em;
+    font-size: 1.5em;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.12s;
+    outline: none;
+    }
+      #scrollTopBtn:hover { color: #fff700; transform: scale(1.18);}
+    
   </style>
 </head>
 <body>
@@ -289,6 +304,7 @@
     <div class="welcome-headline">Willkommen in der Webermühle</div>
   </header>
   <nav>
+    <a href="#" id="scrollTopBtn" title="Nach oben" style="font-size:1.5em;vertical-align:middle;">⬆️</a>
     <a href="#historie">Historie</a>
     <a href="#partyraum">Partyraum</a>
     <a href="#rooftop">Rooftop</a>
@@ -586,6 +602,12 @@
       fetch("https://api.counterapi.dev/v1/webi-webermuehle-week/visits/incr"),
       fetch("https://api.counterapi.dev/v1/webi-webermuehle-month/visits/incr")
     ]).then(updateCounterInfo);
+
+    document.getElementById('scrollTopBtn').onclick = function(e) {
+    e.preventDefault();
+    window.scrollTo({top: 0, behavior: 'smooth'});
+    };
+
   </script>
 </body>
 </html>
