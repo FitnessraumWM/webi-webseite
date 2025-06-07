@@ -21,24 +21,24 @@
       text-align: center;
       overflow: hidden;
     }
-    .logos-left, .logos-right {
+   .logos-left, .logos-right {
   position: absolute;
-  top: 8px;
-  height: 165px; /* vorher 110px, jetzt 1,5x größer */
+  top: 8px;         /* noch etwas höher für mehr Fläche */
+  height: 180px;    /* vorher 110px, jetzt deutlich größer */
   z-index: 10;
 }
-.logos-left { left: 9px; }
-.logos-right { right: 9px; }
+.logos-left { left: 7px; }
+.logos-right { right: 7px; }
 .logos-left img, .logos-right img { height: 100%; }
 
-/* Mobile Logos 1,5x größer als bisher, mehr Abstand */
+/* Mobile (z.B. unter 650px Breite): */
 @media (max-width: 650px) {
   .logos-left, .logos-right {
-    height: 105px;  /* vorher 70px, jetzt 1,5x größer */
-    top: 4px;
+    height: 110px;   /* vorher 70px, jetzt größer */
+    top: 3px;        /* weiter nach oben, falls nötig */
   }
-  .logos-left { left: 4px; }
-  .logos-right { right: 4px; }
+  .logos-left { left: 3px; }
+  .logos-right { right: 3px; }
 }
 
     /* ======= BANNER (Sommerfest-Timer) ======= */
