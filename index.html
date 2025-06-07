@@ -287,6 +287,31 @@
     outline: none;
     }
       #scrollTopBtn:hover { color: #fff700; transform: scale(1.18);}
+
+    /* --- Downloadbereich und Footer-Links wie Menü gestalten --- */
+#downloads a, footer a {
+  color: #222;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 3px;
+  padding: 0 0.2em;
+  transition: color 0.2s, background 0.2s;
+}
+#downloads a:hover, footer a:hover {
+  color: #fff;
+  background: #222;
+}
+
+/* Darkmode */
+body.dark #downloads a,
+body.dark footer a {
+  color: #fff;
+}
+body.dark #downloads a:hover,
+body.dark footer a:hover {
+  color: #ffe066;
+  background: #333;
+}
     
   </style>
 </head>
