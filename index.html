@@ -267,6 +267,53 @@ body.dark nav button#themeSwitcher:focus {
         justify-content: center;
       }
     }
+
+  .sommerfest-timer-container {
+  position: absolute;
+  left: 17vw;         /* Passt gut auf Handy & Desktop */
+  top: 32vh;          /* Muss ggf. je nach Bild noch feinjustiert werden */
+  transform: rotate(-9deg);    /* Für den schrägen Look */
+  z-index: 6;
+  background: rgba(32,32,32, 0.74);
+  border-radius: 1.7em;
+  box-shadow: 0 0 18px #0007;
+  padding: 1.3em 2.1em;
+  pointer-events: none;  /* Keine Interaktion, nur Anzeige */
+  max-width: 80vw;
+}
+.sommerfest-timer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3em;
+}
+.sommerfest-label {
+  color: #ffdc74;
+  font-size: 1.23em;
+  font-weight: bold;
+  letter-spacing: 0.07em;
+  text-shadow: 1px 2px 4px #000a;
+  margin-bottom: 0.13em;
+}
+.sommerfest-countdown {
+  color: #fff;
+  font-size: 1.6em;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-weight: 900;
+  text-shadow: 1px 2px 8px #000a, 0 0 1em #ffb40344;
+  letter-spacing: 0.07em;
+}
+
+@media (max-width: 650px) {
+  .sommerfest-timer-container {
+    left: 7vw;
+    top: 20vh;
+    padding: 0.9em 1em;
+    font-size: 0.9em;
+    max-width: 95vw;
+  }
+  .sommerfest-countdown { font-size: 1.1em;}
+}
   </style>
 </head>
 <body>
@@ -275,6 +322,12 @@ body.dark nav button#themeSwitcher:focus {
     <a href="#" class="logos-left"><img src="verein-sofe-logo-w.png" alt="Logo SOFE Webi" /></a>
     <a href="#" class="logos-right"><img src="logo-qv-weiss.png" alt="Logo Quartierverein" /></a>
     <div>Willkommen in der Webermühle</div>
+  <div class="sommerfest-timer-container">
+  <div class="sommerfest-timer-content">
+    <span class="sommerfest-label">SOMMERFEST in</span>
+    <span class="sommerfest-countdown" id="sommerfest-countdown">00 Tage 00:00:00</span>
+  </div>
+  </div>
   </header>
 
   <nav>
@@ -547,5 +600,36 @@ body.dark nav button#themeSwitcher:focus {
       }, 180);
     }
   </script>
+
+<script>
+function updateSommerfestCountdown() {
+  // Ziel: 30. August 2025, 14:00 (lokale Zeit)
+  const target = new Date(2025, 7, 30, 14, 0, 0); // Monat 7 = August (JS: 0=bis 11)
+  const now = new Date();
+  let diff = target - now;
+
+  if (diff < 0) {
+    document.getElementById('sommerfest-countdown').innerText = "Das Sommerfest läuft!";
+    return;
+  }
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  diff -= days * 1000 * 60 * 60 * 24;
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  diff -= hours * 1000 * 60 * 60;
+  const mins = Math.floor(diff / (1000 * 60));
+  diff -= mins * 1000 * 60;
+  const secs = Math.floor(diff / 1000);
+
+  document.getElementById('sommerfest-countdown').innerText =
+    days.toString().padStart(2, '0') + " Tage " +
+    hours.toString().padStart(2, '0') + ":" +
+    mins.toString().padStart(2, '0') + ":" +
+    secs.toString().padStart(2, '0');
+}
+updateSommerfestCountdown();
+setInterval(updateSommerfestCountdown, 1000);
+</script>
+  
 </body>
 </html>
