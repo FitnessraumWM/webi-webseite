@@ -268,54 +268,54 @@ body.dark nav button#themeSwitcher:focus {
       }
     }
 
-    .sommerfest-timer-container {
+   .sommerfest-timer-container {
   position: absolute;
-  left: 27vw;              /* Mehr in die Mitte */
-  top: 18vh;               /* Höher auf Desktop */
-  transform: rotate(-9deg);
+  left: 29vw;
+  top: 17vh;
+  transform: rotate(-8deg);
   z-index: 6;
   background: rgba(32,32,32, 0.74);
-  border-radius: 1em;
-  box-shadow: 0 0 14px #0006;
-  padding: 0.15em 0.6em;
+  border-radius: 0.9em;
+  box-shadow: 0 0 10px #0005;
+  padding: 0.11em 0.35em;
   pointer-events: none;
-  max-width: 38vw;
-  font-size: 1.05em;
+  max-width: 25vw;     /* Deutlich schmaler! */
+  font-size: 0.77em;   /* Banner und Text kleiner */
 }
 
 .sommerfest-timer-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.08em;
+  gap: 0.04em;
 }
 
 .sommerfest-label {
   color: #ffdc74;
-  font-size: 1em;
+  font-size: 0.93em;
   font-weight: bold;
   letter-spacing: 0.02em;
   text-shadow: 1px 2px 4px #000a;
-  margin-bottom: 0.03em;
+  margin-bottom: 0.01em;
 }
 
 .sommerfest-countdown {
   color: #fff;
-  font-size: 0.92em;
+  font-size: 0.85em;
   font-family: 'Consolas', 'Courier New', monospace;
   font-weight: 800;
   text-shadow: 1px 2px 8px #000a, 0 0 1em #ffb40344;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
 }
 
-/* Mobil: wie bisher, optimal sichtbar und größer */
+/* Mobil: weiterhin groß und präsent */
 @media (max-width: 900px) {
   .sommerfest-timer-container {
     left: 8vw;
     top: 26vh;
-    padding: 0.18em 0.4em;
-    font-size: 1.05em;
-    max-width: 80vw;
+    padding: 0.15em 0.3em;
+    font-size: 1em;
+    max-width: 82vw;
   }
   .sommerfest-countdown { font-size: 1em; }
 }
@@ -323,9 +323,9 @@ body.dark nav button#themeSwitcher:focus {
   .sommerfest-timer-container {
     left: 7vw;
     top: 19vh;
-    padding: 0.14em 0.24em;
-    font-size: 0.67em;
-    max-width: 89vw;
+    padding: 0.11em 0.18em;
+    font-size: 0.7em;
+    max-width: 93vw;
   }
   .sommerfest-countdown { font-size: 0.59em;}
 }
