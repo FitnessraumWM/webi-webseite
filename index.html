@@ -171,14 +171,14 @@ nav a:hover, nav button:hover {
 }
 
 nav a.icon-btn, nav button.icon-btn {
-  font-size: 1.19em;
+  font-size: 1.15em;
   padding: 0 0.25em;
   color: #ffe066;
   text-decoration: none;
   background: none;
   border: none;
   outline: none;
-  height: 1.55em;
+  height: 1.8em;
   margin-top: 0.01em;
   margin-bottom: 0;
   line-height: 1em;
@@ -365,10 +365,43 @@ body.dark section a:hover {
   </script>
   <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
   </script>
-  
+
+ #google_translate_element {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.2em;
+  margin-right: 0.15em;
+  height: 1.8em;
+  font-size: 1.15em;
+  line-height: 1em;
+  vertical-align: middle;
+}
+
+.goog-te-gadget {
+  font-size: 1.15em !important;
+  height: 1.8em !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.goog-te-combo {
+  font-size: 1em !important;
+  border-radius: 6px !important;
+  padding: 0.08em 0.4em !important;
+  height: 1.7em !important;
+  margin: 0 !important;
+  vertical-align: middle;
+}
+
+/* Optional: Google Branding und "Sprache auswählen"-Text ausblenden */
+.goog-logo-link, .goog-te-gadget span {
+  display: none !important;
+}
+
 </head>
 <body>
-  <div id="google_translate_element" style="position:fixed; top:8px; right:14px; z-index:9999;"></div>
   <header>
     <a href="#" class="logos-left"><img src="verein-sofe-logo-w.png" alt="Logo SOFE Webi" /></a>
     <a href="#" class="logos-right"><img src="logo-qv-weiss.png" alt="Logo Quartierverein" /></a>
@@ -394,6 +427,7 @@ body.dark section a:hover {
   <a href="#downloads">Downloads</a>
   <a href="#kontakt">Kontakt</a>
   <a href="#login">Login</a>
+  <span id="google_translate_element"></span>
   <button id="themeSwitcher" aria-label="Theme wechseln">🌓</button>
   <a href="#" id="scrollTopBtn" class="icon-btn" title="Nach oben">⇧</a>
 </nav>
