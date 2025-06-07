@@ -335,36 +335,6 @@ a[href^="mailto:"]:focus {
   </style>
 </head>
 
-<script>
-async function updateCounterInfo() {
-  const res = await fetch("https://api.counterapi.dev/v1/webi-webermuehle/visits");
-  const data = await res.json();
-
-  // Simple Besucherzahl gesamt
-  let text = "Seitenbesuche gesamt: " + data.count;
-
-  // Tages-/Wochen-/Monatszähler (mit Sub-IDs, zählt unabhängig)
-  const [today, week, month] = await Promise.all([
-    fetch("https://api.counterapi.dev/v1/webi-webermuehle-today/visits").then(r => r.json()),
-    fetch("https://api.counterapi.dev/v1/webi-webermuehle-week/visits").then(r => r.json()),
-    fetch("https://api.counterapi.dev/v1/webi-webermuehle-month/visits").then(r => r.json())
-  ]);
-  text += "<br>Heute: " + today.count +
-          "<br>Diese Woche: " + week.count +
-          "<br>Diesen Monat: " + month.count;
-
-  document.getElementById("besucherinfo").innerHTML = text;
-}
-
-// Beim ersten Seitenaufruf hochzählen
-fetch("https://api.counterapi.dev/v1/webi-webermuehle/visits/incr");
-fetch("https://api.counterapi.dev/v1/webi-webermuehle-today/visits/incr");
-fetch("https://api.counterapi.dev/v1/webi-webermuehle-week/visits/incr");
-fetch("https://api.counterapi.dev/v1/webi-webermuehle-month/visits/incr");
-
-updateCounterInfo();
-</script>
-  
 <body>
 
   <header>
@@ -700,6 +670,36 @@ function updateSommerfestCountdown() {
 }
 updateSommerfestCountdown();
 setInterval(updateSommerfestCountdown, 1000);
+</script>
+
+<script>
+async function updateCounterInfo() {
+  const res = await fetch("https://api.counterapi.dev/v1/webi-webermuehle/visits");
+  const data = await res.json();
+
+  // Simple Besucherzahl gesamt
+  let text = "Seitenbesuche gesamt: " + data.count;
+
+  // Tages-/Wochen-/Monatszähler (mit Sub-IDs, zählt unabhängig)
+  const [today, week, month] = await Promise.all([
+    fetch("https://api.counterapi.dev/v1/webi-webermuehle-today/visits").then(r => r.json()),
+    fetch("https://api.counterapi.dev/v1/webi-webermuehle-week/visits").then(r => r.json()),
+    fetch("https://api.counterapi.dev/v1/webi-webermuehle-month/visits").then(r => r.json())
+  ]);
+  text += "<br>Heute: " + today.count +
+          "<br>Diese Woche: " + week.count +
+          "<br>Diesen Monat: " + month.count;
+
+  document.getElementById("besucherinfo").innerHTML = text;
+}
+
+// Beim ersten Seitenaufruf hochzählen
+fetch("https://api.counterapi.dev/v1/webi-webermuehle/visits/incr");
+fetch("https://api.counterapi.dev/v1/webi-webermuehle-today/visits/incr");
+fetch("https://api.counterapi.dev/v1/webi-webermuehle-week/visits/incr");
+fetch("https://api.counterapi.dev/v1/webi-webermuehle-month/visits/incr");
+
+updateCounterInfo();
 </script>
   
 </body>
