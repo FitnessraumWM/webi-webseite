@@ -267,53 +267,57 @@ body.dark nav button#themeSwitcher:focus {
         justify-content: center;
       }
     }
-
-  .sommerfest-timer-container {
+.sommerfest-timer-container {
   position: absolute;
-  left: 17vw;         /* Passt gut auf Handy & Desktop */
-  top: 32vh;          /* Muss ggf. je nach Bild noch feinjustiert werden */
-  transform: rotate(-9deg);    /* Für den schrägen Look */
+  left: 17vw;
+  top: 34vh;
+  transform: rotate(-9deg);
   z-index: 6;
   background: rgba(32,32,32, 0.74);
-  border-radius: 1.7em;
+  border-radius: 1.1em;
   box-shadow: 0 0 18px #0007;
-  padding: 1.3em 2.1em;
-  pointer-events: none;  /* Keine Interaktion, nur Anzeige */
-  max-width: 80vw;
+  padding: 0.5em 1.3em;
+  pointer-events: none;
+  max-width: 68vw;
 }
+
 .sommerfest-timer-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.3em;
-}
-.sommerfest-label {
-  color: #ffdc74;
-  font-size: 1.23em;
-  font-weight: bold;
-  letter-spacing: 0.07em;
-  text-shadow: 1px 2px 4px #000a;
-  margin-bottom: 0.13em;
-}
-.sommerfest-countdown {
-  color: #fff;
-  font-size: 1.6em;
-  font-family: 'Consolas', 'Courier New', monospace;
-  font-weight: 900;
-  text-shadow: 1px 2px 8px #000a, 0 0 1em #ffb40344;
-  letter-spacing: 0.07em;
+  gap: 0.12em;
 }
 
+.sommerfest-label {
+  color: #ffdc74;
+  font-size: 1.02em;
+  font-weight: bold;
+  letter-spacing: 0.03em;
+  text-shadow: 1px 2px 4px #000a;
+  margin-bottom: 0.08em;
+}
+
+.sommerfest-countdown {
+  color: #fff;
+  font-size: 1.18em;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-weight: 800;
+  text-shadow: 1px 2px 8px #000a, 0 0 1em #ffb40344;
+  letter-spacing: 0.04em;
+}
+
+/* Responsive für kleine Displays */
 @media (max-width: 650px) {
   .sommerfest-timer-container {
-    left: 7vw;
-    top: 20vh;
-    padding: 0.9em 1em;
-    font-size: 0.9em;
-    max-width: 95vw;
+    left: 8vw;
+    top: 18vh;
+    padding: 0.35em 0.7em;
+    font-size: 0.84em;
+    max-width: 90vw;
   }
-  .sommerfest-countdown { font-size: 1.1em;}
+  .sommerfest-countdown { font-size: 0.99em;}
 }
+  
   </style>
 </head>
 <body>
@@ -324,7 +328,7 @@ body.dark nav button#themeSwitcher:focus {
     <div>Willkommen in der Webermühle</div>
   <div class="sommerfest-timer-container">
   <div class="sommerfest-timer-content">
-    <span class="sommerfest-label">SOMMERFEST in</span>
+    <span class="sommerfest-label">nächstes SOMMERFEST in</span>
     <span class="sommerfest-countdown" id="sommerfest-countdown">00 Tage 00:00:00</span>
   </div>
   </div>
