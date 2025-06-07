@@ -268,9 +268,9 @@ body.dark nav button#themeSwitcher:focus {
       }
     }
 
-   .sommerfest-timer-container {
+  .sommerfest-timer-container {
   position: absolute;
-  left: 29vw;
+  left: 37vw;    /* War vorher z.B. 29vw – jetzt viel weiter rechts! */
   top: 17vh;
   transform: rotate(-8deg);
   z-index: 6;
@@ -279,55 +279,8 @@ body.dark nav button#themeSwitcher:focus {
   box-shadow: 0 0 10px #0005;
   padding: 0.11em 0.35em;
   pointer-events: none;
-  max-width: 25vw;     /* Deutlich schmaler! */
-  font-size: 0.77em;   /* Banner und Text kleiner */
-}
-
-.sommerfest-timer-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.04em;
-}
-
-.sommerfest-label {
-  color: #ffdc74;
-  font-size: 0.93em;
-  font-weight: bold;
-  letter-spacing: 0.02em;
-  text-shadow: 1px 2px 4px #000a;
-  margin-bottom: 0.01em;
-}
-
-.sommerfest-countdown {
-  color: #fff;
-  font-size: 0.85em;
-  font-family: 'Consolas', 'Courier New', monospace;
-  font-weight: 800;
-  text-shadow: 1px 2px 8px #000a, 0 0 1em #ffb40344;
-  letter-spacing: 0.02em;
-}
-
-/* Mobil: weiterhin groß und präsent */
-@media (max-width: 900px) {
-  .sommerfest-timer-container {
-    left: 8vw;
-    top: 26vh;
-    padding: 0.15em 0.3em;
-    font-size: 1em;
-    max-width: 82vw;
-  }
-  .sommerfest-countdown { font-size: 1em; }
-}
-@media (max-width: 650px) {
-  .sommerfest-timer-container {
-    left: 7vw;
-    top: 19vh;
-    padding: 0.11em 0.18em;
-    font-size: 0.7em;
-    max-width: 93vw;
-  }
-  .sommerfest-countdown { font-size: 0.59em;}
+  max-width: 25vw;
+  font-size: 0.77em;
 }
 
   </style>
