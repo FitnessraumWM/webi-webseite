@@ -23,8 +23,8 @@
     }
    .logos-left, .logos-right {
   position: absolute;
-  top: 8px;         /* noch etwas höher für mehr Fläche */
-  height: 180px;    /* vorher 110px, jetzt deutlich größer */
+  top: 10px;         /* noch etwas höher für mehr Fläche */
+  height: 210px;    /* vorher 110px, jetzt deutlich größer */
   z-index: 10;
 }
 .logos-left { left: 7px; }
@@ -34,8 +34,8 @@
 /* Mobile (z.B. unter 650px Breite): */
 @media (max-width: 650px) {
   .logos-left, .logos-right {
-    height: 110px;   /* vorher 70px, jetzt größer */
-    top: 3px;        /* weiter nach oben, falls nötig */
+    height: 140px;   /* vorher 70px, jetzt größer */
+    top: 4px;        /* weiter nach oben, falls nötig */
   }
   .logos-left { left: 3px; }
   .logos-right { right: 3px; }
@@ -95,16 +95,16 @@
     }
     @media (max-width: 650px) {
       .sommerfest-timer-container {
-        font-size: 0.67em;
-        max-width: 99vw;
-        min-width: 1px;
-        left: 50%;
-        top: 22vh;
-        padding: 0.55em 0.5em 0.75em 0.5em;
-      }
-      .sommerfest-label { font-size: 1.1em; }
-      .sommerfest-countdown { font-size: 1em; }
-    }
+    font-size: 1em;               /* vorher 0.67em, jetzt größer */
+    max-width: 98vw;
+    min-width: 1px;
+    left: 50%;
+    top: 18vh;                    /* etwas tiefer, wenn du magst */
+    padding: 1.1em 0.7em 1.2em 0.7em; /* mehr Platz innen */
+  }
+  .sommerfest-label { font-size: 1.4em; }
+  .sommerfest-countdown { font-size: 1.17em; }
+}
     /* ======= Willkommen-Schrift ======= */
     .welcome-headline {
   position: absolute;
