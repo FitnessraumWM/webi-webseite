@@ -314,79 +314,40 @@ nav button#themeSwitcher:focus {
     body.dark .sommerfest-label { color: #ffe066; }
     body.dark footer { color: #bbb; }
 
-    /* --- Downloadbereich und Footer-Links wie Menü gestalten --- */
-#downloads a, footer a {
+   #downloads a, footer a, #login a, section a {
   color: #222;
   text-decoration: none;
   font-weight: bold;
   border-radius: 3px;
   padding: 0 0.2em;
-  transition: color 0.2s, background 0.2s;
+  transition: color 0.2s;
 }
-#downloads a:hover, footer a:hover {
-  color: #fff;
-  background: #222;
+
+#downloads a:hover,
+footer a:hover,
+#login a:hover,
+section a:hover {
+  color: #ffe066;
+  text-decoration: underline;
+  /* Kein background! */
 }
 
 /* Darkmode */
 body.dark #downloads a,
-body.dark footer a {
-  color: #fff;
-}
-body.dark #downloads a:hover,
-body.dark footer a:hover {
-  color: #ffe066;
-  background: #333;
-}
-
-/* Jetzt kommt #login a */
-#login a {
-  color: #222;
-  text-decoration: none;
-  font-weight: bold;
-  border-radius: 3px;
-  padding: 0 0.2em;
-  transition: color 0.2s, background 0.2s;
-}
-#login a:hover {
-  color: #fff;
-  background: #222;
-}
-/* Darkmode */
-body.dark #login a {
-  color: #fff;
-}
-body.dark #login a:hover {
-  color: #ffe066;
-  background: #333;
-}
-
- @media (max-width: 650px) {
-    header {
-      min-height: 79vh; /* oder dein Lieblingswert */
-    }
-  }
-section a {
-  color: #222;
-  text-decoration: none;
-  font-weight: bold;
-  border-radius: 3px;
-  padding: 0 0.2em;
-  transition: color 0.2s, background 0.2s;
-}
-section a:hover {
-  color: #fff;
-  background: #222;
-}
-
-/* Darkmode */
+body.dark footer a,
+body.dark #login a,
 body.dark section a {
   color: #fff;
 }
+body.dark #downloads a:hover,
+body.dark footer a:hover,
+body.dark #login a:hover,
 body.dark section a:hover {
   color: #ffe066;
-  background: #333;
+  text-decoration: underline;
+  /* Kein background! */
 }
+
 </style>
   </style>
 </head>
