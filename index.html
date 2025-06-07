@@ -15,7 +15,7 @@
     }
     header {
       background: url('webermuehle-gesamt.jpg') center/cover no-repeat;
-      min-height: 82vh;    /* statt 92vh – weniger Platz oben! */
+      min-height: 92vh;    /* wenn kleiner, dann hauptbild dünner */
       color: white;
       position: relative;
       text-align: center;
@@ -41,6 +41,11 @@
   .logos-right { right: 3px; }
 }
 
+  @media (max-width: 650px) {
+  header {
+    min-height: 79vh;  /* Je kleiner die Zahl, desto höher rückt das Menü auf dem Handy nach oben. */
+  }
+}
     /* ======= BANNER (Sommerfest-Timer) ======= */
     .sommerfest-timer-container {
       position: absolute;
