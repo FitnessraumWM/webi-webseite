@@ -276,17 +276,21 @@
     body.dark footer { color: #bbb; }
 
     #scrollTopBtn {
-    text-decoration: none;
-     background: none;
-    border: none;
-    color: #ffe066;
-    padding: 0 0.4em 0 0.1em;
-    font-size: 1.5em;
-    cursor: pointer;
-    transition: color 0.2s, transform 0.12s;
-    outline: none;
-    }
-      #scrollTopBtn:hover { color: #fff700; transform: scale(1.18);}
+  text-decoration: none;
+  background: none;
+  border: none;
+  color: #ffe066;
+  padding: 0.1em 0.2em; /* gleich wie themeSwitcher */
+  font-size: 1.1em;      /* gleich wie themeSwitcher */
+  cursor: pointer;
+  transition: color 0.2s, transform 0.12s;
+  outline: none;
+}
+
+#scrollTopBtn:hover {
+  color: #fff700;
+  transform: scale(1.18);
+}
 
     /* --- Downloadbereich und Footer-Links wie Menü gestalten --- */
 #downloads a, footer a {
