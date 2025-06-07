@@ -580,25 +580,31 @@
   setInterval(updateSommerfestCountdown, 1000);
 
   // Besucherzähler counterapi.dev
-  async function updateCounterInfo() {
-    const res = await fetch("https://api.counterapi.dev/v1/webi-webermuehle/visits");
-    const data = await res.json();
-    let text = "Seitenbesuche gesamt: " + data.count;
-    const [today, week, month] = await Promise.all([
-      fetch("https://api.counterapi.dev/v1/webi-webermuehle-today/visits").then(r => r.json()),
-      fetch("https://api.counterapi.dev/v1/webi-webermuehle-week/visits").then(r => r.json()),
-      fetch("https://api.counterapi.dev/v1/webi-webermuehle-month/visits").then(r => r.json())
-    ]);
-    text += "<br>Heute: " + today.count +
-            "<br>Diese Woche: " + week.count +
-            "<br>Diesen Monat: " + month.count;
-    document.getElementById("besucherinfo").innerHTML = text;
-  }
-  fetch("https://api.counterapi.dev/v1/webi-webermuehle/visits/incr");
-  fetch("https://api.counterapi.dev/v1/webi-webermuehle-today/visits/incr");
-  fetch("https://api.counterapi.dev/v1/webi-webermuehle-week/visits/incr");
-  fetch("https://api.counterapi.dev/v1/webi-webermuehle-month/visits/incr");
-  updateCounterInfo();
+  <div id="besucherinfo">Lade Besucherzahlen...</div>
+<script>
+async function updateCounterInfo() {
+  // Parallel abfragen
+  const [all, today, week, month] = await Promise.all([
+    fetch("https://api.counterapi.dev/v1/webi-webermuehle/visits").then(r => r.json()),
+    fetch("https://api.counterapi.dev/v1/webi-webermuehle-today/visits").then(r => r.json()),
+    fetch("https://api.counterapi.dev/v1/webi-webermuehle-week/visits").then(r => r.json()),
+    fetch("https://api.counterapi.dev/v1/webi-webermuehle-month/visits").then(r => r.json())
+  ]);
+  // Anzeigen
+  let text = `Seitenbesuche gesamt: ${all.count}<br>
+              Heute: ${today.count}<br>
+              Diese Woche: ${week.count}<br>
+              Diesen Monat: ${month.count}`;
+  document.getElementById("besucherinfo").innerHTML = text;
+}
+
+// Zähler hochzählen (aber erst DANN abfragen!)
+Promise.all([
+  fetch("https://api.counterapi.dev/v1/webi-webermuehle/visits/incr"),
+  fetch("https://api.counterapi.dev/v1/webi-webermuehle-today/visits/incr"),
+  fetch("https://api.counterapi.dev/v1/webi-webermuehle-week/visits/incr"),
+  fetch("https://api.counterapi.dev/v1/webi-webermuehle-month/visits/incr")
+]).then(updateCounterInfo);
 </script>
 </body>
 </html>
