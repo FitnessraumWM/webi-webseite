@@ -75,52 +75,57 @@
     nav button#themeSwitcher:hover { background: #444; color: #ffd700; }
 
     .sommerfest-timer-container {
-      position: absolute;
-      left: 50%;
-      top: 30vh;
-      transform: translate(-50%, 0) rotate(-12deg);
-      z-index: 6;
-      background: rgba(25,25,25,0.85);
-      border-radius: 1.2em;
-      box-shadow: 0 0 16px #000a;
-      padding: 0.7em 2.2em 1em 2.2em;
-      color: #fff;
-      min-width: 320px;
-      max-width: 580px;
-      width: 44vw;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .sommerfest-label {
-      color: #ffe066;
-      font-size: 1.35em;
-      font-weight: 900;
-      letter-spacing: 0.02em;
-      text-shadow: 1px 2px 6px #000c;
-      margin-bottom: 0.25em;
-    }
-    .sommerfest-countdown {
-      font-size: 1.16em;
-      color: #fff;
-      font-family: 'Consolas', monospace;
-      font-weight: 800;
-      letter-spacing: 0.03em;
-      text-shadow: 1px 1px 10px #000b, 0 0 1em #ffe06633;
-      margin-top: 0.2em;
-    }
-
-    @media (max-width: 900px) {
-      .sommerfest-timer-container {
-        top: 20vh;
-        width: 85vw;
-        min-width: 0;
-        max-width: 95vw;
-        font-size: 0.97em;
-        padding: 0.3em 0.5em 0.5em 0.5em;
-      }
-    }
-
+  position: absolute;
+  left: 26vw;
+  top: 27vh;
+  z-index: 7;
+  background: rgba(30,30,30,0.81);
+  border-radius: 1.2em;
+  box-shadow: 0 0 12px #0009;
+  padding: 0.5em 2.4em 0.4em 2.4em;
+  max-width: 32vw;
+  min-width: 180px;
+  color: #fff;
+  transform: rotate(-10deg);
+}
+.sommerfest-label {
+  color: #ffe066;
+  font-size: 1.12em;
+  font-weight: 800;
+  text-shadow: 1px 2px 6px #000d;
+  display: block;
+  margin-bottom: 0.13em;
+  letter-spacing: 0.04em;
+}
+.sommerfest-label .emoji { font-size: 1.25em; vertical-align: middle; }
+.sommerfest-countdown {
+  color: #fff;
+  font-size: 1.05em;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-weight: 800;
+  text-shadow: 1px 2px 10px #000b, 0 0 1em #ffb40344;
+  letter-spacing: 0.03em;
+}
+@media (max-width: 900px) {
+  .sommerfest-timer-container {
+    left: 7vw;
+    top: 19vh;
+    max-width: 83vw;
+    padding: 0.4em 0.8em;
+    font-size: 0.87em;
+  }
+  .sommerfest-label { font-size: 1em; }
+  .sommerfest-countdown { font-size: 0.95em; }
+  .sommerfest-label .emoji { font-size: 1.1em; }
+}
+@media (max-width: 600px) {
+  .sommerfest-timer-container {
+    left: 3vw;
+    top: 12vh;
+    max-width: 94vw;
+    font-size: 0.73em;
+  }
+}
     section {
       padding: 3em 1em 1.2em 1em;
       max-width: 1000px;
@@ -251,10 +256,12 @@
     <a href="#" class="logos-left"><img src="verein-sofe-logo-w.png" alt="Logo SOFE Webi" /></a>
     <a href="#" class="logos-right"><img src="logo-qv-weiss.png" alt="Logo Quartierverein" /></a>
     <div style="width:100%">
-      <div class="sommerfest-timer-container" id="sommerfest-timer">
-        <span class="sommerfest-label">nächstes <b>SOMMERFEST</b> in</span>
-        <span class="sommerfest-countdown" id="sommerfest-countdown">00 Tage 00:00:00</span>
-      </div>
+      <div class="sommerfest-timer-container">
+      <div class="sommerfest-timer-content">
+      <span class="sommerfest-label">☀️ nächstes <b>SOMMERFEST</b> in <span class="emoji">🥳</span></span>
+      <span class="sommerfest-countdown" id="sommerfest-countdown">00 Tage 00:00:00</span>
+    </div>
+  
       <div style="font-size:2.3rem; font-weight:900; margin-top:35vh; letter-spacing:0.03em; text-shadow:2px 2px 8px #000c;">Willkommen in der Webermühle</div>
     </div>
   </header>
@@ -500,28 +507,29 @@
 
     // Sommerfest-Countdown
     function updateSommerfestCountdown() {
-      const target = new Date(2025, 7, 30, 14, 0, 0); // 30. August 2025, 14:00 Uhr
-      const now = new Date();
-      let diff = target - now;
-      if (diff < 0) {
-        document.getElementById('sommerfest-countdown').innerText = "Das Sommerfest läuft!";
-        return;
-      }
-      const days = Math.floor(diff / (1000*60*60*24));
-      diff -= days * 1000*60*60*24;
-      const hours = Math.floor(diff / (1000*60*60));
-      diff -= hours * 1000*60*60;
-      const mins = Math.floor(diff / (1000*60));
-      diff -= mins * 1000*60;
-      const secs = Math.floor(diff / 1000);
-      document.getElementById('sommerfest-countdown').innerText =
-        days.toString().padStart(2, '0') + " Tage " +
-        hours.toString().padStart(2, '0') + ":" +
-        mins.toString().padStart(2, '0') + ":" +
-        secs.toString().padStart(2, '0');
-    }
-    updateSommerfestCountdown();
-    setInterval(updateSommerfestCountdown, 1000);
+  // 30. August 2025, 14:00
+  const target = new Date(2025, 7, 30, 14, 0, 0); // JS: 0=Januar, 7=August
+  const now = new Date();
+  let diff = target - now;
+  if (diff < 0) {
+    document.getElementById('sommerfest-countdown').innerText = "Das Sommerfest läuft!";
+    return;
+  }
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  diff -= days * 1000 * 60 * 60 * 24;
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  diff -= hours * 1000 * 60 * 60;
+  const mins = Math.floor(diff / (1000 * 60));
+  diff -= mins * 1000 * 60;
+  const secs = Math.floor(diff / 1000);
+  document.getElementById('sommerfest-countdown').innerText =
+    days.toString().padStart(2, '0') + " Tage " +
+    hours.toString().padStart(2, '0') + ":" +
+    mins.toString().padStart(2, '0') + ":" +
+    secs.toString().padStart(2, '0');
+}
+updateSommerfestCountdown();
+setInterval(updateSommerfestCountdown, 1000);
 
     // Besucherzähler counterapi.dev
     async function updateCounterInfo() {
