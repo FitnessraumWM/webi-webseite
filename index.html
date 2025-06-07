@@ -23,24 +23,23 @@
     }
     .logos-left, .logos-right {
   position: absolute;
-  top: 18px;
-  height: 110px;
+  top: 8px;
+  height: 165px; /* vorher 110px, jetzt 1,5x größer */
   z-index: 10;
 }
-.logos-left { left: 14px; }
-.logos-right { right: 14px; }
+.logos-left { left: 9px; }
+.logos-right { right: 9px; }
 .logos-left img, .logos-right img { height: 100%; }
 
-/* Mobile Logos deutlich grösser und mit mehr Abstand */
+/* Mobile Logos 1,5x größer als bisher, mehr Abstand */
 @media (max-width: 650px) {
   .logos-left, .logos-right {
-    height: 70px;
-    top: 10px;
+    height: 105px;  /* vorher 70px, jetzt 1,5x größer */
+    top: 4px;
   }
-  .logos-left { left: 9px; }
-  .logos-right { right: 9px; }
+  .logos-left { left: 4px; }
+  .logos-right { right: 4px; }
 }
-
 
     /* ======= BANNER (Sommerfest-Timer) ======= */
     .sommerfest-timer-container {
