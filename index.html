@@ -138,52 +138,81 @@
   }
 }
     nav {
-      position: sticky;
-      top: 0;
-      background: #2d2d2d;
-      color: white;
-      display: flex;
-      justify-content: center;
-      gap: 2em;
-      font-size: 1.13em;
-      font-weight: bold;
-      padding: 0.5em 1em 0.5em 1em;
-      z-index: 100;
-      transition: top 0.44s cubic-bezier(.77,0,.18,1.05);
-    }
-    nav a {
-      color: white;
-      text-decoration: none;
-      transition: color 0.2s;
-      border-radius: 3px;
-      padding: 0 0.2em;
-    }
-    nav a:hover {
-      color: #ffe066;
-      text-decoration: underline;
-    }
-nav a.icon-btn, nav button#themeSwitcher {
-  display: inline-block;
-  vertical-align: middle;
-  line-height: 1.15em;
-  font-size: 1.19em;
-  margin-top: -0.11em;
-  margin-bottom: -0.09em;
-  padding-top: 0.04em;
+  position: sticky;
+  top: 0;
+  background: #2d2d2d;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2em;
+  font-size: 1.13em;
+  font-weight: bold;
+  padding: 0.5em 1em 0.5em 1em;
+  z-index: 100;
+  transition: top 0.44s cubic-bezier(.77,0,.18,1.05);
 }
-
-nav a.icon-btn {
-  padding-left: 0.1em;
-  padding-right: 0.11em;
-  color: #ffe066;
+nav a, nav button {
+  color: white;
+  text-decoration: none;
   background: none;
   border: none;
+  font: inherit;
+  border-radius: 3px;
+  padding: 0 0.2em;
   cursor: pointer;
-  transition: color 0.2s, transform 0.12s;
+  transition: color 0.2s;
   outline: none;
+  display: inline-flex;
+  align-items: center;
+  height: 1.8em;
 }
-nav a.icon-btn:hover { color: #fff700; transform: scale(1.19);}
-    
+nav a:hover, nav button:hover {
+  color: #ffe066;
+  text-decoration: underline;
+}
+
+nav a.icon-btn, nav button.icon-btn {
+  font-size: 1.19em;
+  padding: 0 0.25em;
+  color: #ffe066;
+  text-decoration: none;
+  background: none;
+  border: none;
+  outline: none;
+  height: 1.55em;
+  margin-top: 0.01em;
+  margin-bottom: 0;
+  line-height: 1em;
+  vertical-align: middle;
+  transition: color 0.19s, transform 0.13s;
+}
+nav a.icon-btn:hover, nav button.icon-btn:hover {
+  color: #fff700;
+  transform: scale(1.19);
+  background: none;
+  text-decoration: none;
+}
+nav button#themeSwitcher {
+  font-size: 1.15em;
+  margin-left: 0.18em;
+  padding: 0 0.20em 0 0.16em;
+  color: #ffe066;
+  background: none;
+}
+nav button#themeSwitcher:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Menü auf kleinen Geräten */
+@media (max-width: 900px) {
+  nav { gap: 1em; font-size: 0.99em; }
+}
+@media (max-width: 570px) {
+  nav { gap: 0.37em; font-size: 0.88em; flex-wrap: wrap; }
+}
+  
     section {
       padding: 3em 1em 1.2em 1em;
       max-width: 1000px;
@@ -350,19 +379,20 @@ body.dark #login a:hover {
     <div class="welcome-headline">Willkommen in der Webermühle</div>
   </header>
   <nav>
-    <a href="#historie">Historie</a>
-    <a href="#partyraum">Partyraum</a>
-    <a href="#rooftop">Rooftop</a>
-    <a href="#fitness">Fitnessraum</a>
-    <a href="#spielgruppe">Spielgruppe</a>
-    <a href="#vereine">Vereine</a>
-    <a href="#sommerfest">Sommerfest</a>
-    <a href="#kontakt">Kontakt</a>
-    <a href="#downloads">Downloads</a>
-    <a href="#login">Login</a>
-    <button id="themeSwitcher" aria-label="Theme wechseln">🌓</button>
-    <a href="#" id="scrollTopBtn" class="icon-btn" title="Nach oben">⇧</a>
-  </nav>
+  <a href="#historie">Historie</a>
+  <a href="#partyraum">Partyraum</a>
+  <a href="#rooftop">Rooftop</a>
+  <a href="#fitness">Fitnessraum</a>
+  <a href="#spielgruppe">Spielgruppe</a>
+  <a href="#vereine">Vereine</a>
+  <a href="#sommerfest">Sommerfest</a>
+  <a href="#kontakt">Kontakt</a>
+  <a href="#downloads">Downloads</a>
+  <a href="#login">Login</a>
+  <button id="themeSwitcher" aria-label="Theme wechseln" class="icon-btn">🌓</button>
+  <a href="#" id="scrollTopBtn" class="icon-btn" title="Nach oben">⇧</a>
+</nav>
+
 
   <!-- ===== SECTIONS, GALLERIES, ALLE TEXTE ===== -->
   <section id="historie">
