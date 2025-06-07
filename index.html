@@ -105,17 +105,18 @@
 }
 
     nav {
-      position: sticky; top: 0;
-      background: #2d2d2d;
-      color: white;
-      display: flex;
-      justify-content: center;
-      gap: 2em;
-      font-size: 1.2em;
-      font-weight: bold;
-      padding: 0.5em 1em 0.5em 1em;
-      z-index: 10;
-      transition: top 0.7s cubic-bezier(.77,0,.18,1.05);
+  position: sticky;
+  top: 0;
+  background: #2d2d2d;
+  color: white;
+  display: flex;
+  justify-content: center;
+  gap: 2em;
+  font-size: 1.2em;
+  font-weight: bold;
+  padding: 0.5em 1em 0.5em 1em;
+  z-index: 100;
+  transition: top 0.44s cubic-bezier(.77,0,.18,1.05); /* <--- */
     }
     nav a {
       color: white;
@@ -468,17 +469,40 @@
 <!-- Scripte -->
 <script>
   // Menü Hide on Scroll
+  <script>
+  // Menü verschwindet beim Scroll nach unten, taucht beim Hochscrollen auf
   let lastScrollY = window.scrollY;
   let nav = document.querySelector('nav');
-  let navHidden = false, navHeight = nav.offsetHeight;
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > lastScrollY && window.scrollY > navHeight) {
-      if (!navHidden) { nav.style.top = `-${navHeight+30}px`; navHidden = true; }
+  let navHidden = false;
+  let ticking = false;
+  let navHeight = nav.offsetHeight;
+
+  function handleNavScroll() {
+    if (window.scrollY > lastScrollY && window.scrollY > navHeight + 10) {
+      // Runterscrollen: Menü verstecken
+      if (!navHidden) {
+        nav.style.top = `-${navHeight + 20}px`;
+        navHidden = true;
+      }
     } else {
-      if (navHidden) { nav.style.top = '0'; navHidden = false; }
+      // Hochscrollen: Menü zeigen
+      if (navHidden) {
+        nav.style.top = '0';
+        navHidden = false;
+      }
     }
     lastScrollY = window.scrollY;
+    ticking = false;
+  }
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      window.requestAnimationFrame(handleNavScroll);
+      ticking = true;
+    }
   });
+</script>
+
 
   // Theme Switcher inkl. Logo-Wechsel
   const themeBtn = document.getElementById('themeSwitcher');
