@@ -5,96 +5,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Verein Webermühle - Klosterrüti</title>
   <style>
-    :root {
-      --nav-height: 58px;
-    }
     html, body {
       margin: 0;
-      padding: 0;
       font-family: sans-serif;
+      scroll-behavior: smooth;
       background: #fff;
       color: #222;
-      scroll-behavior: smooth;
     }
-
-    /* =======================
-          HEADER & LOGOS
-    ======================== */
     header {
       background: url('webermuehle-gesamt.jpg') center/cover no-repeat;
       height: 90vh;
-      color: #fff;
-      position: relative;
+      color: white;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: center;
+      font-size: 3em;
+      text-shadow: 2px 2px 5px black;
+      position: relative;
       text-align: center;
+      flex-direction: column;
     }
     .logos-left, .logos-right {
       position: absolute;
       top: 20px;
-      height: 160px;
-      z-index: 3;
+      height: 180px;
+      z-index: 2;
     }
     .logos-left { left: 20px; }
     .logos-right { right: 20px; }
     .logos-left img, .logos-right img {
       height: 100%;
+      cursor: pointer;
+      transition: transform 0.3s;
       user-select: none;
-      pointer-events: none;
     }
-
-    /* =======================
-            TIMER-BANNER
-    ======================== */
-    .sommerfest-timer-container {
-      position: absolute;
-      left: 14vw;
-      top: 34vh;     /* Feinjustierung: Je kleiner, desto höher */
-      transform: rotate(-10deg);
-      z-index: 6;
-      background: rgba(30,30,30,0.82);
-      border-radius: 1.2em;
-      box-shadow: 0 0 14px #0007;
-      padding: 0.3em 1.2em;
-      max-width: 66vw;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    .logos-left img:hover, .logos-right img:hover {
+      transform: scale(1.05);
     }
-    .sommerfest-label {
-      color: #ffe067;
-      font-size: 1.18em;
-      font-weight: 900;
-      letter-spacing: 0.01em;
-      text-shadow: 1px 2px 6px #000d;
-      margin-bottom: 0.18em;
-      margin-top: 0.05em;
-    }
-    .sommerfest-countdown {
-      color: #fff;
-      font-size: 1.04em;
-      font-family: 'Consolas', 'Courier New', monospace;
-      font-weight: 700;
-      text-shadow: 1px 2px 10px #000b, 0 0 1em #ffb40344;
-      letter-spacing: 0.03em;
-    }
-
-    /* Willkommen */
-    header > div:not(.sommerfest-timer-container) {
-      margin-top: 38vh;
-      font-size: 2.8em;
-      font-weight: 700;
-      text-shadow: 2px 2px 6px #000b;
-      z-index: 1;
-      position: relative;
-    }
-
-    /* =======================
-               NAV
-    ======================== */
     nav {
       position: sticky;
       top: 0;
@@ -105,48 +52,45 @@
       flex-wrap: wrap;
       justify-content: center;
       gap: 1em;
-      padding: 0.48em 1em;
-      z-index: 20;
+      padding: 0.45em 1em;
+      z-index: 10;
     }
     nav a {
       color: white;
       text-decoration: none;
       font-weight: bold;
-      line-height: 1.45;
-      font-size: 1.14em;
-      transition: color .2s;
-      position: relative;
-    }
-    nav a:hover,
-    nav a:focus {
-      color: #ffd700;
-      text-decoration: underline solid #ffd700 0.12em;
-      text-underline-offset: 4px;
+      line-height: 1.4;
     }
     nav button#themeSwitcher {
       background: none;
       border: none;
       color: #fff;
-      font-size: 1.22em;
+      font-size: 1.15em;
       cursor: pointer;
-      margin-left: 0.5em;
-      border-radius: 0.32em;
+      font-weight: bold;
+      margin-left: 0.45em;
+      padding: 0 0.18em;
+      border-radius: 0.3em;
+      outline: none;
       vertical-align: middle;
-      padding: 0 0.2em;
       line-height: 1.1;
-      height: 1.4em;
+      height: 1.25em;
       transition: color 0.22s, background 0.22s;
-      display: flex; align-items: center; justify-content: center;
     }
     nav button#themeSwitcher:hover,
     nav button#themeSwitcher:focus {
       background: #444;
       color: #ffd700;
     }
-
-    /* =======================
-            SECTIONS
-    ======================== */
+    body.dark nav button#themeSwitcher {
+      color: #ffe066;
+      background: none;
+    }
+    body.dark nav button#themeSwitcher:hover,
+    body.dark nav button#themeSwitcher:focus {
+      background: #333;
+      color: #ffe066;
+    }
     section {
       padding: 4em 1em;
       max-width: 1000px;
@@ -156,10 +100,73 @@
       border-bottom: 2px solid #ccc;
       padding-bottom: 0.5em;
     }
-
-    /* =======================
-        GALLERY + MODAL
-    ======================== */
+    /* --- Sommerfest Timer --- */
+    .sommerfest-timer-container {
+      position: absolute;
+      left: 19vw;
+      top: 32vh;
+      transform: rotate(-10deg);
+      z-index: 3;
+      background: rgba(30,30,30,0.84);
+      border-radius: 1.2em;
+      box-shadow: 0 0 14px #0007;
+      padding: 0.35em 1.2em 0.55em 1.2em;
+      max-width: 58vw;
+      color: #fff;
+      text-align: center;
+    }
+    .sommerfest-label {
+      color: #ffe067;
+      font-size: 1.25em;
+      font-weight: 900;
+      letter-spacing: 0.03em;
+      text-shadow: 1px 2px 6px #000d;
+      margin-bottom: 0.13em;
+      display: block;
+    }
+    .sommerfest-countdown {
+      color: #fff;
+      font-size: 1.2em;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-weight: 800;
+      text-shadow: 1px 2px 10px #000b, 0 0 1em #ffb40344;
+      letter-spacing: 0.03em;
+      margin-top: 0.5em;
+      display: block;
+    }
+    @media (max-width: 1000px) {
+      .sommerfest-timer-container {
+        left: 10vw;
+        top: 20vh;
+        max-width: 80vw;
+        font-size: 0.95em;
+      }
+    }
+    @media (max-width: 700px) {
+      .logos-left, .logos-right {
+        height: 100px;
+        top: 10px;
+      }
+      nav {
+        flex-direction: column;
+        gap: 0.5em;
+      }
+      .sommerfest-timer-container {
+        left: 5vw;
+        top: 20vh;
+        max-width: 90vw;
+        padding: 0.18em 0.3em 0.5em 0.3em;
+        font-size: 0.9em;
+      }
+      .gallery {
+        flex-direction: column;
+        align-items: center;
+      }
+      .spielgruppe-logo {
+        justify-content: center;
+      }
+    }
+    /* --- Galerie Bilder --- */
     .gallery {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -168,6 +175,7 @@
     .gallery img {
       width: 100%;
       aspect-ratio: 1/1;
+      height: auto;
       object-fit: cover;
       border-radius: 8px;
       cursor: zoom-in;
@@ -177,44 +185,7 @@
       box-shadow: 0 0 16px #444b;
       transform: scale(1.07);
     }
-    /* Modal */
-    #modalOverlay {
-      display: none;
-      position: fixed;
-      z-index: 10000;
-      left: 0; top: 0; width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.85);
-      align-items: center;
-      justify-content: center;
-    }
-    #modalOverlay.active { display: flex; }
-    #modalOverlay img {
-      max-width: 90vw; max-height: 85vh;
-      border-radius: 12px;
-      box-shadow: 0 0 30px #000b;
-      background: #fff;
-      object-fit: contain;
-      transform: scale(0.7);
-      opacity: 0;
-      transition: transform 0.23s cubic-bezier(.22,1,.36,1.07), opacity 0.18s;
-    }
-    #modalOverlay.active img {
-      transform: scale(1.0); opacity: 1;
-    }
-    #modalOverlay .closeModal {
-      position: absolute;
-      top: 30px; right: 45px;
-      font-size: 3rem;
-      color: #fff;
-      cursor: pointer;
-      font-family: Arial, sans-serif;
-      z-index: 10;
-      user-select: none;
-    }
-
-    /* =======================
-        LOGO SPIELGRUPPE
-    ======================== */
+    /* --- Spielgruppe Logo --- */
     .spielgruppe-logo {
       display: flex;
       justify-content: flex-start;
@@ -222,37 +193,27 @@
       margin-top: 0.5em;
     }
     .spielgruppe-logo img {
-      max-height: 150px;
+      max-height: 110px;
       height: auto;
       width: auto;
       display: block;
     }
-
-    /* =======================
-            CONTACT-LINKS
-    ======================== */
-    .contact-link,
-    a[href^="mailto:"],
-    a[href^="tel:"] {
+    /* --- Kontakt Links (Telefon/Mail) --- */
+    .contact-link, a[href^="mailto:"], a[href^="tel:"] {
       color: inherit !important;
-      text-decoration: underline dotted #aaa;
+      text-decoration: underline dotted #aaa !important;
       font-weight: bold;
       cursor: pointer;
-      transition: color .18s;
+      transition: color 0.16s;
     }
-    .contact-link:hover,
-    a[href^="mailto:"]:hover,
-    a[href^="tel:"]:hover {
-      color: #888;
-      text-decoration: underline solid #888;
+    .contact-link:hover, a[href^="mailto:"]:hover, a[href^="tel:"]:hover {
+      color: #888 !important;
+      text-decoration: underline solid #888 !important;
     }
-
-    /* =======================
-              LOGIN-LINKS
-    ======================== */
+    /* --- Login Links --- */
     .login-links {
       text-align: center;
-      font-size: 1.18em;
+      font-size: 1.2em;
     }
     .login-links a {
       display: inline-block;
@@ -264,66 +225,82 @@
     .login-links a:hover {
       text-decoration: underline;
     }
-
-    /* =======================
-            FOOTER
-    ======================== */
+    /* --- Modal für Bildvorschau --- */
+    #modalOverlay {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.85);
+      align-items: center;
+      justify-content: center;
+    }
+    #modalOverlay.active { display: flex; }
+    #modalOverlay img {
+      max-width: 90vw;
+      max-height: 85vh;
+      border-radius: 12px;
+      box-shadow: 0 0 30px #000b;
+      background: #fff;
+      object-fit: contain;
+      transform: scale(0.7);
+      opacity: 0;
+      transition: transform 0.23s cubic-bezier(.22,1,.36,1.07), opacity 0.18s;
+    }
+    #modalOverlay.active img {
+      transform: scale(1.0);
+      opacity: 1;
+    }
+    #modalOverlay .closeModal {
+      position: absolute;
+      top: 30px; right: 45px;
+      font-size: 3rem;
+      color: #fff;
+      cursor: pointer;
+      font-family: Arial, sans-serif;
+      z-index: 10;
+      user-select: none;
+    }
+    /* --- Footer --- */
     footer {
       background: #f2f2f2;
       padding: 2em 1em;
       text-align: center;
-      font-size: 0.99em;
+      font-size: 0.9em;
+      color: #222;
     }
-    #besucherinfo {
-      margin-bottom: 0.3em;
-      color: #888;
-      font-size: 0.97em;
+    /* --- Darkmode --- */
+    body.dark {
+      background: #181a1b;
+      color: #ddd;
     }
-
-    /* =======================
-         RESPONSIVE DESIGN
-    ======================== */
-    @media (max-width: 900px) {
-      .sommerfest-timer-container {
-        left: 8vw; top: 32vh; max-width: 90vw; font-size: 0.97em;
-      }
-      header > div:not(.sommerfest-timer-container) {
-        margin-top: 35vh; font-size: 2.1em;
-      }
-      .logos-left, .logos-right { height: 110px; top: 10px; }
-      nav { flex-direction: column; gap: 0.5em; }
-      .spielgruppe-logo { justify-content: center; }
+    body.dark header {
+      color: #fff;
+      text-shadow: 2px 2px 8px #111a;
     }
-    @media (max-width: 600px) {
-      .sommerfest-timer-container { left: 3vw; top: 24vh; max-width: 94vw; font-size: 0.88em; }
-      header > div:not(.sommerfest-timer-container) { margin-top: 29vh; font-size: 1.27em; }
-      .logos-left, .logos-right { height: 70px; top: 6px; }
+    body.dark nav {
+      background: #222;
+      color: #eee;
     }
-
-    /* =======================
-            DARK MODE
-    ======================== */
-    body.dark { background: #181a1b; color: #ddd; }
-    body.dark header { color: #fff; text-shadow: 2px 2px 8px #111a; }
-    body.dark nav { background: #222; color: #eee; }
-    body.dark section, body.dark footer { background: #222; color: #ddd; }
-    body.dark .sommerfest-timer-container { background: rgba(36,36,36,0.89); }
-    body.dark .contact-link,
-    body.dark a[href^="mailto:"],
-    body.dark a[href^="tel:"] { color: #fff !important; }
+    body.dark section, body.dark footer {
+      background: #222;
+      color: #ddd;
+    }
+    body.dark .sommerfest-timer-container {
+      background: rgba(34,34,34,0.88);
+      color: #fff9e7;
+    }
   </style>
 </head>
-
 <body>
-
   <header>
     <a href="#" class="logos-left"><img src="verein-sofe-logo-w.png" alt="Logo SOFE Webi" /></a>
     <a href="#" class="logos-right"><img src="logo-qv-weiss.png" alt="Logo Quartierverein" /></a>
+    <div>Willkommen in der Webermühle</div>
     <div class="sommerfest-timer-container">
       <span class="sommerfest-label">nächstes SOMMERFEST in</span>
       <span class="sommerfest-countdown" id="sommerfest-countdown">00 Tage 00:00:00</span>
     </div>
-    <div>Willkommen in der Webermühle</div>
   </header>
 
   <nav>
@@ -336,30 +313,104 @@
     <a href="#sommerfest">Sommerfest</a>
     <a href="#kontakt">Kontakt</a>
     <a href="#login">Login</a>
-    <button id="themeSwitcher" aria-label="Theme wechseln">🌙</button>
+    <button id="themeSwitcher" aria-label="Theme wechseln">🌓</button>
   </nav>
 
-  <!-- ==== SECTIONS: Historie, Partyraum, ... ==== -->
+  <!-- Historie -->
   <section id="historie">
     <h2>Historie der Webermühle</h2>
     <p>Die Webermühle in Neuenhof blickt auf eine bewegte Geschichte zurück, die bis ins 19. Jahrhundert reicht...</p>
-    <!-- ... Restliche Inhalte und Galerie ... -->
+    <!-- ... Dein restlicher Text ... -->
+    <div class="gallery">
+      <img src="historie01.jpg" alt="Historisches Bild 1">
+      <img src="historie02.jpg" alt="Historisches Bild 2">
+      <!-- ... weitere Fotos ... -->
+    </div>
   </section>
-  <!-- ... ALLE WEITEREN SECTIONS UNVERÄNDERT wie zuvor ... -->
-  <!-- SPIELGRUPPE mit Logo -->
+
+  <!-- Partyraum -->
+  <section id="partyraum">
+    <h2>Partyraum</h2>
+    <p>Der Partyraum ... Ansprechpartner Michal Jančovič, Tel. <a href="tel:+41767090801" class="contact-link">076 709 08 01</a>, 
+      <a href="mailto:qv@webi.family" class="contact-link">Mail an Quartierverein</a></p>
+    <div class="gallery">
+      <img src="partyraum01.jpg" alt="Partyraum 1">
+      <!-- ... weitere Fotos ... -->
+    </div>
+  </section>
+
+  <!-- Rooftop -->
+  <section id="rooftop">
+    <h2>Rooftop</h2>
+    <p>Unsere grosse Dachterrasse ist der perfekte Ort, um ...</p>
+    <div class="gallery">
+      <img src="rooftop-01.jpg" alt="Rooftop 01">
+      <!-- ... weitere Fotos ... -->
+    </div>
+  </section>
+
+  <!-- Fitnessraum -->
+  <section id="fitness">
+    <h2>Fitnessraum</h2>
+    <div class="gallery">
+      <img src="fitness1.jpg" alt="Fitnessraum 1">
+    </div>
+    <p>Im Fitnessraum ... <a href="mailto:qv@webi.family" class="contact-link">qv@webi.family</a></p>
+  </section>
+
+  <!-- Spielgruppe -->
   <section id="spielgruppe">
     <h2>Spielgruppe Zwergmühle</h2>
     <div class="spielgruppe-logo">
-      <img alt="Logo Zwergmühle" src="https://github.com/FitnessraumWM/webi-webseite/blob/main/zwergmuehle-logo.png?raw=true">
+      <img alt="zwergmuehle-logo.png" src="https://github.com/FitnessraumWM/webi-webseite/blob/main/zwergmuehle-logo.png?raw=true">
     </div>
-    <!-- ... Text ... -->
+    <p>Die Spielgruppe ... <br>
+      Leitung: Sandra Adamovic, Tel. <a href="tel:+41764040685" class="contact-link">076 404 06 85</a>, 
+      <a href="mailto:esiino@hotmail.com" class="contact-link">esiino@hotmail.com</a>
+    </p>
+    <div class="gallery">
+      <img src="spielgruppe01.jpg" alt="Spielgruppe">
+      <!-- ... weitere Fotos ... -->
+    </div>
   </section>
-  <!-- SOMMERFEST Section -->
+
+  <!-- Vereine -->
+  <section id="vereine">
+    <h2>Vereine</h2>
+    <p>Die Webermühle ist Heimat verschiedener Vereine ... 
+      <a href="mailto:qv@webi.family" class="contact-link">qv@webi.family</a>,
+      <a href="mailto:sommerfest@webi.family" class="contact-link">sommerfest@webi.family</a>
+    </p>
+  </section>
+
+  <!-- Sommerfest -->
   <section id="sommerfest">
     <h2>Sommerfest Webermühle</h2>
-    <!-- ... Text ... -->
+    <p>Das Sommerfest ... <strong>Kontakt:</strong>
+      <a href="mailto:sommerfest@webi.family" class="contact-link">sommerfest@webi.family</a>
+    </p>
   </section>
-  <!-- ... und so weiter ... -->
+
+  <!-- Kontakt -->
+  <section id="kontakt">
+    <h2>Kontakt</h2>
+    <p>
+      <strong>Quartierverein:</strong> <a href="mailto:qv@webi.family" class="contact-link">qv@webi.family</a><br>
+      <strong>Partyraum:</strong> Michal Jančovič, Tel. <a href="tel:+41767090801" class="contact-link">076 709 08 01</a><br>
+      <strong>Spielgruppe:</strong> Sandra Adamovic, Tel. <a href="tel:+41764040685" class="contact-link">076 404 06 85</a>, 
+      <a href="mailto:esiino@hotmail.com" class="contact-link">esiino@hotmail.com</a><br>
+      <strong>Sommerfest/SOFE Webi:</strong> <a href="mailto:sommerfest@webi.family" class="contact-link">sommerfest@webi.family</a>
+    </p>
+  </section>
+
+  <!-- Login -->
+  <section id="login">
+    <h2>Interner Bereich</h2>
+    <div class="login-links">
+      <p><a href="https://github.com/dein-verein" target="_blank" rel="noopener noreferrer">🔗 GitHub Repository</a></p>
+      <p><a href="https://mail.zoho.eu/zm/" target="_blank" rel="noopener noreferrer">📧 Vereins-E-Mail öffnen</a></p>
+    </div>
+  </section>
 
   <footer>
     <div id="besucherinfo">Seitenbesuche: ...</div>
@@ -373,16 +424,23 @@
   </div>
 
   <script>
-    // Menü Hide on Scroll
+    // Menü Hide on Scroll, langsamere Animation
     let lastScrollY = window.scrollY;
     let nav = document.querySelector('nav');
     let navHidden = false;
     let navHeight = nav.offsetHeight;
+
     window.addEventListener('scroll', () => {
       if (window.scrollY > lastScrollY && window.scrollY > navHeight) {
-        if (!navHidden) { nav.style.top = `-${navHeight + 30}px`; navHidden = true; }
+        if (!navHidden) {
+          nav.style.top = `-${navHeight + 30}px`;
+          navHidden = true;
+        }
       } else {
-        if (navHidden) { nav.style.top = '0'; navHidden = false; }
+        if (navHidden) {
+          nav.style.top = '0';
+          navHidden = false;
+        }
       }
       lastScrollY = window.scrollY;
     });
@@ -391,8 +449,14 @@
     const themeBtn = document.getElementById('themeSwitcher');
     const body = document.body;
     const logos = {
-      sofe: { hell: "verein-sofe-logo-w.png", dunkel: "verein-sofe-logo-s.png" },
-      qv:   { hell: "logo-qv-weiss.png",     dunkel: "logo-qv-schwarz.png" }
+      sofe: {
+        hell: "verein-sofe-logo-w.png",
+        dunkel: "verein-sofe-logo-s.png"
+      },
+      qv: {
+        hell: "logo-qv-weiss.png",
+        dunkel: "logo-qv-schwarz.png"
+      }
     };
     function setTheme(mode) {
       if (mode === 'dark') {
@@ -409,25 +473,32 @@
         themeBtn.textContent = "🌙";
       }
     }
-    themeBtn.onclick = () => { setTheme(body.classList.contains('dark') ? 'light' : 'dark'); };
+    themeBtn.onclick = () => {
+      setTheme(body.classList.contains('dark') ? 'light' : 'dark');
+    };
     (function() {
-      const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      const theme = localStorage.getItem('theme') ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
       setTheme(theme);
     })();
 
-    // Modale Bildvorschau
+    // Modale Bildvorschau (Lightbox) mit Zoom-Animation
     document.querySelectorAll('.gallery img').forEach(img => {
       img.addEventListener('click', () => {
         const modal = document.getElementById('modalOverlay');
         const modalImg = modal.querySelector('img');
-        modalImg.src = img.src; modalImg.alt = img.alt;
+        modalImg.src = img.src;
+        modalImg.alt = img.alt;
         modalImg.style.transform = 'scale(0.7)';
         modalImg.style.opacity = '0';
         modal.classList.add('active');
-        setTimeout(() => { modalImg.style.transform = 'scale(1.0)'; modalImg.style.opacity = '1'; }, 10);
+        setTimeout(() => {
+          modalImg.style.transform = 'scale(1.0)';
+          modalImg.style.opacity = '1';
+        }, 10);
       });
     });
-    document.querySelector('#modalOverlay .closeModal').onclick = closeModal;
+    document.querySelector('#modalOverlay .closeModal').onclick = function() { closeModal(); };
     document.getElementById('modalOverlay').onclick = function(e) { if (e.target === this) closeModal(); };
     document.addEventListener('keydown', function(e) { if (e.key === "Escape") closeModal(); });
     function closeModal() {
@@ -435,12 +506,15 @@
       const modalImg = modal.querySelector('img');
       modalImg.style.transform = 'scale(0.7)';
       modalImg.style.opacity = '0';
-      setTimeout(() => { modal.classList.remove('active'); modalImg.src = ''; }, 180);
+      setTimeout(() => {
+        modal.classList.remove('active');
+        modalImg.src = '';
+      }, 180);
     }
 
     // Sommerfest Countdown
     function updateSommerfestCountdown() {
-      // 30. August 2025, 14:00 (lokal)
+      // Ziel: 30. August 2025, 14:00
       const target = new Date(2025, 7, 30, 14, 0, 0);
       const now = new Date();
       let diff = target - now;
@@ -448,7 +522,43 @@
         document.getElementById('sommerfest-countdown').innerText = "Das Sommerfest läuft!";
         return;
       }
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24)); diff -= days * 1000 * 60 * 60 * 24;
-      const hours = Math.floor(diff / (1000 * 60 * 60)); diff -= hours * 1000 * 60 * 60;
-      const mins = Math.floor(diff / (1000 * 60)); diff -= mins * 1000 * 60;
-      const secs = Math.floor(diff / 
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      diff -= days * 1000 * 60 * 60 * 24;
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      diff -= hours * 1000 * 60 * 60;
+      const mins = Math.floor(diff / (1000 * 60));
+      diff -= mins * 1000 * 60;
+      const secs = Math.floor(diff / 1000);
+      document.getElementById('sommerfest-countdown').innerText =
+        days.toString().padStart(2, '0') + " Tage " +
+        hours.toString().padStart(2, '0') + ":" +
+        mins.toString().padStart(2, '0') + ":" +
+        secs.toString().padStart(2, '0');
+    }
+    updateSommerfestCountdown();
+    setInterval(updateSommerfestCountdown, 1000);
+
+    // Besucherzähler
+    async function updateCounterInfo() {
+      const res = await fetch("https://api.counterapi.dev/v1/webi-webermuehle/visits");
+      const data = await res.json();
+      let text = "Seitenbesuche gesamt: " + data.count;
+      const [today, week, month] = await Promise.all([
+        fetch("https://api.counterapi.dev/v1/webi-webermuehle-today/visits").then(r => r.json()),
+        fetch("https://api.counterapi.dev/v1/webi-webermuehle-week/visits").then(r => r.json()),
+        fetch("https://api.counterapi.dev/v1/webi-webermuehle-month/visits").then(r => r.json())
+      ]);
+      text += "<br>Heute: " + today.count +
+              "<br>Diese Woche: " + week.count +
+              "<br>Diesen Monat: " + month.count;
+      document.getElementById("besucherinfo").innerHTML = text;
+    }
+    // Hochzählen bei Seitenaufruf
+    fetch("https://api.counterapi.dev/v1/webi-webermuehle/visits/incr");
+    fetch("https://api.counterapi.dev/v1/webi-webermuehle-today/visits/incr");
+    fetch("https://api.counterapi.dev/v1/webi-webermuehle-week/visits/incr");
+    fetch("https://api.counterapi.dev/v1/webi-webermuehle-month/visits/incr");
+    updateCounterInfo();
+  </script>
+</body>
+</html>
