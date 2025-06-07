@@ -22,25 +22,25 @@
       overflow: hidden;
     }
     .logos-left, .logos-right {
-      position: absolute;
-      top: 22px;
-      height: 132px;
-      z-index: 10;
-      background: none;
-    }
-    .logos-left { left: 18px; }
-    .logos-right { right: 18px; }
-    .logos-left img, .logos-right img { height: 100%; }
+  position: absolute;
+  top: 18px;
+  height: 110px;
+  z-index: 10;
+}
+.logos-left { left: 14px; }
+.logos-right { right: 14px; }
+.logos-left img, .logos-right img { height: 100%; }
 
-    /* Mobile Logos besser trennen */
-    @media (max-width: 650px) {
-      .logos-left, .logos-right {
-        height: 63px;
-        top: 10px;
-      }
-      .logos-left { left: 7px; }
-      .logos-right { right: 7px; }
-    }
+/* Mobile Logos deutlich grösser und mit mehr Abstand */
+@media (max-width: 650px) {
+  .logos-left, .logos-right {
+    height: 70px;
+    top: 10px;
+  }
+  .logos-left { left: 9px; }
+  .logos-right { right: 9px; }
+}
+
 
     /* ======= BANNER (Sommerfest-Timer) ======= */
     .sommerfest-timer-container {
@@ -108,25 +108,35 @@
     }
     /* ======= Willkommen-Schrift ======= */
     .welcome-headline {
-      position: relative;
-      z-index: 5;
-      width: 100vw;
-      margin-top: 25vh;
-      font-size: 3.3rem;
-      font-weight: 900;
-      letter-spacing: 0.03em;
-      color: #fff;
-      text-shadow: 3px 3px 12px #000c, 0 2px 8px #444b;
-      pointer-events: none;
-      line-height: 1.15;
-      text-align: center;
-    }
-    @media (max-width: 900px) {
-      .welcome-headline { font-size: 2.1rem; margin-top: 18vh;}
-    }
-    @media (max-width: 500px) {
-      .welcome-headline { font-size: 1.16rem; margin-top: 8vh;}
-    }
+  position: absolute;
+  left: 50%;
+  top: 47vh;
+  transform: translate(-50%, -50%);
+  z-index: 8;
+  width: 94vw;
+  font-size: 3.4rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  color: #fff;
+  text-shadow: 3px 3px 12px #000c, 0 2px 8px #444b;
+  pointer-events: none;
+  line-height: 1.13;
+  text-align: center;
+  white-space: pre-line;
+}
+
+@media (max-width: 900px) {
+  .welcome-headline {
+    font-size: 2.1rem;
+    top: 44vh;
+  }
+}
+@media (max-width: 600px) {
+  .welcome-headline {
+    font-size: 1.55rem;
+    top: 41vh;
+  }
+}
     nav {
       position: sticky;
       top: 0;
@@ -152,25 +162,27 @@
       color: #ffe066;
       text-decoration: underline;
     }
-    nav button#themeSwitcher {
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 1.1em;
-      cursor: pointer;
-      margin-left: 0.4em;
-      border-radius: 6px;
-      padding: 0.1em 0.2em;
-      transition: background 0.22s, color 0.22s;
-    }
-    nav button#themeSwitcher:hover { background: #444; color: #ffd700; }
-    @media (max-width: 820px) {
-      nav { gap: 0.9em; font-size: 1em; }
-    }
-    @media (max-width: 570px) {
-      nav { gap: 0.37em; font-size: 0.92em; flex-wrap: wrap; }
-    }
+nav a.icon-btn, nav button#themeSwitcher {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1.15em;
+  font-size: 1.19em;
+  margin-top: -0.11em;
+  margin-bottom: -0.09em;
+  padding-top: 0.04em;
+}
 
+nav a.icon-btn {
+  padding-left: 0.1em;
+  padding-right: 0.11em;
+  color: #ffe066;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s, transform 0.12s;
+  outline: none;
+}
+nav a.icon-btn:hover { color: #fff700; transform: scale(1.19);}
     
     section {
       padding: 3em 1em 1.2em 1em;
@@ -275,15 +287,6 @@
     body.dark .sommerfest-label { color: #ffe066; }
     body.dark footer { color: #bbb; }
 
- #scrollTopBtn {
-  font-size: 1.1em;
-  margin-right: 0.14em;
-  margin-left: 0.06em;
-  padding: 0;
-  vertical-align: middle;
-}
-
-
     /* --- Downloadbereich und Footer-Links wie Menü gestalten --- */
 #downloads a, footer a {
   color: #222;
@@ -358,7 +361,7 @@ body.dark #login a:hover {
     <a href="#downloads">Downloads</a>
     <a href="#login">Login</a>
     <button id="themeSwitcher" aria-label="Theme wechseln">🌓</button>
-    <a href="#" id="scrollTopBtn" title="Nach oben" aria-label="Nach oben scrollen" style="font-size:1.3em; background:none;">⇧</a>
+    <a href="#" id="scrollTopBtn" class="icon-btn" title="Nach oben">⇧</a>
   </nav>
 
   <!-- ===== SECTIONS, GALLERIES, ALLE TEXTE ===== -->
