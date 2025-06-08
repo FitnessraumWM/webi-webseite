@@ -358,32 +358,27 @@ body.dark section a:hover {
     }
   }
 
-   #google_translate_element {
-  display: inline-flex;
-  align-items: center;
-  margin-left: 0.16em;
-  margin-right: 0.05em;
-  height: 1.36em;    /* wie die Links */
+  #google_translate_element {
   font-size: 1em;
-  line-height: 1em;
-  vertical-align: middle;
+  background: #232323;
+  padding: 0.18em 0.38em;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px #2227;
 }
-
 .goog-te-gadget {
   font-size: 1em !important;
-  height: 1.36em !important;
-  padding: 0 !important;
-  margin: 0 !important;
+  height: 1.34em !important;
   display: flex !important;
   align-items: center !important;
 }
 .goog-te-combo {
-  font-size: 0.97em !important;
-  border-radius: 5px !important;
-  padding: 0.03em 0.2em !important;
-  height: 1.23em !important;
-  margin: 0 !important;
-  vertical-align: middle;
+  font-size: 1em !important;
+  border-radius: 4px !important;
+  padding: 0.1em 0.4em !important;
+  height: 1.18em !important;
+}
+.goog-logo-link, .goog-te-gadget span {
+  display: none !important;
 }
 
   </style>
@@ -398,6 +393,32 @@ body.dark section a:hover {
   </script>
   <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
   </script>
+  
+  <script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var btn = document.getElementById("showTranslate");
+    var box = document.getElementById("google_translate_element");
+    btn.addEventListener("click", function(e) {
+      e.preventDefault();
+      if (box.style.display === "none" || box.style.display === "") {
+        box.style.display = "block";
+        // Optional: Klick außerhalb schließt wieder
+        setTimeout(function() {
+          document.addEventListener("click", outsideClick);
+        }, 100);
+      } else {
+        box.style.display = "none";
+        document.removeEventListener("click", outsideClick);
+      }
+      function outsideClick(event) {
+        if (!box.contains(event.target) && event.target !== btn) {
+          box.style.display = "none";
+          document.removeEventListener("click", outsideClick);
+        }
+      }
+    });
+  });
+</script>
 
 </head>
 <body>
@@ -426,7 +447,8 @@ body.dark section a:hover {
   <a href="#downloads">Downloads</a>
   <a href="#kontakt">Kontakt</a>
   <a href="#login">Login</a>
-  <span id="google_translate_element"></span>
+  <a href="#" id="showTranslate" class="icon-btn" title="Sprache wählen" style="font-size:1.18em; vertical-align:middle;">🌐</a>
+  <span id="google_translate_element" style="display:none; position:absolute; right:4.2em; top:2.7em; z-index:1001;"></span>
   <button id="themeSwitcher" aria-label="Theme wechseln">🌓</button>
   <a href="#" id="scrollTopBtn" class="icon-btn" title="Nach oben">⇧</a>
 </nav>
