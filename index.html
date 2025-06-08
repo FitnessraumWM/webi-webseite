@@ -387,6 +387,47 @@ body.dark section a:hover {
   display: none !important;
 }
 
+.vorstand-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .vorstand-table th,
+  .vorstand-table td {
+    padding: 0.5em;
+    text-align: left;
+    border-bottom: 1px solid #ccc;
+  }
+
+  @media (max-width: 768px) {
+    .vorstand-table,
+    .vorstand-table thead,
+    .vorstand-table tbody,
+    .vorstand-table th,
+    .vorstand-table td,
+    .vorstand-table tr {
+      display: block;
+      width: 100%;
+    }
+    .vorstand-table thead tr {
+      display: none;
+    }
+    .vorstand-table tr {
+      margin-bottom: 1em;
+      border: 1px solid #ccc;
+      border-radius: 0.5em;
+      padding: 0.5em;
+    }
+    .vorstand-table td {
+      padding: 0.3em 0.5em;
+      position: relative;
+    }
+    .vorstand-table td::before {
+      content: attr(data-label);
+      font-weight: bold;
+      display: block;
+      margin-bottom: 0.3em;
+    }
+  }
   </style>
 
   <script type="text/javascript">
@@ -612,79 +653,80 @@ body.dark section a:hover {
   <p>
     Du hast Fragen, möchtest einen Raum buchen oder hast ein Anliegen?<br><br>
     <h2>Quartierverein Webermühle - Klosterrütti (Vorstand)</h2>
-  <table style="width:100%; border-collapse: collapse; font-size: 0.97em;">
-    <thead style="font-weight:bold;">
-      <tr>
-        <th style="text-align:left;">Funktion</th>
-        <th>Name</th>
-        <th>Adresse</th>
-        <th>Telefon</th>
-        <th>E-Mail</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Präsident</td>
-        <td>Michal Jancovic</td>
-        <td>Webermühle 13, 5432 Neuenhof</td>
-        <td><a href="tel:+41767090801" class="contact-link">076 709 08 01</a></td>
-        <td><a href="mailto:michal.jancovic@gmail.com" class="contact-link">michal.jancovic@gmail.com</a></td>
-      </tr>
-      <tr>
-        <td>Kassierin</td>
-        <td>Lucia Kober</td>
-        <td>Webermühle 45, 5432 Neuenhof</td>
-        <td><a href="tel:+41784062547" class="contact-link">078 406 25 47</a></td>
-        <td><a href="mailto:lucia.kober@yahoo.com" class="contact-link">lucia.kober@yahoo.com</a></td>
-      </tr>
-      <tr>
-        <td>Aktuar</td>
-        <td>David Kober</td>
-        <td>Hardstrasse 78, 5432 Neuenhof</td>
-        <td><a href="tel:+41796279262" class="contact-link">079 627 92 62</a></td>
-        <td><a href="mailto:d.kober@gmx.ch" class="contact-link">d.kober@gmx.ch</a></td>
-      </tr>
-      <tr>
-        <td>Gärten</td>
-        <td>Marco Arico</td>
-        <td>Webermühle 18, 5432 Neuenhof</td>
-        <td><a href="tel:+41799041410" class="contact-link">079 904 14 10</a></td>
-        <td><a href="mailto:store@luxvitea.ch" class="contact-link">store@luxvitea.ch</a></td>
-      </tr>
-      <tr>
-        <td>Partyraum</td>
-        <td>Michal Jancovic</td>
-        <td>Webermühle 13, 5432 Neuenhof</td>
-        <td><a href="tel:+41767090801" class="contact-link">076 709 08 01</a></td>
-        <td><a href="mailto:michal.jancovic@gmail.com" class="contact-link">michal.jancovic@gmail.com</a></td>
-      </tr>
-      <tr>
-        <td>Beisitzer</td>
-        <td>Marcella Nicosia</td>
-        <td>Webermühle 11, 5432 Neuenhof</td>
-        <td><a href="tel:+41763164322" class="contact-link">076 316 43 22</a></td>
-        <td><a href="mailto:pino.nicosia@bluewin.ch" class="contact-link">pino.nicosia@bluewin.ch</a></td>
-      </tr>
-      <tr>
-        <td>Beisitzer</td>
-        <td>Fausto Broccini</td>
-        <td>Webermühle 11, 5432 Neuenhof</td>
-        <td><a href="tel:+41787917774" class="contact-link">078 791 77 74</a></td>
-        <td><a href="mailto:faustobroccini@gmail.com" class="contact-link">faustobroccini@gmail.com</a></td>
-      </tr>
-      <tr>
-        <td>Beisitzer</td>
-        <td>Ivan Letina</td>
-        <td>Webermühle 11, 5432 Neuenhof</td>
-        <td><a href="tel:+41564061469" class="contact-link">056 406 14 69</a></td>
-        <td><a href="mailto:ivan.letina@bluewin.ch" class="contact-link">ivan.letina@bluewin.ch</a></td>
-      </tr>
-    </tbody>
-  </table>
-  <p><strong>Spielgruppe</strong>: Enza Siino – Tel: <a href="tel:+41793953658" class="contact-link">079 395 36 58</a> – <a href="mailto:e.siino@hotmail.com" class="contact-link">e.siino@hotmail.com</a></p>
-  <p><strong>Email</strong>: <a href="mailto:quartiervereinwk@gmail.com" class="contact-link">quartiervereinwk@gmail.com</a></p>
-  <p><strong>Revisoren</strong>: Angela Strappazzon und Christine Beiner</p>
-    
+  <table class="vorstand-table">
+  <thead>
+    <tr>
+      <th>Funktion</th>
+      <th>Name</th>
+      <th>Adresse</th>
+      <th>Telefon</th>
+      <th>E-Mail</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td data-label="Funktion">Präsident</td>
+      <td data-label="Name">Michal Jancovic</td>
+      <td data-label="Adresse">Webermühle 13, 5432 Neuenhof</td>
+      <td data-label="Telefon"><a href="tel:0767090801">076 709 08 01</a></td>
+      <td data-label="E-Mail"><a href="mailto:michal.jancovic@gmail.com">michal.jancovic@gmail.com</a></td>
+    </tr>
+    <tr>
+      <td data-label="Funktion">Kassierin</td>
+      <td data-label="Name">Lucia Kober</td>
+      <td data-label="Adresse">Webermühle 45, 5432 Neuenhof</td>
+      <td data-label="Telefon"><a href="tel:0784062547">078 406 25 47</a></td>
+      <td data-label="E-Mail"><a href="mailto:lucia.kober@yahoo.com">lucia.kober@yahoo.com</a></td>
+    </tr>
+    <tr>
+      <td data-label="Funktion">Aktuar</td>
+      <td data-label="Name">David Kober</td>
+      <td data-label="Adresse">Hardstrasse 78, 5432 Neuenhof</td>
+      <td data-label="Telefon"><a href="tel:0796279262">079 627 92 62</a></td>
+      <td data-label="E-Mail"><a href="mailto:d.kober@gmx.ch">d.kober@gmx.ch</a></td>
+    </tr>
+    <tr>
+      <td data-label="Funktion">Gärten</td>
+      <td data-label="Name">Marco Arico</td>
+      <td data-label="Adresse">Webermühle 18, 5432 Neuenhof</td>
+      <td data-label="Telefon"><a href="tel:0799041410">079 904 14 10</a></td>
+      <td data-label="E-Mail"><a href="mailto:store@luxvitea.ch">store@luxvitea.ch</a></td>
+    </tr>
+    <tr>
+      <td data-label="Funktion">Partyraum</td>
+      <td data-label="Name">Michal Jancovic</td>
+      <td data-label="Adresse">Webermühle 13, 5432 Neuenhof</td>
+      <td data-label="Telefon"><a href="tel:0767090801">076 709 08 01</a></td>
+      <td data-label="E-Mail"><a href="mailto:michal.jancovic@gmail.com">michal.jancovic@gmail.com</a></td>
+    </tr>
+    <tr>
+      <td data-label="Funktion">Beisitzer</td>
+      <td data-label="Name">Marcella Nicosia</td>
+      <td data-label="Adresse">Webermühle 11, 5432 Neuenhof</td>
+      <td data-label="Telefon"><a href="tel:0763164322">076 316 43 22</a></td>
+      <td data-label="E-Mail"><a href="mailto:pino.nicosia@bluewin.ch">pino.nicosia@bluewin.ch</a></td>
+    </tr>
+    <tr>
+      <td data-label="Funktion">Beisitzer</td>
+      <td data-label="Name">Fausto Broccini</td>
+      <td data-label="Adresse">Webermühle 11, 5432 Neuenhof</td>
+      <td data-label="Telefon"><a href="tel:0787917774">078 791 77 74</a></td>
+      <td data-label="E-Mail"><a href="mailto:faustobroccini@gmail.com">faustobroccini@gmail.com</a></td>
+    </tr>
+    <tr>
+      <td data-label="Funktion">Beisitzer</td>
+      <td data-label="Name">Ivan Letina</td>
+      <td data-label="Adresse">Webermühle 11, 5432 Neuenhof</td>
+      <td data-label="Telefon"><a href="tel:0564061469">056 406 14 69</a></td>
+      <td data-label="E-Mail"><a href="mailto:ivan.letina@bluewin.ch">ivan.letina@bluewin.ch</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Spielgruppe:</strong> Enza Siino – Tel: <a href="tel:0793953658">079 395 36 58</a> – <a href="mailto:e.siino@hotmail.com">e.siino@hotmail.com</a></p>
+<p><strong>Email:</strong> <a href="mailto:quartiervereinwk@gmail.com">quartiervereinwk@gmail.com</a></p>
+<p><strong>Revisoren:</strong> Angela Strappazzon und Christine Beiner</p>
+  
       <h2>Verein SOFE Webi</h2>
   <b>Sommerfest/SOFE Webi:</b> <a href="mailto:sommerfest@webi.family" class="contact-link">sommerfest@webi.family</a>
   
