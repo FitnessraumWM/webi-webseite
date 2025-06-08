@@ -146,6 +146,7 @@
   min-height: 2.6em;
 }
 
+/* Sticky-Zustand */
 nav.stuck {
   position: fixed !important;
   top: 0 !important;
@@ -153,9 +154,11 @@ nav.stuck {
   width: 100vw;
 }
 
+/* Verstecken beim Scrollen */
 nav.hidden {
   transform: translateY(-120%);
 }
+
     nav a, nav button {
       color: white;
       text-decoration: none;
@@ -540,14 +543,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const headerHeight = header.offsetHeight;
     const scrollY = window.scrollY;
 
-    // 1. Wechsel: Wenn noch im Header, Menü bleibt am Bild unten.
+    // Im Headerbereich – Menü am unteren Rand des Bilds (header)
     if (scrollY < headerHeight) {
       nav.classList.remove('stuck', 'hidden');
       nav.style.top = '';
     } else {
-      // 2. Wechsel: Sticky oben.
+      // Sticky oben
       nav.classList.add('stuck');
-      // 3. Menü verstecken beim schnellen Runterscrollen, zeigen beim Hochscrollen.
       if (scrollY > lastScrollY && scrollY > headerHeight + 20) {
         nav.classList.add('hidden');
       } else {
