@@ -7,10 +7,8 @@
   <title>Unsere WEBI</title>
   <style>
     html, body {
-  max-width: 100vw !important;
-  overflow-x: hidden !important;
-}
-html, body {
+      max-width: 100vw !important;
+      overflow-x: hidden !important;
       margin: 0;
       padding: 0;
       font-family: sans-serif;
@@ -20,32 +18,29 @@ html, body {
     }
     header {
       background: url('webermuehle-gesamt.jpg') center/cover no-repeat;
-      min-height: 92vh;    /* wenn kleiner, dann hauptbild dünner */
+      min-height: 92vh;
       color: white;
       position: relative;
       text-align: center;
       overflow: hidden;
     }
-   .logos-left, .logos-right {
-  position: absolute;
-  top: 10px;         /* noch etwas höher für mehr Fläche */
-  height: 210px;    /* vorher 110px, jetzt deutlich größer */
-  z-index: 10;
-}
-.logos-left { left: 7px; }
-.logos-right { right: 7px; }
-.logos-left img, .logos-right img { height: 100%; }
-
-/* Mobile (z.B. unter 650px Breite): */
-@media (max-width: 650px) {
-  .logos-left, .logos-right {
-    height: 140px;   /* vorher 70px, jetzt größer */
-    top: 4px;        /* weiter nach oben, falls nötig */
-  }
-  .logos-left { left: 3px; }
-  .logos-right { right: 3px; }
-}
-    /* ======= BANNER (Sommerfest-Timer) ======= */
+    .logos-left, .logos-right {
+      position: absolute;
+      top: 10px;
+      height: 210px;
+      z-index: 10;
+    }
+    .logos-left { left: 7px; }
+    .logos-right { right: 7px; }
+    .logos-left img, .logos-right img { height: 100%; }
+    @media (max-width: 650px) {
+      .logos-left, .logos-right {
+        height: 140px;
+        top: 4px;
+      }
+      .logos-left { left: 3px; }
+      .logos-right { right: 3px; }
+    }
     .sommerfest-timer-container {
       position: absolute;
       left: 50%;
@@ -99,481 +94,127 @@ html, body {
     }
     @media (max-width: 650px) {
       .sommerfest-timer-container {
-    font-size: 1em;               /* vorher 0.67em, jetzt größer */
-    max-width: 98vw;
-    min-width: 1px;
-    left: 50%;
-    top: 26vh;                    /* etwas tiefer, wenn du magst (also höhere nummer)*/
-    padding: 1.1em 0.7em 1.2em 0.7em; /* mehr Platz innen */
-  }
-  .sommerfest-label { font-size: 1.4em; }
-  .sommerfest-countdown { font-size: 1.17em; }
-}
-    /* ======= Willkommen-Schrift ======= */
+        font-size: 1em;
+        max-width: 98vw;
+        min-width: 1px;
+        left: 50%;
+        top: 26vh;
+        padding: 1.1em 0.7em 1.2em 0.7em;
+      }
+      .sommerfest-label { font-size: 1.4em; }
+      .sommerfest-countdown { font-size: 1.17em; }
+    }
     .welcome-headline {
-  position: absolute;
-  left: 50%;
-  top: 47vh;
-  transform: translate(-50%, -50%);
-  z-index: 10;
-  width: 94vw;
-  font-size: 3.4rem;
-  font-weight: 900;
-  letter-spacing: 0.03em;
-  color: #fff;
-  text-shadow: 3px 3px 12px #000c, 0 2px 8px #444b;
-  pointer-events: none;
-  line-height: 1.13;
-  text-align: center;
-  white-space: pre-line;
-}
-
-@media (max-width: 900px) {
-  .welcome-headline {
-    font-size: 2.1rem;
-    top: 44vh;
-  }
-}
-@media (max-width: 600px) {
-  .welcome-headline {
-    font-size: 2.5rem;
-    top: 50vh;
-  }
-}
-    nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  background: #2d2d2d;
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 2em;
-  font-size: 1.07em;
-  font-weight: bold;
-  padding: 0.22em 1em 0.18em 1em;
-  min-height: 2.6em; 
-  z-index: 100;
-  transition: top 0.44s cubic-bezier(.77,0,.18,1.05);
-}
-
-nav a, nav button {
-  color: white;
-  text-decoration: none;
-  background: none;
-  border: none;
-  font: inherit;
-  border-radius: 3px;
-  padding: 0 0.12em;       /* schmaler */
-  cursor: pointer;
-  transition: color 0.2s;
-  outline: none;
-  display: inline-flex;
-  align-items: center;
-  height: 1.36em;          /* niedriger */
-  font-size: 1em;          /* NEU: wie normaler Text */
-  margin: 0 0.06em;        /* NEU: etwas seitlicher Abstand */
-}
-
-nav a:hover, nav button:hover {
-  color: #ffe066;
-  text-decoration: underline;
-}
-
-nav a.icon-btn, nav button.icon-btn {
-  font-size: 1.15em;
-  padding: 0 0.25em;
-  color: #ffe066;
-  text-decoration: none;
-  background: none;
-  border: none;
-  outline: none;
-  height: 1.8em;
-  margin-top: 0.01em;
-  margin-bottom: 0;
-  line-height: 1em;
-  vertical-align: middle;
-  transition: color 0.19s, transform 0.13s;
-}
-nav a.icon-btn:hover, nav button.icon-btn:hover {
-  color: #fff700;
-  transform: scale(1.19);
-  background: none;
-  text-decoration: none;
-}
-nav button#themeSwitcher {
-  font-size: 1.15em;
-  margin-left: 0.18em;
-  padding: 0 0.20em 0 0.16em;
-  color: #ffe066;
-  background: none;
-}
-nav button#themeSwitcher:focus {
-  outline: none;
-  box-shadow: none;
-}
-
-/* Menü auf kleinen Geräten */
-@media (max-width: 900px) {
-  nav { gap: 1em; font-size: 0.99em; }
-}
-@media (max-width: 570px) {
-  nav { gap: 0.37em; font-size: 0.88em; flex-wrap: wrap; }
-}
-  
-    section {
-      padding: 3em 1em 1.2em 1em;
-      max-width: 1000px;
-      margin: auto;
-      background: #fff;
-      color: #222;
-    }
-    h2 {
-      border-bottom: 2px solid #d4d4d4;
-      padding-bottom: 0.38em;
-      margin-top: 0;
-    }
-    /* Galerie-Bilder */
-    .gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 1em;
-      margin-top: 1em;
-    }
-    .gallery img {
-      width: 100%;
-      aspect-ratio: 1/1;
-      object-fit: cover;
-      border-radius: 8px;
-      box-shadow: 0 0 6px #aaa3;
-      cursor: zoom-in;
-      transition: box-shadow 0.2s, transform 0.23s cubic-bezier(.22,1,.36,1.07);
-    }
-    .gallery img:hover {
-      box-shadow: 0 0 18px #444b;
-      transform: scale(1.05);
-    }
-    .spielgruppe-logo { margin-bottom: 0.5em; }
-    .spielgruppe-logo img {
-      height: 85px; width: auto;
-      margin-bottom: 0.5em; margin-top: 0.2em;
-    }
-    .contact-link {
-      color: inherit !important;
-      text-decoration: underline dotted #aaa;
-      font-weight: bold;
-      cursor: pointer;
-      transition: color 0.2s;
-    }
-    .contact-link:hover, .contact-link:focus {
-      color: #888; text-decoration: underline solid #888;
-    }
-    footer {
-      background: #f2f2f2;
-      padding: 2em 1em 1.3em 1em;
-      text-align: center;
-      font-size: 1em;
-      color: #333;
-    }
-    /* Modal für Bildvorschau */
-    #modalOverlay {
-      display: none;
-      position: fixed;
-      z-index: 10000;
-      left: 0; top: 0; width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.89);
-      align-items: center;
-      justify-content: center;
-    }
-    #modalOverlay.active { display: flex; }
-    #modalOverlay img {
-      max-width: 90vw;
-      max-height: 85vh;
-      border-radius: 12px;
-      background: #fff;
-      object-fit: contain;
-      transform: scale(0.7);
-      opacity: 0;
-      transition: transform 0.22s cubic-bezier(.22,1,.36,1.07), opacity 0.16s;
-      cursor: pointer;
-    }
-    #modalOverlay.active img {
-      transform: scale(1.0); opacity: 1;
-    }
-    #modalOverlay .closeModal {
       position: absolute;
-      top: 30px; right: 45px;
-      font-size: 3rem;
-      color: #fff;
-      cursor: pointer;
-      font-family: Arial, sans-serif;
+      left: 50%;
+      top: 47vh;
+      transform: translate(-50%, -50%);
       z-index: 10;
-      user-select: none;
+      width: 94vw;
+      font-size: 3.4rem;
+      font-weight: 900;
+      letter-spacing: 0.03em;
+      color: #fff;
+      text-shadow: 3px 3px 12px #000c, 0 2px 8px #444b;
+      pointer-events: none;
+      line-height: 1.13;
+      text-align: center;
+      white-space: pre-line;
     }
-    /* Darkmode */
-    body.dark {
-      background: #16191c; color: #ddd;
+    @media (max-width: 900px) {
+      .welcome-headline { font-size: 2.1rem; top: 44vh; }
     }
-    body.dark section, body.dark footer {
-      background: #222; color: #ddd;
+    @media (max-width: 600px) {
+      .welcome-headline { font-size: 2.5rem; top: 50vh; }
     }
-    body.dark nav { background: #232323; color: #eee; }
-    body.dark nav a { color: #eee; }
-    body.dark nav a:hover { color: #ffe066; }
-    body.dark .sommerfest-timer-container { background: rgba(15,15,15,0.92); }
-    body.dark .sommerfest-label { color: #ffe066; }
-    body.dark footer { color: #bbb; }
-
-   #downloads a, footer a, #login a, section a {
-  color: #222;
-  text-decoration: none;
-  font-weight: bold;
-  border-radius: 3px;
-  padding: 0 0.2em;
-  transition: color 0.2s;
-}
-
-#downloads a:hover,
-footer a:hover,
-#login a:hover,
-section a:hover {
-  color: #ffe066;
-  text-decoration: underline;
-  /* Kein background! */
-}
-
-/* Darkmode */
-body.dark #downloads a,
-body.dark footer a,
-body.dark #login a,
-body.dark section a {
-  color: #fff;
-}
-body.dark #downloads a:hover,
-body.dark footer a:hover,
-body.dark #login a:hover,
-body.dark section a:hover {
-  color: #ffe066;
-  text-decoration: underline;
-  /* Kein background! */
-}
-
-@media (max-width: 650px) {
-    header {
-      min-height: 79vh; /* oder dein Lieblingswert */
-    }
-  }
-
-  #google_translate_element {
-  display: none;
-  position: absolute;
-  right: 4.2em;        /* ggf. anpassen, je nach Abstand zum Rand */
-  bottom: 100%;        /* <-- Menü nach oben ausklappen lassen! */
-  margin-bottom: 0.28em; /* kleiner Abstand über dem Icon */
-  z-index: 1001;
-  font-size: 1em;
-  background: #232323;
-  padding: 0.18em 0.38em;
-  border-radius: 6px;
-  box-shadow: 0 4px 12px #2227;
-}
-.goog-te-gadget {
-  font-size: 1em !important;
-  height: 1.34em !important;
-  display: flex !important;
-  align-items: center !important;
-}
-.goog-te-combo {
-  font-size: 1em !important;
-  border-radius: 4px !important;
-  padding: 0.1em 0.4em !important;
-  height: 1.18em !important;
-}
-.goog-logo-link, .goog-te-gadget span {
-  display: none !important;
-}
-
-.vorstand-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  .vorstand-table th,
-  .vorstand-table td {
-    padding: 0.5em;
-    text-align: left;
-    border-bottom: 1px solid #ccc;
-  }
-
-  @media (max-width: 768px) {
-    .vorstand-table,
-    .vorstand-table thead,
-    .vorstand-table tbody,
-    .vorstand-table th,
-    .vorstand-table td,
-    .vorstand-table tr {
-      display: block;
-      width: 100%;
-    }
-    .vorstand-table thead tr {
-      display: none;
-    }
-    .vorstand-table tr {
-      margin-bottom: 1em;
-      border: 1px solid #ccc;
-      border-radius: 0.5em;
-      padding: 0.5em;
-    }
-    .vorstand-table td {
-      padding: 0.3em 0.5em;
-      position: relative;
-    }
-    .vorstand-table td::before {
-      content: attr(data-label);
+    nav {
+      position: fixed;
+      left: 0;
+      width: 100vw;
+      z-index: 100;
+      background: #2d2d2d;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 2em;
+      font-size: 1.07em;
       font-weight: bold;
-      display: block;
-      margin-bottom: 0.3em;
+      padding: 0.22em 1em 0.18em 1em;
+      min-height: 2.6em; 
+      transition: top 0.44s cubic-bezier(.77,0,.18,1.05);
     }
-  }
+    /* ... deine weiteren Styles ... */
   </style>
-
-  <script type="text/javascript">
-    function googleTranslateElementInit() {
-      new google.translate.TranslateElement(
-        {pageLanguage: 'de', includedLanguages: 'en,it,es,tr,sq,hr,pt,pl,sk,fr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE},
-        'google_translate_element'
-      );
-    }
-  </script>
-  <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
-  </script>
-  
-  <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    var btn = document.getElementById("showTranslate");
-    var box = document.getElementById("google_translate_element");
-    btn.addEventListener("click", function(e) {
-      e.preventDefault();
-      if (box.style.display === "none" || box.style.display === "") {
-        box.style.display = "block";
-        // Optional: Klick außerhalb schließt wieder
-        setTimeout(function() {
-          document.addEventListener("click", outsideClick);
-        }, 100);
-      } else {
-        box.style.display = "none";
-        document.removeEventListener("click", outsideClick);
-      }
-      function outsideClick(event) {
-        if (!box.contains(event.target) && event.target !== btn) {
-          box.style.display = "none";
-          document.removeEventListener("click", outsideClick);
-        }
-      }
-    });
-  });
-    
-.qv-logo-wrapper,
-.sofe-logo-wrapper {
-  text-align: center;
-  margin: 1.5em auto 1em auto;
-}
-.logo-sofe {
-  height: 60px;
-  width: auto;
-  max-width: 110px;
-  object-fit: contain;
-  display: inline-block;
-}
-.logo-qv {
-  display: inline-block;
-  width: 130px;
-  height: 130px;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-/* Darkmode Support für QV Logo */
-body.dark .logo-qv {
-  content: url('logo-qv-weiss.png') !important;
-}
-body:not(.dark) .logo-qv {
-  content: url('logo-qv-schwarz.png') !important;
-}
-
-  </script>
-
 </head>
 <body>
-  // Menü unter dem Header starten, dann sticky mit Hide/Show beim Scrollen
-  <script>
-const nav = document.querySelector('nav');
-const header = document.querySelector('header');
-let navHidden = false;
-let lastScrollY = window.scrollY;
-let ticking = false;
-
-function getHeaderHeight() {
-  return header.offsetHeight;
-}
-
-function handleNavScroll() {
-  const scrollY = window.scrollY;
-  const headerHeight = getHeaderHeight();
-
-  if (scrollY < headerHeight) {
-    // Menü schwebt direkt unter dem Headerbild
-    nav.style.top = `${headerHeight - scrollY}px`;
-    navHidden = false; // beim Runterscrollen im Headerbereich immer sichtbar
-  } else {
-    // Menü sticky ganz oben (Hide/Show bei Scrollrichtung)
-    if (scrollY > lastScrollY && scrollY > headerHeight + 10) {
-      if (!navHidden) {
-        nav.style.top = `-${nav.offsetHeight + 20}px`;
-        navHidden = true;
-      }
-    } else {
-      if (navHidden || nav.style.top !== '0px') {
-        nav.style.top = '0px';
-        navHidden = false;
-      }
-    }
-  }
-  lastScrollY = scrollY;
-  ticking = false;
-}
-
-// Event-Listener setzen
-window.addEventListener('scroll', () => {
-  if (!ticking) {
-    window.requestAnimationFrame(handleNavScroll);
-    ticking = true;
-  }
-});
-window.addEventListener('resize', handleNavScroll);
-window.addEventListener('DOMContentLoaded', handleNavScroll);
-
-// CSS-Voraussetzung (z.B. ins <style>-Tag oder externe CSS):
-// nav { position: fixed; left: 0; width: 100vw; z-index: 100; transition: top 0.44s cubic-bezier(.77,0,.18,1.05); }
-  </script>
-
   <header>
     <a href="#" class="logos-left"><img src="verein-sofe-logo-w.png" alt="Logo SOFE Webi" /></a>
     <a href="#" class="logos-right"><img id="logo-qv-header" src="logo-qv-weiss.png" alt="Logo Quartierverein" /></a>
-    <!-- BANNER -->
     <div class="welcome-headline">Willkommen in der Webermühle</div>
-<div class="sommerfest-timer-container">
-  <div class="sommerfest-label">
-    <span class="emoji">☀️</span> nächstes <b>SOMMERFEST</b> in <span class="emoji">🥳</span>
-  </div>
-  <span class="sommerfest-countdown" id="sommerfest-countdown">00 Tage 00:00:00</span>
-</div>
-
+    <div class="sommerfest-timer-container">
+      <div class="sommerfest-label">
+        <span class="emoji">☀️</span> nächstes <b>SOMMERFEST</b> in <span class="emoji">🥳</span>
+      </div>
+      <span class="sommerfest-countdown" id="sommerfest-countdown">00 Tage 00:00:00</span>
+    </div>
   </header>
+
   <nav>
-  <a href="#historie">Historie</a>
+    <a href="#historie">Historie</a>
+    <a href="#vereine">Vereine</a>
+    <a href="#sommerfest">Sommerfest</a>
+    <!-- ... weitere Menüpunkte ... -->
+  </nav>
+
+  <script>
+    // Menü unter Header – Sticky mit Hide/Show
+    document.addEventListener('DOMContentLoaded', function() {
+      const nav = document.querySelector('nav');
+      const header = document.querySelector('header');
+      let navHidden = false;
+      let lastScrollY = window.scrollY;
+      let ticking = false;
+      function getHeaderHeight() {
+        return header.offsetHeight;
+      }
+      function handleNavScroll() {
+        const scrollY = window.scrollY;
+        const headerHeight = getHeaderHeight();
+        if (scrollY < headerHeight) {
+          nav.style.top = `${headerHeight - scrollY}px`;
+          navHidden = false;
+        } else {
+          if (scrollY > lastScrollY && scrollY > headerHeight + 10) {
+            if (!navHidden) {
+              nav.style.top = `-${nav.offsetHeight + 20}px`;
+              navHidden = true;
+            }
+          } else {
+            if (navHidden || nav.style.top !== '0px') {
+              nav.style.top = '0px';
+              navHidden = false;
+            }
+          }
+        }
+        lastScrollY = scrollY;
+        ticking = false;
+      }
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          window.requestAnimationFrame(handleNavScroll);
+          ticking = true;
+        }
+      });
+      window.addEventListener('resize', handleNavScroll);
+      handleNavScroll(); // Direkt beim Start aufrufen!
+    });
+  </script>
+
+  <section id="historie">
+    <!-- Dein Inhalt -->
+  </section>
+
   <a href="#vereine">Vereine</a>
   <a href="#sommerfest">Sommerfest</a>
   <a href="#lädeli">Lädeli</a>
