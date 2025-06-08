@@ -128,37 +128,32 @@
       .welcome-headline { font-size: 2.5rem; top: 50vh; }
     }
     nav {
-  position: absolute;
-  left: 0;
-  width: 100vw;
-  bottom: 0;
-  z-index: 100;
-  transition: top 0.44s cubic-bezier(.77,0,.18,1.05), transform 0.34s;
-  background: #2d2d2d;
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 2em;
-  font-size: 1.07em;
-  font-weight: bold;
-  padding: 0.22em 1em 0.18em 1em;
-  min-height: 2.6em;
-}
-
-/* Sticky-Zustand */
-nav.stuck {
-  position: fixed !important;
-  top: 0 !important;
-  bottom: auto !important;
-  width: 100vw;
-}
-
-/* Verstecken beim Scrollen */
-nav.hidden {
-  transform: translateY(-120%);
-}
-
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 100;
+      transition: top 0.44s cubic-bezier(.77,0,.18,1.05), transform 0.34s;
+      background: #2d2d2d;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 2em;
+      font-size: 1.07em;
+      font-weight: bold;
+      padding: 0.22em 1em 0.18em 1em;
+      min-height: 2.6em;
+    }
+    nav.stuck {
+      position: fixed !important;
+      top: 0 !important;
+      bottom: auto !important;
+      left: 0; right: 0; width: 100vw;
+    }
+    nav.hidden {
+      transform: translateY(-120%);
+    }
     nav a, nav button {
       color: white;
       text-decoration: none;
@@ -217,8 +212,7 @@ nav.hidden {
     }
     @media (max-width: 570px) {
       nav { gap: 0.37em; font-size: 0.88em; flex-wrap: wrap; }
-    }
-  
+    }  
     section {
       padding: 3em 1em 1.2em 1em;
       max-width: 1000px;
@@ -501,6 +495,7 @@ body:not(.dark) .logo-qv {
 
   </script>
 
+</style>
 </head>
 <body>
   <header>
@@ -513,64 +508,61 @@ body:not(.dark) .logo-qv {
       </div>
       <span class="sommerfest-countdown" id="sommerfest-countdown">00 Tage 00:00:00</span>
     </div>
+    <nav>
+      <a href="#historie">Historie</a>
+      <a href="#vereine">Vereine</a>
+      <a href="#sommerfest">Sommerfest</a>
+      <a href="#lädeli">Lädeli</a>
+      <a href="#partyraum">Partyraum</a>
+      <a href="#rooftop">Rooftop</a>
+      <a href="#fitness">Fitnessraum</a>
+      <a href="#spielgruppe">Spielgruppe</a>
+      <a href="#downloads">Downloads</a>
+      <a href="#kontakt">Kontakt</a>
+      <a href="#login">Login</a>
+      <a href="#" id="showTranslate" class="icon-btn" title="Sprache wählen" style="font-size:1.18em; vertical-align:middle;">🌐</a>
+      <span id="google_translate_element" style="display:none; position:absolute; right:4.2em; top:2.7em; z-index:1001;"></span>
+      <button id="themeSwitcher" aria-label="Theme wechseln">🌓</button>
+      <a href="#" id="scrollTopBtn" class="icon-btn" title="Nach oben">⇧</a>
+    </nav>
   </header>
-  <nav>
-  <a href="#historie">Historie</a>
-  <a href="#vereine">Vereine</a>
-  <a href="#sommerfest">Sommerfest</a>
-  <a href="#lädeli">Lädeli</a>
-  <a href="#partyraum">Partyraum</a>
-  <a href="#rooftop">Rooftop</a>
-  <a href="#fitness">Fitnessraum</a>
-  <a href="#spielgruppe">Spielgruppe</a>
-  <a href="#downloads">Downloads</a>
-  <a href="#kontakt">Kontakt</a>
-  <a href="#login">Login</a>
-  <a href="#" id="showTranslate" class="icon-btn" title="Sprache wählen" style="font-size:1.18em; vertical-align:middle;">🌐</a>
-  <span id="google_translate_element" style="display:none; position:absolute; right:4.2em; top:2.7em; z-index:1001;"></span>
-  <button id="themeSwitcher" aria-label="Theme wechseln">🌓</button>
-  <a href="#" id="scrollTopBtn" class="icon-btn" title="Nach oben">⇧</a>
-</nav>
   <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const nav = document.querySelector('nav');
-  const header = document.querySelector('header');
-  let lastScrollY = window.scrollY;
-  let navHidden = false;
-  let ticking = false;
+    document.addEventListener('DOMContentLoaded', function() {
+      const nav = document.querySelector('header nav');
+      const header = document.querySelector('header');
+      let lastScrollY = window.scrollY;
+      let ticking = false;
 
-  function onScroll() {
-    const headerHeight = header.offsetHeight;
-    const scrollY = window.scrollY;
+      function onScroll() {
+        const headerHeight = header.offsetHeight;
+        const scrollY = window.scrollY;
 
-    // Im Headerbereich – Menü am unteren Rand des Bilds (header)
-    if (scrollY < headerHeight) {
-      nav.classList.remove('stuck', 'hidden');
-      nav.style.top = '';
-    } else {
-      // Sticky oben
-      nav.classList.add('stuck');
-      if (scrollY > lastScrollY && scrollY > headerHeight + 20) {
-        nav.classList.add('hidden');
-      } else {
-        nav.classList.remove('hidden');
+        if (scrollY < headerHeight) {
+          nav.classList.remove('stuck', 'hidden');
+          nav.style.top = '';
+        } else {
+          nav.classList.add('stuck');
+          if (scrollY > lastScrollY && scrollY > headerHeight + 20) {
+            nav.classList.add('hidden');
+          } else {
+            nav.classList.remove('hidden');
+          }
+        }
+        lastScrollY = scrollY;
+        ticking = false;
       }
-    }
-    lastScrollY = scrollY;
-    ticking = false;
-  }
 
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      window.requestAnimationFrame(onScroll);
-      ticking = true;
-    }
-  });
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          window.requestAnimationFrame(onScroll);
+          ticking = true;
+        }
+      });
 
-  window.addEventListener('resize', onScroll);
-  onScroll();
-});
-</script>
+      window.addEventListener('resize', onScroll);
+      onScroll();
+    });
+  </script>
 
   <!-- ===== SECTIONS, GALLERIES, ALLE TEXTE ===== -->
   <section id="historie">
