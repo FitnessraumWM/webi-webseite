@@ -860,18 +860,18 @@ body:not(.dark) .logo-qv {
   <script>
     // Menü Hide on Scroll
     let lastScrollY = window.scrollY, nav = document.querySelector('nav');
-    let navHidden = false, ticking = false, navHeight = nav.offsetHeight;
-    function handleNavScroll() {
-      if (window.scrollY > lastScrollY && window.scrollY > navHeight + 10) {
-        if (!navHidden) { nav.style.top = -${navHeight + 20}px; navHidden = true; }
-      } else {
-        if (navHidden) { nav.style.top = '0'; navHidden = false; }
-      }
-      lastScrollY = window.scrollY; ticking = false;
-    }
-    window.addEventListener('scroll', () => {
-      if (!ticking) { window.requestAnimationFrame(handleNavScroll); ticking = true; }
-    });
+let navHidden = false, ticking = false, navHeight = nav.offsetHeight;
+function handleNavScroll() {
+  if (window.scrollY > lastScrollY && window.scrollY > navHeight + 10) {
+    if (!navHidden) { nav.style.top = `-${navHeight + 20}px`; navHidden = true; }
+  } else {
+    if (navHidden) { nav.style.top = '0'; navHidden = false; }
+  }
+  lastScrollY = window.scrollY; ticking = false;
+}
+window.addEventListener('scroll', () => {
+  if (!ticking) { window.requestAnimationFrame(handleNavScroll); ticking = true; }
+});
 
     // Theme Switcher inkl. Logo-Wechsel
     const themeBtn = document.getElementById('themeSwitcher');
@@ -953,33 +953,37 @@ body:not(.dark) .logo-qv {
     updateSommerfestCountdown();
     setInterval(updateSommerfestCountdown, 1000);
 
-    const base = "webermuehle";
-
-  async function updateCounterInfo() {
-    try {
-      const [all, today, week, month] = await Promise.all([
-        fetch(https://api.counterapi.dev/v1/${base}/total).then(r => r.json()),
-        fetch(https://api.counterapi.dev/v1/${base}/today).then(r => r.json()),
-        fetch(https://api.counterapi.dev/v1/${base}/week).then(r => r.json()),
-        fetch(https://api.counterapi.dev/v1/${base}/month).then(r => r.json())
-      ]);
-      let text = Seitenbesuche gesamt: ${all.value}<br>
-        Heute: ${today.value}<br>
-        Diese Woche: ${week.value}<br>
-        Diesen Monat: ${month.value};
-      document.getElementById("besucherinfo").innerHTML = text;
-    } catch(e) {
-      document.getElementById("besucherinfo").textContent = "Besucherzähler offline";
-    }
+    const base = "webi-webermuehle"; // richtiger Counter-Name!
+async function updateCounterInfo() {
+  try {
+    const [all, today, week, month] = await Promise.all([
+      fetch(`https://api.counterapi.dev/v1/${base}/visits`).then(r => r.json()),
+      fetch(`https://api.counterapi.dev/v1/${base}-today/visits`).then(r => r.json()),
+      fetch(`https://api.counterapi.dev/v1/${base}-week/visits`).then(r => r.json()),
+      fetch(`https://api.counterapi.dev/v1/${base}-month/visits`).then(r => r.json())
+    ]);
+    let text = `Seitenbesuche gesamt: ${all.count}<br>
+      Heute: ${today.count}<br>
+      Diese Woche: ${week.count}<br>
+      Diesen Monat: ${month.count}`;
+    document.getElementById("besucherinfo").innerHTML = text;
+  } catch(e) {
+    document.getElementById("besucherinfo").textContent = "Besucherzähler offline";
   }
+}
 
   // Zähler erhöhen – automatisch angelegt beim ersten Zugriff
-  Promise.all([
-    fetch(https://api.counterapi.dev/v1/${base}/total/incr, { method: "POST" }),
-    fetch(https://api.counterapi.dev/v1/${base}/today/incr, { method: "POST" }),
-    fetch(https://api.counterapi.dev/v1/${base}/week/incr, { method: "POST" }),
-    fetch(https://api.counterapi.dev/v1/${base}/month/incr, { method: "POST" })
-  ]).then(updateCounterInfo);
+ Promise.all([
+  fetch(`https://api.counterapi.dev/v1/${base}/visits/incr`, { method: "POST" }),
+  fetch(`https://api.counterapi.dev/v1/${base}-today/visits/incr`, { method: "POST" }),
+  fetch(`https://api.counterapi.dev/v1/${base}-week/visits/incr`, { method: "POST" }),
+  fetch(`https://api.counterapi.dev/v1/${base}-month/visits/incr`, { method: "POST" })
+]).then(updateCounterInfo);
+
+document.getElementById('scrollTopBtn').onclick = function(e) {
+  e.preventDefault();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
 
   document.getElementById('scrollTopBtn').onclick = function(e) {
     e.preventDefault();
