@@ -472,13 +472,20 @@ body.dark section a:hover {
   text-align: center;
   margin: 1.5em auto 1em auto;
 }
-.logo-qv,
 .logo-sofe {
   height: 60px;
   width: auto;
   max-width: 110px;
   object-fit: contain;
   display: inline-block;
+}
+.logo-qv {
+  display: inline-block;
+  width: 130px;
+  height: 130px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 /* Darkmode Support für QV Logo */
@@ -686,8 +693,8 @@ body:not(.dark) .logo-qv {
   <h2>Kontakt</h2>
   
     Du hast Fragen, möchtest einen Raum buchen oder hast ein Anliegen?<br><br>
-<div style="text-align:center; display: flex; justify-content: center; align-items: center; gap: 0.5em; flex-wrap: wrap;">
-<img class="logo-qv" alt="Logo Quartierverein" style="height: 100px;" />
+<div style="text-align:center; display:flex; justify-content:center; align-items:center; gap: 0.7em; flex-wrap:wrap;">
+  <span class="logo-qv" aria-label="Logo Quartierverein"></span>
   <h2 style="margin: 0;">Quartierverein Webermühle - Klosterrütti (Vorstand)</h2>
 </div>
 
@@ -767,7 +774,7 @@ body:not(.dark) .logo-qv {
 
   
 <div style="text-align:center; display: flex; justify-content: center; align-items: center; gap: 0.5em; flex-wrap: wrap;">
-  <img class="verein-sofe-logo-w" src="verein-sofe-logo-w.png" alt="Logo SOFE Webi" style="height: 100px;" />
+  <img class="verein-sofe-logo-w" src="verein-sofe-logo-w.png" alt="Logo SOFE Webi" style="height: 130px;" />
   <h2 style="margin: 0;">Verein SOFE Webi</h2>
   </div>
 
