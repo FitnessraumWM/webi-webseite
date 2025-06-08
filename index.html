@@ -128,12 +128,12 @@
       .welcome-headline { font-size: 2.5rem; top: 50vh; }
     }
     nav {
-  position: absolute;         /* <-- NEU! */
+  position: absolute;
   left: 0;
-  bottom: 0;                  /* <-- NEU! */
   width: 100vw;
+  bottom: 0;
   z-index: 100;
-  transition: top 0.44s cubic-bezier(.77,0,.18,1.05), bottom 0.44s, transform 0.34s;
+  transition: top 0.44s cubic-bezier(.77,0,.18,1.05), transform 0.34s;
   background: #2d2d2d;
   color: white;
   display: flex;
@@ -145,17 +145,17 @@
   padding: 0.22em 1em 0.18em 1em;
   min-height: 2.6em;
 }
-  nav.stuck {
+
+nav.stuck {
   position: fixed !important;
   top: 0 !important;
   bottom: auto !important;
   width: 100vw;
 }
+
 nav.hidden {
   transform: translateY(-120%);
 }
- 
-    }
     nav a, nav button {
       color: white;
       text-decoration: none;
@@ -529,29 +529,26 @@ body:not(.dark) .logo-qv {
   <a href="#" id="scrollTopBtn" class="icon-btn" title="Nach oben">⇧</a>
 </nav>
   <script>
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
   const nav = document.querySelector('nav');
   const header = document.querySelector('header');
   let lastScrollY = window.scrollY;
+  let navHidden = false;
   let ticking = false;
 
-  function handleNav() {
+  function onScroll() {
     const headerHeight = header.offsetHeight;
     const scrollY = window.scrollY;
-    // Menü im Headerbereich: unten am Bild (position: absolute; bottom: 0)
+
+    // 1. Wechsel: Wenn noch im Header, Menü bleibt am Bild unten.
     if (scrollY < headerHeight) {
       nav.classList.remove('stuck', 'hidden');
       nav.style.top = '';
-      nav.style.bottom = '0';
-      nav.style.position = 'absolute';
     } else {
-      // Sticky oben
+      // 2. Wechsel: Sticky oben.
       nav.classList.add('stuck');
-      nav.style.position = 'fixed';
-      nav.style.top = '0';
-      nav.style.bottom = 'auto';
-      // Hide beim Runter-, Show beim Hochscrollen
-      if (scrollY > lastScrollY) {
+      // 3. Menü verstecken beim schnellen Runterscrollen, zeigen beim Hochscrollen.
+      if (scrollY > lastScrollY && scrollY > headerHeight + 20) {
         nav.classList.add('hidden');
       } else {
         nav.classList.remove('hidden');
@@ -561,14 +558,15 @@ document.addEventListener('DOMContentLoaded', function () {
     ticking = false;
   }
 
-  window.addEventListener('scroll', function () {
+  window.addEventListener('scroll', () => {
     if (!ticking) {
-      window.requestAnimationFrame(handleNav);
+      window.requestAnimationFrame(onScroll);
       ticking = true;
     }
   });
-  window.addEventListener('resize', handleNav);
-  handleNav();
+
+  window.addEventListener('resize', onScroll);
+  onScroll();
 });
 </script>
 
