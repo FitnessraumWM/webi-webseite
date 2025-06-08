@@ -466,6 +466,19 @@ body.dark section a:hover {
       }
     });
   });
+
+.logo-qv {
+    height: 55px;
+  }
+  .logo-sofe {
+    height: 55px;
+  }
+  body.dark .logo-qv {
+    content: url('logo-qv-weiss.png');
+  }
+  body:not(.dark) .logo-qv {
+    content: url('logo-qv-schwarz.png');
+  }
 </script>
 
 </head>
@@ -663,7 +676,10 @@ body.dark section a:hover {
   <h2>Kontakt</h2>
   
     Du hast Fragen, möchtest einen Raum buchen oder hast ein Anliegen?<br><br>
-    <h2 style="margin-top:2em;">Quartierverein Webermühle - Klosterrütti (Vorstand)</h2>
+<h2 style="margin-top:2em; display: flex; align-items: center; gap: 0.5em;">
+    <img src="logo-qv-schwarz.png" class="logo-qv" alt="Logo QV" />
+    Quartierverein Webermühle - Klosterrütti (Vorstand)
+  </h2>
   <table class="vorstand-table">
   <thead>
     <tr>
@@ -739,7 +755,9 @@ body.dark section a:hover {
 <p><strong>Spielgruppe: </strong> Enza Siino – Tel: <a href="tel:0793953658">079 395 36 58</a> – <a href="mailto:e.siino@hotmail.com">e.siino@hotmail.com</a></p><br><br><p>
 
   
-      <h2>Verein SOFE Webi</h2><br>
+      <h2 style="margin-top:2em; display: flex; align-items: center; gap: 0.5em;">
+    <img src="verein-sofe-logo-b.png" class="logo-sofe" alt="Logo SOFE Webi" />
+    Verein SOFE Webi</h2><br>
   <b>Sommerfest/SOFE Webi:</b> <a href="mailto:sommerfest@webi.family" class="contact-link">sommerfest@webi.family</a><br><br>
    <table class="vorstand-table">
   <thead>
