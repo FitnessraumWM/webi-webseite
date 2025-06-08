@@ -862,7 +862,7 @@ body:not(.dark) .logo-qv {
     let navHidden = false, ticking = false, navHeight = nav.offsetHeight;
     function handleNavScroll() {
       if (window.scrollY > lastScrollY && window.scrollY > navHeight + 10) {
-        if (!navHidden) { nav.style.top = `-${navHeight + 20}px`; navHidden = true; }
+        if (!navHidden) { nav.style.top = -${navHeight + 20}px; navHidden = true; }
       } else {
         if (navHidden) { nav.style.top = '0'; navHidden = false; }
       }
@@ -952,49 +952,38 @@ body:not(.dark) .logo-qv {
     updateSommerfestCountdown();
     setInterval(updateSommerfestCountdown, 1000);
 
-    const counterBase = "webi-webermuehle"; // eindeutiger Name für deinen Counter
+    const base = "webermuehle";
 
-async function updateCounterInfo() {
-  // Gesamte Besucher
-  const all = await fetch(`https://api.counterapi.dev/v1/${COUNTER_KEY}/visits/incr`, { method: "POST" }).then(r => r.json());
-  // Heute, Woche, Monat hochzählen
-  const today = await fetch(`https://api.counterapi.dev/v1/${COUNTER_KEY}-today/visits/incr`, { method: "POST" }).then(r => r.json());
-  const week = await fetch(`https://api.counterapi.dev/v1/${COUNTER_KEY}-week/visits/incr`, { method: "POST" }).then(r => r.json());
-  const month = await fetch(`https://api.counterapi.dev/v1/${COUNTER_KEY}-month/visits/incr`, { method: "POST" }).then(r => r.json());
-
-  document.getElementById("besucherinfo").innerHTML =
-    `Seitenbesuche gesamt: ${all.count}<br>
-    Heute: ${today.count}<br>
-    Diese Woche: ${week.count}<br>
-    Diesen Monat: ${month.count}`;
-}
-updateCounterInfo();
-
-// Beim Laden Seite: Zähler für alle Zeiträume erhöhen
-Promise.all([
-  fetch(`https://api.counterapi.dev/v1/${counterBase}/visits/incr`, { method: "POST" }),
-  fetch(`https://api.counterapi.dev/v1/${counterBase}-today/visits/incr`, { method: "POST" }),
-  fetch(`https://api.counterapi.dev/v1/${counterBase}-week/visits/incr`, { method: "POST" }),
-  fetch(`https://api.counterapi.dev/v1/${counterBase}-month/visits/incr`, { method: "POST" })
-]).then(updateCounterInfo);
-
-<div id="besucherinfo"></div>
-<script>
-  // Counter-Namespace und Name
-  const COUNTER_KEY = "webi-webermuehle";
-  const COUNTER_NAME = "visits";
-
-  async function updateCounter() {
-    // Erhöhe und hole aktuellen Stand (Counter wird bei erstem Aufruf angelegt)
-    const resp = await fetch(`https://api.counterapi.dev/v1/${COUNTER_KEY}/${COUNTER_NAME}/incr`, { method: "POST" });
-    const data = await resp.json();
-    document.getElementById("besucherinfo").innerHTML =
-      `Seitenbesuche gesamt: ${data.count}`;
+  async function updateCounterInfo() {
+    try {
+      const [all, today, week, month] = await Promise.all([
+        fetch(https://api.counterapi.dev/v1/${base}/total).then(r => r.json()),
+        fetch(https://api.counterapi.dev/v1/${base}/today).then(r => r.json()),
+        fetch(https://api.counterapi.dev/v1/${base}/week).then(r => r.json()),
+        fetch(https://api.counterapi.dev/v1/${base}/month).then(r => r.json())
+      ]);
+      let text = Seitenbesuche gesamt: ${all.value}<br>
+        Heute: ${today.value}<br>
+        Diese Woche: ${week.value}<br>
+        Diesen Monat: ${month.value};
+      document.getElementById("besucherinfo").innerHTML = text;
+    } catch(e) {
+      document.getElementById("besucherinfo").textContent = "Besucherzähler offline";
+    }
   }
 
-  updateCounter();
-</script>
+  // Zähler erhöhen – automatisch angelegt beim ersten Zugriff
+  Promise.all([
+    fetch(https://api.counterapi.dev/v1/${base}/total/incr, { method: "POST" }),
+    fetch(https://api.counterapi.dev/v1/${base}/today/incr, { method: "POST" }),
+    fetch(https://api.counterapi.dev/v1/${base}/week/incr, { method: "POST" }),
+    fetch(https://api.counterapi.dev/v1/${base}/month/incr, { method: "POST" })
+  ]).then(updateCounterInfo);
 
+  document.getElementById('scrollTopBtn').onclick = function(e) {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
   </script>
 </body>
 </html>
