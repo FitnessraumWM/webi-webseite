@@ -466,20 +466,29 @@ body.dark section a:hover {
       }
     });
   });
+    
+.qv-logo-wrapper,
+.sofe-logo-wrapper {
+  text-align: center;
+  margin: 1em auto;
+}
 
-.logo-qv {
-    height: 55px;
-  }
-  .logo-sofe {
-    height: 55px;
-  }
-  body.dark .logo-qv {
-    content: url('logo-qv-weiss.png');
-  }
-  body:not(.dark) .logo-qv {
-    content: url('logo-qv-schwarz.png');
-  }
-</script>
+.logo-qv,
+.logo-sofe {
+  height: 80px;
+  max-width: 180px;
+  margin-bottom: 0.5em;
+}
+
+/* Logo-Wechsel bei Darkmode */
+body.dark .logo-qv {
+  content: url('logo-qv-weiss.png');
+}
+body:not(.dark) .logo-qv {
+  content: url('logo-qv-schwarz.png');
+}
+
+  </script>
 
 </head>
 <body>
@@ -680,7 +689,10 @@ body.dark section a:hover {
     <img src="logo-qv-schwarz.png" class="logo-qv" alt="Logo QV" />
     Quartierverein Webermühle - Klosterrütti (Vorstand)
   </h2>
-  <table class="vorstand-table">
+  <div class="qv-logo-wrapper">
+  <img class="logo-qv" src="logo-qv-schwarz.png" alt="Logo Quartierverein" />
+</div>
+<table class="vorstand-table">
   <thead>
     <tr>
       <th>Funktion</th>
@@ -759,7 +771,10 @@ body.dark section a:hover {
     <img src="verein-sofe-logo-b.png" class="logo-sofe" alt="Logo SOFE Webi" />
     Verein SOFE Webi</h2><br>
   <b>Sommerfest/SOFE Webi:</b> <a href="mailto:sommerfest@webi.family" class="contact-link">sommerfest@webi.family</a><br><br>
-   <table class="vorstand-table">
+   <div class="sofe-logo-wrapper">
+  <img class="logo-sofe" src="verein-sofe-logo-w.png" alt="Logo SOFE Webi" />
+</div>
+<table class="vorstand-table">
   <thead>
     <tr>
       <th>Funktion</th>
