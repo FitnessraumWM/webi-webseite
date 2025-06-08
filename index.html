@@ -691,14 +691,12 @@ body:not(.dark) .logo-qv {
 
 <section id="kontakt">
   <h2>Kontakt</h2>
-<p style="margin-bottom: 2.6em;">
-  Du hast Fragen, möchtest einen Raum buchen oder hast ein Anliegen?
-</p>
+  
+    Du hast Fragen, möchtest einen Raum buchen oder hast ein Anliegen?<br><br>
 <div style="text-align:center; display:flex; justify-content:center; align-items:center; gap: 0.7em; flex-wrap:wrap;">
-  <img id="logo-qv-kontakt" class="logo-qv" src="logo-qv-schwarz.png" alt="Logo Quartierverein" style="height:130px;" />
+  <span class="logo-qv" aria-label="Logo Quartierverein"></span>
   <h2 style="margin: 0;">Quartierverein Webermühle - Klosterrütti (Vorstand)</h2>
 </div>
-
 
 <table class="vorstand-table">
   <thead>
@@ -812,11 +810,8 @@ body:not(.dark) .logo-qv {
       <td data-label="Telefon"><a href="tel:0767090801">076 709 08 01</a></td>
       <td data-label="E-Mail"><a href="mailto:sommerfest@webi.family">sommerfest@webi.family</a></td>
     </tr>
-    
      </tbody>
 </table>
-  <p><strong>Revisoren:</strong> Jan Kunz und Johnny Ballas</p><p>
-
    <h2 style="margin-top:2em;">Hausmeister</h2>
 <p>
   <strong>CEBA Hauswartung GmbH</strong><br>
@@ -898,7 +893,6 @@ body:not(.dark) .logo-qv {
     themeBtn.textContent = "🌙";
   }
 }
-
     themeBtn.onclick = () => setTheme(body.classList.contains('dark') ? 'light' : 'dark');
     (function() {
       const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
