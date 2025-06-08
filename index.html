@@ -955,23 +955,20 @@ body:not(.dark) .logo-qv {
     const counterBase = "webi-webermuehle"; // eindeutiger Name für deinen Counter
 
 async function updateCounterInfo() {
-  try {
-    // Hole Werte für alle Zeiträume
-    const [all, today, week, month] = await Promise.all([
-      fetch(`https://api.counterapi.dev/v1/${counterBase}/visits`).then(r => r.json()),
-      fetch(`https://api.counterapi.dev/v1/${counterBase}-today/visits`).then(r => r.json()),
-      fetch(`https://api.counterapi.dev/v1/${counterBase}-week/visits`).then(r => r.json()),
-      fetch(`https://api.counterapi.dev/v1/${counterBase}-month/visits`).then(r => r.json())
-    ]);
-    let text = `Seitenbesuche gesamt: ${all.count}<br>
-      Heute: ${today.count}<br>
-      Diese Woche: ${week.count}<br>
-      Diesen Monat: ${month.count}`;
-    document.getElementById("besucherinfo").innerHTML = text;
-  } catch(e) {
-    document.getElementById("besucherinfo").textContent = "Besucherzähler offline";
-  }
+  // Gesamte Besucher
+  const all = await fetch(`https://api.counterapi.dev/v1/${COUNTER_KEY}/visits/incr`, { method: "POST" }).then(r => r.json());
+  // Heute, Woche, Monat hochzählen
+  const today = await fetch(`https://api.counterapi.dev/v1/${COUNTER_KEY}-today/visits/incr`, { method: "POST" }).then(r => r.json());
+  const week = await fetch(`https://api.counterapi.dev/v1/${COUNTER_KEY}-week/visits/incr`, { method: "POST" }).then(r => r.json());
+  const month = await fetch(`https://api.counterapi.dev/v1/${COUNTER_KEY}-month/visits/incr`, { method: "POST" }).then(r => r.json());
+
+  document.getElementById("besucherinfo").innerHTML =
+    `Seitenbesuche gesamt: ${all.count}<br>
+    Heute: ${today.count}<br>
+    Diese Woche: ${week.count}<br>
+    Diesen Monat: ${month.count}`;
 }
+updateCounterInfo();
 
 // Beim Laden Seite: Zähler für alle Zeiträume erhöhen
 Promise.all([
@@ -980,6 +977,23 @@ Promise.all([
   fetch(`https://api.counterapi.dev/v1/${counterBase}-week/visits/incr`, { method: "POST" }),
   fetch(`https://api.counterapi.dev/v1/${counterBase}-month/visits/incr`, { method: "POST" })
 ]).then(updateCounterInfo);
+
+<div id="besucherinfo"></div>
+<script>
+  // Counter-Namespace und Name
+  const COUNTER_KEY = "webi-webermuehle";
+  const COUNTER_NAME = "visits";
+
+  async function updateCounter() {
+    // Erhöhe und hole aktuellen Stand (Counter wird bei erstem Aufruf angelegt)
+    const resp = await fetch(`https://api.counterapi.dev/v1/${COUNTER_KEY}/${COUNTER_NAME}/incr`, { method: "POST" });
+    const data = await resp.json();
+    document.getElementById("besucherinfo").innerHTML =
+      `Seitenbesuche gesamt: ${data.count}`;
+  }
+
+  updateCounter();
+</script>
 
   </script>
 </body>
