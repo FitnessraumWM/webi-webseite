@@ -495,7 +495,7 @@ body:not(.dark) .logo-qv {
 <body>
   <header>
     <a href="#" class="logos-left"><img src="verein-sofe-logo-w.png" alt="Logo SOFE Webi" /></a>
-    <a href="#" class="logos-right"><img src="logo-qv-weiss.png" alt="Logo Quartierverein" /></a>
+    <a href="#" class="logos-right"><img id="logo-qv-header" src="logo-qv-weiss.png" alt="Logo Quartierverein" /></a>
     <!-- BANNER -->
     <div class="welcome-headline">Willkommen in der Webermühle</div>
 <div class="sommerfest-timer-container">
@@ -687,7 +687,7 @@ body:not(.dark) .logo-qv {
   
     Du hast Fragen, möchtest einen Raum buchen oder hast ein Anliegen?<br><br>
   <div class="qv-logo-wrapper">
-  <img class="logo-qv" src="logo-qv-schwarz.png" alt="Logo Quartierverein" />
+  <img id="logo-qv-kontakt" class="logo-qv" src="logo-qv-schwarz.png" alt="Logo Quartierverein" />
 </div>
 
 <h2 style="text-align:center;">Quartierverein Webermühle - Klosterrütti (Vorstand)</h2>
@@ -872,21 +872,22 @@ body:not(.dark) .logo-qv {
       sofe: { hell: "verein-sofe-logo-w.png", dunkel: "verein-sofe-logo-s.png" },
       qv: { hell: "logo-qv-weiss.png", dunkel: "logo-qv-schwarz.png" }
     };
+    
     function setTheme(mode) {
-      if (mode === 'dark') {
-        body.classList.add('dark');
-        document.querySelector('.logos-left img').src = logos.sofe.dunkel;
-        document.querySelector('.logos-right img').src = logos.qv.dunkel;
-        localStorage.setItem('theme', 'dark');
-        themeBtn.textContent = "🌞";
-      } else {
-        body.classList.remove('dark');
-        document.querySelector('.logos-left img').src = logos.sofe.hell;
-        document.querySelector('.logos-right img').src = logos.qv.hell;
-        localStorage.setItem('theme', 'light');
-        themeBtn.textContent = "🌙";
-      }
-    }
+  if (mode === 'dark') {
+    body.classList.add('dark');
+    document.getElementById('logo-qv-header').src = logos.qv.dunkel;
+    document.getElementById('logo-qv-kontakt').src = 'logo-qv-weiss.png'; // dark
+    document.querySelector('.logos-left img').src = logos.sofe.dunkel;
+    themeBtn.textContent = "🌞";
+  } else {
+    body.classList.remove('dark');
+    document.getElementById('logo-qv-header').src = logos.qv.hell;
+    document.getElementById('logo-qv-kontakt').src = 'logo-qv-schwarz.png'; // light
+    document.querySelector('.logos-left img').src = logos.sofe.hell;
+    themeBtn.textContent = "🌙";
+  }
+}
     themeBtn.onclick = () => setTheme(body.classList.contains('dark') ? 'light' : 'dark');
     (function() {
       const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
