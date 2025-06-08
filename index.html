@@ -691,12 +691,13 @@ body:not(.dark) .logo-qv {
 
 <section id="kontakt">
   <h2>Kontakt</h2>
-  
-    Du hast Fragen, möchtest einen Raum buchen oder hast ein Anliegen?<br><br>
+
+  Du hast Fragen, möchtest einen Raum buchen oder hast ein Anliegen?<br><br>
 <div style="text-align:center; display:flex; justify-content:center; align-items:center; gap: 0.7em; flex-wrap:wrap;">
   <img id="logo-qv-kontakt" class="logo-qv" src="logo-qv-schwarz.png" alt="Logo Quartierverein" style="height:75px;" />
   <h2 style="margin: 0;">Quartierverein Webermühle - Klosterrütti (Vorstand)</h2>
 </div>
+
 
 <table class="vorstand-table">
   <thead>
@@ -893,6 +894,7 @@ body:not(.dark) .logo-qv {
     themeBtn.textContent = "🌙";
   }
 }
+
     themeBtn.onclick = () => setTheme(body.classList.contains('dark') ? 'light' : 'dark');
     (function() {
       const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
