@@ -431,39 +431,18 @@ body.dark section a:hover {
   }
   </style>
 
-  <script type="text/javascript">
-    function googleTranslateElementInit() {
-      new google.translate.TranslateElement(
-        {pageLanguage: 'de', includedLanguages: 'en,it,es,tr,sq,hr,pt,pl,sk,fr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE},
-        'google_translate_element'
-      );
-    }
-  </script>
-  <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
-  </script>
-  <script>
-setTimeout(function() {
-  var langMap = {
-    'Englisch': 'English',
-    'Italienisch': 'Italiano',
-    'Spanisch': 'Español',
-    'Französisch': 'Français',
-    'Türkisch': 'Türkçe',
-    'Albanisch': 'Shqip',
-    'Kroatisch': 'Hrvatski',
-    'Portugiesisch': 'Português',
-    'Polnisch': 'Polski',
-    'Slowakisch': 'Slovenský'
-  };
-  document.querySelectorAll('.goog-te-combo option').forEach(function(opt) {
-    if (langMap[opt.textContent]) {
-      opt.textContent = langMap[opt.textContent];
-    }
-  });
-}, 1100);
+ <script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement(
+      {pageLanguage: 'de', includedLanguages: 'en,it,es,tr,sq,hr,pt,pl,sk,fr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE},
+      'google_translate_element'
+    );
+  }
 </script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
-  <script>
+  
+
   document.addEventListener("DOMContentLoaded", function() {
   var btn = document.getElementById("showTranslate");
   var box = document.getElementById("google_translate_element");
