@@ -359,18 +359,29 @@ body.dark section a:hover {
     }
   }
 
-  #google_translate_element {
-  display: none;
-  position: absolute;
-  right: 10.5em;      /* passend zum Menü, ggf. anpassen */
-  top: -2.8em;        /* etwas unterhalb der Menüleiste */
-  z-index: 1001;
-  background: #232323;
-  padding: 0.18em 0.38em;
-  border-radius: 6px;
-  box-shadow: 0 4px 12px #2227;
-  font-size: 1em;
+  #my-translate-dropdown select {
+  background: none !important;
+  border: none !important;
+  color: #2da6df !important;
+  font-size: 1.32em !important;
+  padding: 0 !important;
+  width: 2.3em !important;
+  cursor: pointer;
+  outline: none;
+  box-shadow: none !important;
+  min-width: 0 !important;
+  transition: background 0.14s, color 0.14s;
 }
+#my-translate-dropdown select:hover,
+#my-translate-dropdown select:focus {
+  color: #ffe066 !important;
+  background: none !important;
+}
+body.dark #my-translate-dropdown select {
+  color: #ffd200 !important;
+  background: none !important;
+}
+
 
 .goog-te-gadget {
   font-size: 1em !important;
@@ -540,22 +551,24 @@ body:not(.dark) .logo-qv {
   <a href="#downloads">Downloads</a>
   <a href="#kontakt">Kontakt</a>
   <a href="#login">Login</a>
-  <div id="my-translate-dropdown">
-    <select id="languageSelect" aria-label="Sprache wählen" title="Sprache wählen">
-      <option value="">🌐</option>
-      <option value="de">Deutsch</option>
-      <option value="en">English</option>
-      <option value="it">Italiano</option>
-      <option value="fr">Français</option>
-      <option value="es">Español</option>
-      <option value="tr">Türkçe</option>
-      <option value="sq">Shqip</option>
-      <option value="hr">Hrvatski</option>
-      <option value="pt">Português</option>
-      <option value="pl">Polski</option>
-      <option value="sk">Slovenčina</option>
-    </select>
-  </div>
+  <div id="my-translate-dropdown" style="display: flex; align-items: center; background: none;">
+  <select id="languageSelect" aria-label="Sprache wählen"
+    style="background: none; border: none; color: #2da6df; font-size: 1.32em; padding: 0; width: 2.3em; cursor:pointer; outline: none;">
+    <option value="" style="color:#2da6df;">🌐</option>
+    <option value="de">Deutsch</option>
+    <option value="en">English</option>
+    <option value="it">Italiano</option>
+    <option value="fr">Français</option>
+    <option value="es">Español</option>
+    <option value="tr">Türkçe</option>
+    <option value="sq">Shqip</option>
+    <option value="hr">Hrvatski</option>
+    <option value="pt">Português</option>
+    <option value="pl">Polski</option>
+    <option value="sk">Slovenčina</option>
+  </select>
+</div>
+
   <button id="themeSwitcher" aria-label="Theme wechseln">🌓</button>
   <a href="#" id="scrollTopBtn" class="icon-btn" title="Nach oben">⇧</a>
 </nav>
@@ -910,61 +923,7 @@ window.addEventListener('scroll', () => {
   if (!ticking) { window.requestAnimationFrame(handleNavScroll); ticking = true; }
 });
 
-    // Theme Switcher inkl. Logo-Wechsel
-    const themeBtn = document.getElementById('themeSwitcher');
-  const body = document.body;
-  const logos = {
-    sofe: { hell: "verein-sofe-logo-w.png", dunkel: "verein-sofe-logo-s.png" },
-    qv:   { hell: "logo-qv-schwarz.png",   dunkel: "logo-qv-weiss.png" }
-  };
-  function setTheme(mode) {
-    if (mode === 'dark') {
-      body.classList.add('dark');
-      document.getElementById('logo-qv-header').src = logos.qv.dunkel;
-      document.getElementById('logo-qv-kontakt').src = logos.qv.dunkel;
-      document.querySelector('.logos-left img').src = logos.sofe.dunkel;
-      themeBtn.textContent = "🌞";
-      localStorage.setItem('theme', 'dark');
-    } else {
-      body.classList.remove('dark');
-      document.getElementById('logo-qv-header').src = logos.qv.hell;
-      document.getElementById('logo-qv-kontakt').src = logos.qv.hell;
-      document.querySelector('.logos-left img').src = logos.sofe.hell;
-      themeBtn.textContent = "🌙";
-      localStorage.setItem('theme', 'light');
-    }
-  }
-  themeBtn.onclick = () => setTheme(body.classList.contains('dark') ? 'light' : 'dark');
-  // Setze das Theme beim Laden!
-  const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  setTheme(theme);
-
-    // Modale Bildvorschau (mit Click auf Bild auch schließen)
-    document.querySelectorAll('.gallery img').forEach(img => {
-      img.addEventListener('click', () => {
-        const modal = document.getElementById('modalOverlay');
-        const modalImg = modal.querySelector('img');
-        modalImg.src = img.src; modalImg.alt = img.alt;
-        modal.classList.add('active');
-        setTimeout(() => {
-          modalImg.style.transform = 'scale(1.0)';
-          modalImg.style.opacity = '1';
-        }, 10);
-        modalImg.onclick = closeModal;
-      });
-    });
-    document.querySelector('#modalOverlay .closeModal').onclick = closeModal;
-    document.getElementById('modalOverlay').onclick = function(e) { if (e.target === this) closeModal(); };
-    document.addEventListener('keydown', function(e) { if (e.key === "Escape") closeModal(); });
-    function closeModal() {
-      const modal = document.getElementById('modalOverlay');
-      const modalImg = modal.querySelector('img');
-      modalImg.style.transform = 'scale(0.7)';
-      modalImg.style.opacity = '0';
-      setTimeout(() => { modal.classList.remove('active'); modalImg.src = ''; }, 180);
-    }
-
-    
+       
 <script type="text/javascript">
   // Google Translate Widget initialisieren (wie gehabt)
   function googleTranslateElementInit() {
@@ -1019,7 +978,75 @@ document.addEventListener('DOMContentLoaded', function() {
 updateSommerfestCountdown();
 setInterval(updateSommerfestCountdown, 1000);
 </script>
-  
+  // Theme Switcher inkl. Logo-Wechsel
+    <script>const themeBtn = document.getElementById('themeSwitcher');
+  const body = document.body;
+  const logos = {
+    sofe: { hell: "verein-sofe-logo-w.png", dunkel: "verein-sofe-logo-s.png" },
+    qv:   { hell: "logo-qv-schwarz.png",   dunkel: "logo-qv-weiss.png" }
+  };
+  function setTheme(mode) {
+    if (mode === 'dark') {
+      body.classList.add('dark');
+      document.getElementById('logo-qv-header').src = logos.qv.dunkel;
+      document.getElementById('logo-qv-kontakt').src = logos.qv.dunkel;
+      document.querySelector('.logos-left img').src = logos.sofe.dunkel;
+      themeBtn.textContent = "🌞";
+      localStorage.setItem('theme', 'dark');
+    } else {
+      body.classList.remove('dark');
+      document.getElementById('logo-qv-header').src = logos.qv.hell;
+      document.getElementById('logo-qv-kontakt').src = logos.qv.hell;
+      document.querySelector('.logos-left img').src = logos.sofe.hell;
+      themeBtn.textContent = "🌙";
+      localStorage.setItem('theme', 'light');
+    }
+  }
+  themeBtn.onclick = () => setTheme(body.classList.contains('dark') ? 'light' : 'dark');
+  // Setze das Theme beim Laden!
+  const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  setTheme(theme);
+</script>
+    // Modale Bildvorschau (mit Click auf Bild auch schließen)
+    <script>
+      document.querySelectorAll('.gallery img').forEach(img => {
+      img.addEventListener('click', () => {
+        const modal = document.getElementById('modalOverlay');
+        const modalImg = modal.querySelector('img');
+        modalImg.src = img.src; modalImg.alt = img.alt;
+        modal.classList.add('active');
+        setTimeout(() => {
+          modalImg.style.transform = 'scale(1.0)';
+          modalImg.style.opacity = '1';
+        }, 10);
+        modalImg.onclick = closeModal;
+      });
+    });
+    document.querySelector('#modalOverlay .closeModal').onclick = closeModal;
+    document.getElementById('modalOverlay').onclick = function(e) { if (e.target === this) closeModal(); };
+    document.addEventListener('keydown', function(e) { if (e.key === "Escape") closeModal(); });
+    function closeModal() {
+      const modal = document.getElementById('modalOverlay');
+      const modalImg = modal.querySelector('img');
+      modalImg.style.transform = 'scale(0.7)';
+      modalImg.style.opacity = '0';
+      setTimeout(() => { modal.classList.remove('active'); modalImg.src = ''; }, 180);
+    }
+    // --- SPRACHWAHL DROPDOWN ---
+  setTimeout(function() {
+    var languageSelect = document.getElementById('languageSelect');
+    if (!languageSelect) return;
+    languageSelect.addEventListener('change', function() {
+      var lang = this.value;
+      var googleCombo = document.querySelector('.goog-te-combo');
+      if (googleCombo) {
+        googleCombo.value = lang;
+        googleCombo.dispatchEvent(new Event('change'));
+      }
+    });
+  }, 900); // Google braucht manchmal etwas
+});
+</script>
 <div id="google_translate_element" style="display:none;"></div>
  </body>
 </html>
