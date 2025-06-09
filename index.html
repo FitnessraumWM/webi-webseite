@@ -429,26 +429,32 @@ body.dark section a:hover {
       margin-bottom: 0.3em;
     }
   }
-    #my-translate-dropdown select {
-    border-radius: 6px;
-    padding: 0.24em 1.1em;
-    font-size: 1em;
-    background: #222;
-    color: #ffe066;
-    border: none;
-    margin-left: 0.8em;
-    box-shadow: 0 2px 12px #2225;
-    cursor: pointer;
-    transition: background 0.17s;
-  }
-  #my-translate-dropdown select:hover {
-    background: #ffe066;
-    color: #222;
-  }
-  body.dark #my-translate-dropdown select {
-    background: #111;
-    color: #ffe066;
-  }
+    #my-translate-dropdown {
+  display: flex;
+  align-items: center;
+  background: none;         /* Kein dunkler Kasten! */
+  margin: 0 0.2em;
+}
+#my-translate-dropdown select {
+  border-radius: 6px;
+  padding: 0.17em 1.1em 0.17em 0.7em;
+  font-size: 1em;
+  background: #2d2d2d; /* selbe Farbe wie Nav */
+  color: #ffe066;
+  border: none;
+  box-shadow: none;
+  cursor: pointer;
+  transition: background 0.17s, color 0.17s;
+  outline: none;
+}
+#my-translate-dropdown select:hover {
+  background: #ffe066;
+  color: #222;
+}
+body.dark #my-translate-dropdown select {
+  background: #111;
+  color: #ffe066;
+}
       </style>
 
   <script>
@@ -538,25 +544,25 @@ body:not(.dark) .logo-qv {
       <a href="#login">Login</a>
       <a href="#" id="showTranslate" class="icon-btn" title="Sprache wählen">🌐</a>
       
-    <div id="my-translate-dropdown" style="position:relative; display:inline-block; margin-left:1em;">
-  <select id="languageSelect" aria-label="Sprache wählen">
-    <option value="">🌐 Sprache wählen</option>
-    <option value="de">Deutsch</option>
-    <option value="en">English</option>
-    <option value="it">Italiano</option>
-    <option value="fr">Français</option>
-    <option value="es">Español</option>
-    <option value="tr">Türkçe</option>
-    <option value="sq">Shqip</option>
-    <option value="hr">Hrvatski</option>
-    <option value="pt">Português</option>
-    <option value="pl">Polski</option>
-    <option value="sk">Slovensky</option>
-  </select>
-</div>
-
-    <button id="themeSwitcher" aria-label="Theme wechseln">🌓</button>
-      <a href="#" id="scrollTopBtn" class="icon-btn" title="Nach oben">⇧</a>
+    <div id="my-translate-dropdown" style="display: flex; align-items: center;">
+    <span style="font-size: 1.22em; color: #2da6df; margin-right:0.2em;">🌐</span>
+    <select id="languageSelect" aria-label="Sprache wählen">
+      <option value="">Sprache wählen</option>
+      <option value="de">Deutsch</option>
+      <option value="en">English</option>
+      <option value="it">Italiano</option>
+      <option value="fr">Français</option>
+      <option value="es">Español</option>
+      <option value="tr">Türkçe</option>
+      <option value="sq">Shqip</option>
+      <option value="hr">Hrvatski</option>
+      <option value="pt">Português</option>
+      <option value="pl">Polski</option>
+      <option value="sk">Slovenčina</option>
+    </select>
+  </div>
+  <button id="themeSwitcher" aria-label="Theme wechseln">🌓</button>
+  <a href="#" id="scrollTopBtn" class="icon-btn" title="Nach oben">⇧</a>
     </nav>
 
   <!-- ===== SECTIONS, GALLERIES, ALLE TEXTE ===== -->
