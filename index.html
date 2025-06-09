@@ -542,11 +542,11 @@ body:not(.dark) .logo-qv {
       <a href="#downloads">Downloads</a>
       <a href="#kontakt">Kontakt</a>
       <a href="#login">Login</a>
-      <a href="#" id="showTranslate" class="icon-btn" title="Sprache wählen">🌐</a>
-      
-    <div id="my-translate-dropdown" style="display: flex; align-items: center;">
-    <span style="font-size: 1.22em; color: #2da6df; margin-right:0.2em;">🌐</span>
-    <select id="languageSelect" aria-label="Sprache wählen">
+  <div id="my-translate-dropdown" style="display:flex;align-items:center;">
+    <label for="languageSelect" style="margin:0;padding:0;">
+      <span style="font-size:1.22em; color:#2da6df; cursor:pointer;">🌐</span>
+    </label>
+    <select id="languageSelect" aria-label="Sprache wählen" style="width:34px;opacity:0;position:absolute;left:0;top:0;cursor:pointer;">
       <option value="">Sprache wählen</option>
       <option value="de">Deutsch</option>
       <option value="en">English</option>
