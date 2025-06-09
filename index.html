@@ -139,26 +139,20 @@
     nav {
   position: sticky;
   top: 0;
-  left: 0;
-  width: 100vw;        /* <-- Stelle sicher, dass die Nav 100% breit ist */
   background: #2d2d2d;
   color: white;
   display: flex;
-  flex-wrap: wrap;     /* NEU: bricht auf kleinere Screens um */
   justify-content: center;
   align-items: center;
   gap: 2em;
   font-size: 1.07em;
   font-weight: bold;
   padding: 0.22em 1em 0.18em 1em;
-  min-height: 2.6em;
+  min-height: 2.6em; 
   z-index: 100;
   transition: top 0.44s cubic-bezier(.77,0,.18,1.05);
-  box-sizing: border-box; /* damit nichts rausläuft */
-}
 
-
-nav a, nav button {
+      nav a, nav button {
   color: white;
   text-decoration: none;
   background: none;
