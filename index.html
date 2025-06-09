@@ -371,8 +371,9 @@ body.dark section a:hover {
   #google_translate_element {
   display: none;
   position: absolute;
-  right: 3.6em;      /* passend zum Menü, ggf. anpassen */
-  top: 2.8em;        /* etwas unterhalb der Menüleiste */
+  /* Positionierung RELATIV zum Nav-Menü */
+  right: 7.8em;   /* Passe den Wert an, damit es genau über dem 🌐 steht */
+  top: -2.6em;    /* Negativ = oberhalb vom Menü! */
   z-index: 1001;
   background: #232323;
   padding: 0.18em 0.38em;
@@ -380,7 +381,7 @@ body.dark section a:hover {
   box-shadow: 0 4px 12px #2227;
   font-size: 1em;
 }
-nav { position: sticky; top: 0; /* ... */ }
+nav { position: relative; top: 0; /* ... */ }
 .goog-te-gadget {
   font-size: 1em !important;
   height: 1.34em !important;
