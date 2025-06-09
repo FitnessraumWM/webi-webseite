@@ -7,10 +7,6 @@
   <title>Unsere WEBI</title>
   <style>
     html, body {
-  max-width: 100vw !important;
-  overflow-x: hidden !important;
-}
-html, body {
       margin: 0;
       padding: 0;
       font-family: sans-serif;
@@ -141,10 +137,8 @@ html, body {
   }
 }
     nav {
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
-  width: 100vw;
   background: #2d2d2d;
   color: white;
   display: flex;
@@ -158,7 +152,6 @@ html, body {
   z-index: 100;
   transition: top 0.44s cubic-bezier(.77,0,.18,1.05);
 }
-
 nav a, nav button {
   color: white;
   text-decoration: none;
@@ -507,58 +500,6 @@ body:not(.dark) .logo-qv {
 
 </head>
 <body>
-  // Menü unter dem Header starten, dann sticky mit Hide/Show beim Scrollen
-  <script>
-const nav = document.querySelector('nav');
-const header = document.querySelector('header');
-let navHidden = false;
-let lastScrollY = window.scrollY;
-let ticking = false;
-
-function getHeaderHeight() {
-  return header.offsetHeight;
-}
-
-function handleNavScroll() {
-  const scrollY = window.scrollY;
-  const headerHeight = getHeaderHeight();
-
-  if (scrollY < headerHeight) {
-    // Menü schwebt direkt unter dem Headerbild
-    nav.style.top = ${headerHeight - scrollY}px;
-    navHidden = false; // beim Runterscrollen im Headerbereich immer sichtbar
-  } else {
-    // Menü sticky ganz oben (Hide/Show bei Scrollrichtung)
-    if (scrollY > lastScrollY && scrollY > headerHeight + 10) {
-      if (!navHidden) {
-        nav.style.top = -${nav.offsetHeight + 20}px;
-        navHidden = true;
-      }
-    } else {
-      if (navHidden || nav.style.top !== '0px') {
-        nav.style.top = '0px';
-        navHidden = false;
-      }
-    }
-  }
-  lastScrollY = scrollY;
-  ticking = false;
-}
-
-// Event-Listener setzen
-window.addEventListener('scroll', () => {
-  if (!ticking) {
-    window.requestAnimationFrame(handleNavScroll);
-    ticking = true;
-  }
-});
-window.addEventListener('resize', handleNavScroll);
-window.addEventListener('DOMContentLoaded', handleNavScroll);
-
-// CSS-Voraussetzung (z.B. ins <style>-Tag oder externe CSS):
-// nav { position: fixed; left: 0; width: 100vw; z-index: 100; transition: top 0.44s cubic-bezier(.77,0,.18,1.05); }
-  </script>
-
   <header>
     <a href="#" class="logos-left"><img src="verein-sofe-logo-w.png" alt="Logo SOFE Webi" /></a>
     <a href="#" class="logos-right"><img id="logo-qv-header" src="logo-qv-weiss.png" alt="Logo Quartierverein" /></a>
@@ -572,9 +513,10 @@ window.addEventListener('DOMContentLoaded', handleNavScroll);
 </div>
 
   </header>
-  <nav>
-  <a href="#historie">Historie</a>
-  <a href="#vereine">Vereine</a>
+
+    <nav>
+      <a href="#historie">Historie</a>
+      <a href="#vereine">Vereine</a>
       <a href="#sommerfest">Sommerfest</a>
       <a href="#lädeli">Lädeli</a>
       <a href="#partyraum">Partyraum</a>
