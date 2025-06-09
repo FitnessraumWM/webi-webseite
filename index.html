@@ -13,6 +13,9 @@
       background: #fff;
       color: #222;
       scroll-behavior: smooth;
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: hidden !important;
     }
     header {
       background: url('webermuehle-gesamt.jpg') center/cover no-repeat;
@@ -151,6 +154,7 @@
   min-height: 2.6em; 
   z-index: 100;
   transition: top 0.44s cubic-bezier(.77,0,.18,1.05);
+  width: 100%;
 }
 nav a, nav button {
   color: white;
@@ -429,6 +433,9 @@ body.dark section a:hover {
       margin-bottom: 0.3em;
     }
   }
+ * {
+  box-sizing: border-box;
+}
   </style>
 
   <script type="text/javascript">
