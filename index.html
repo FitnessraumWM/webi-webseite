@@ -922,7 +922,30 @@ function handleNavScroll() {
 window.addEventListener('scroll', () => {
   if (!ticking) { window.requestAnimationFrame(handleNavScroll); ticking = true; }
 });
-
+// Modale Bildvorschau (mit Click auf Bild auch schließen)
+      document.querySelectorAll('.gallery img').forEach(img => {
+      img.addEventListener('click', () => {
+        const modal = document.getElementById('modalOverlay');
+        const modalImg = modal.querySelector('img');
+        modalImg.src = img.src; modalImg.alt = img.alt;
+        modal.classList.add('active');
+        setTimeout(() => {
+          modalImg.style.transform = 'scale(1.0)';
+          modalImg.style.opacity = '1';
+        }, 10);
+        modalImg.onclick = closeModal;
+      });
+    });
+    document.querySelector('#modalOverlay .closeModal').onclick = closeModal;
+    document.getElementById('modalOverlay').onclick = function(e) { if (e.target === this) closeModal(); };
+    document.addEventListener('keydown', function(e) { if (e.key === "Escape") closeModal(); });
+    function closeModal() {
+      const modal = document.getElementById('modalOverlay');
+      const modalImg = modal.querySelector('img');
+      modalImg.style.transform = 'scale(0.7)';
+      modalImg.style.opacity = '0';
+      setTimeout(() => { modal.classList.remove('active'); modalImg.src = ''; }, 180);
+    }
        
 <script type="text/javascript">
   // Google Translate Widget initialisieren (wie gehabt)
@@ -1007,32 +1030,7 @@ setInterval(updateSommerfestCountdown, 1000);
   const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   setTheme(theme);
 </script>
-    // Modale Bildvorschau (mit Click auf Bild auch schließen)
-    <script>
-      document.querySelectorAll('.gallery img').forEach(img => {
-      img.addEventListener('click', () => {
-        const modal = document.getElementById('modalOverlay');
-        const modalImg = modal.querySelector('img');
-        modalImg.src = img.src; modalImg.alt = img.alt;
-        modal.classList.add('active');
-        setTimeout(() => {
-          modalImg.style.transform = 'scale(1.0)';
-          modalImg.style.opacity = '1';
-        }, 10);
-        modalImg.onclick = closeModal;
-      });
-    });
-    document.querySelector('#modalOverlay .closeModal').onclick = closeModal;
-    document.getElementById('modalOverlay').onclick = function(e) { if (e.target === this) closeModal(); };
-    document.addEventListener('keydown', function(e) { if (e.key === "Escape") closeModal(); });
-    function closeModal() {
-      const modal = document.getElementById('modalOverlay');
-      const modalImg = modal.querySelector('img');
-      modalImg.style.transform = 'scale(0.7)';
-      modalImg.style.opacity = '0';
-      setTimeout(() => { modal.classList.remove('active'); modalImg.src = ''; }, 180);
-    }
-    // --- SPRACHWAHL DROPDOWN ---
+       // --- SPRACHWAHL DROPDOWN ---
   setTimeout(function() {
     var languageSelect = document.getElementById('languageSelect');
     if (!languageSelect) return;
