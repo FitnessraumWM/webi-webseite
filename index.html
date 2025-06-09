@@ -1,15 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-L26VXZHYT2"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-L26VXZHYT2');
-</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/png" href="favicon.png" />
@@ -368,20 +359,19 @@ body.dark section a:hover {
     }
   }
 
- #google_translate_element {
+  #google_translate_element {
   display: none;
   position: absolute;
-  right: 11em;   /* Passe ggf. an: so dass es über deinem Globus-Icon ist */
-  top: 2.7em;    /* Unterkante von nav, ggf. feintunen */
+  right: 4.2em;        /* ggf. anpassen, je nach Abstand zum Rand */
+  bottom: 100%;        /* <-- Menü nach oben ausklappen lassen! */
+  margin-bottom: 0.28em; /* kleiner Abstand über dem Icon */
   z-index: 1001;
+  font-size: 1em;
   background: #232323;
   padding: 0.18em 0.38em;
   border-radius: 6px;
   box-shadow: 0 4px 12px #2227;
-  font-size: 1em;
 }
-
-nav { position: relative; top: 0; /* ... */ }
 .goog-te-gadget {
   font-size: 1em !important;
   height: 1.34em !important;
@@ -442,44 +432,41 @@ nav { position: relative; top: 0; /* ... */ }
   </style>
 
   <script type="text/javascript">
-  function googleTranslateElementInit() {
-    new google.translate.TranslateElement(
-      {pageLanguage: 'de', includedLanguages: 'en,it,es,tr,sq,hr,pt,pl,sk,fr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE},
-      'google_translate_element'
-    );
-  }
-</script>
-<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement(
+        {pageLanguage: 'de', includedLanguages: 'en,it,es,tr,sq,hr,pt,pl,sk,fr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE},
+        'google_translate_element'
+      );
+    }
+  </script>
+  <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+  </script>
   
   <script>
   document.addEventListener("DOMContentLoaded", function() {
-  var btn = document.getElementById("showTranslate");
-  var box = document.getElementById("google_translate_element");
-  box.style.display = "none";
-
-  btn.addEventListener("click", function(e) {
-    e.preventDefault();
-    if (box.style.display === "none" || box.style.display === "") {
-      box.style.display = "block";
-      setTimeout(function() {
-        document.addEventListener("click", outsideClick);
-      }, 100);
-    } else {
-      box.style.display = "none";
-      document.removeEventListener("click", outsideClick);
-    }
-    function outsideClick(event) {
-      if (!box.contains(event.target) && event.target !== btn) {
+    var btn = document.getElementById("showTranslate");
+    var box = document.getElementById("google_translate_element");
+    btn.addEventListener("click", function(e) {
+      e.preventDefault();
+      if (box.style.display === "none" || box.style.display === "") {
+        box.style.display = "block";
+        // Optional: Klick außerhalb schließt wieder
+        setTimeout(function() {
+          document.addEventListener("click", outsideClick);
+        }, 100);
+      } else {
         box.style.display = "none";
         document.removeEventListener("click", outsideClick);
       }
-    }
+      function outsideClick(event) {
+        if (!box.contains(event.target) && event.target !== btn) {
+          box.style.display = "none";
+          document.removeEventListener("click", outsideClick);
+        }
+      }
+    });
   });
-});
-  </script>
-
-  <script>  
+    
 .qv-logo-wrapper,
 .sofe-logo-wrapper {
   text-align: center;
