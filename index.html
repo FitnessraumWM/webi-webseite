@@ -429,7 +429,27 @@ body.dark section a:hover {
       margin-bottom: 0.3em;
     }
   }
-  </style>
+    #my-translate-dropdown select {
+    border-radius: 6px;
+    padding: 0.24em 1.1em;
+    font-size: 1em;
+    background: #222;
+    color: #ffe066;
+    border: none;
+    margin-left: 0.8em;
+    box-shadow: 0 2px 12px #2225;
+    cursor: pointer;
+    transition: background 0.17s;
+  }
+  #my-translate-dropdown select:hover {
+    background: #ffe066;
+    color: #222;
+  }
+  body.dark #my-translate-dropdown select {
+    background: #111;
+    color: #ffe066;
+  }
+      </style>
 
   <script>
 document.addEventListener("DOMContentLoaded", function() {
@@ -521,6 +541,26 @@ body:not(.dark) .logo-qv {
       <button id="themeSwitcher" aria-label="Theme wechseln">🌓</button>
       <a href="#" id="scrollTopBtn" class="icon-btn" title="Nach oben">⇧</a>
     </nav>
+  <!-- Dein Dropdown-Menü für Sprachauswahl -->
+<div id="my-translate-dropdown" style="position:relative; display:inline-block; margin-left:1em;">
+  <select id="languageSelect" aria-label="Sprache wählen">
+    <option value="">🌐 Sprache wählen</option>
+    <option value="de">Deutsch</option>
+    <option value="en">English</option>
+    <option value="it">Italiano</option>
+    <option value="fr">Français</option>
+    <option value="es">Español</option>
+    <option value="tr">Türkçe</option>
+    <option value="sq">Shqip</option>
+    <option value="hr">Hrvatski</option>
+    <option value="pt">Português</option>
+    <option value="pl">Polski</option>
+    <option value="sk">Slovenčina</option>
+  </select>
+</div>
+<!-- Google Translate bleibt versteckt! -->
+<div id="google_translate_element" style="display:none;"></div>
+
   <!-- ===== SECTIONS, GALLERIES, ALLE TEXTE ===== -->
   <section id="historie">
   <h2>Historie der Webermühle</h2>
@@ -950,43 +990,34 @@ window.addEventListener('scroll', () => {
     }
     updateSommerfestCountdown();
     setInterval(updateSommerfestCountdown, 1000);
-
-  </script>
-   <script type="text/javascript">
-function googleTranslateElementInit() {
-  new google.translate.TranslateElement(
-    {
-      pageLanguage: 'de',
-      includedLanguages: 'en,it,es,tr,sq,hr,pt,pl,sk,fr',
-      layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-    },
-    'google_translate_element'
-  );
-}
+<script type="text/javascript">
+  // Google Translate Widget initialisieren (wie gehabt)
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement(
+      {pageLanguage: 'de', includedLanguages: 'en,it,es,tr,sq,hr,pt,pl,sk,fr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE},
+      'google_translate_element'
+    );
+  }
 </script>
 <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-  <script>
-setTimeout(function() {
-  var langMap = {
-    'Englisch': 'English',
-    'Italienisch': 'Italiano',
-    'Spanisch': 'Español',
-    'Französisch': 'Français',
-    'Türkisch': 'Türkçe',
-    'Albanisch': 'Shqip',
-    'Kroatisch': 'Hrvatski',
-    'Portugiesisch': 'Português',
-    'Polnisch': 'Polski',
-    'Slowakisch': 'Slovenský'
-  };
-  document.querySelectorAll('.goog-te-combo option').forEach(function(opt) {
-    if (langMap[opt.textContent]) {
-      opt.textContent = langMap[opt.textContent];
-    }
-  });
-}, 1100);
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Warte kurz, bis das Google-Widget geladen ist (es lädt async!)
+  setTimeout(function() {
+    var languageSelect = document.getElementById('languageSelect');
+    languageSelect.addEventListener('change', function() {
+      var lang = this.value;
+      // Google Combo suchen und triggern!
+      var googleCombo = document.querySelector('.goog-te-combo');
+      if (googleCombo) {
+        googleCombo.value = lang;
+        // Manuell das Change-Event auslösen
+        googleCombo.dispatchEvent(new Event('change'));
+      }
+    });
+  }, 800); // Zeit ggf. anpassen (Google braucht manchmal länger)
+});
 </script>
-
-
-</body>
+ </body>
 </html>
