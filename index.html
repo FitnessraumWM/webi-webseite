@@ -453,14 +453,20 @@ body.dark section a:hover {
   
   <script>
   document.addEventListener("DOMContentLoaded", function() {
-    var btn = document.getElementById("showTranslate");
-    var box = document.getElementById("google_translate_element");
-box.style.display = "none";
-    btn.addEventListener("click", function(e) {
-      e.preventDefault();
+  var btn = document.getElementById("showTranslate");
+  var box = document.getElementById("google_translate_element");
+
+  // Warten bis Google-Widget geladen ist
+  function waitForTranslateInit(cb) {
+    if (box && box.innerHTML.trim() !== "") cb();
+    else setTimeout(function() { waitForTranslateInit(cb); }, 150);
+  }
+
+  btn.addEventListener("click", function(e) {
+    e.preventDefault();
+    waitForTranslateInit(function() {
       if (box.style.display === "none" || box.style.display === "") {
         box.style.display = "block";
-        // Optional: Klick außerhalb schließt wieder
         setTimeout(function() {
           document.addEventListener("click", outsideClick);
         }, 100);
@@ -468,14 +474,16 @@ box.style.display = "none";
         box.style.display = "none";
         document.removeEventListener("click", outsideClick);
       }
-      function outsideClick(event) {
-        if (!box.contains(event.target) && event.target !== btn) {
-          box.style.display = "none";
-          document.removeEventListener("click", outsideClick);
-        }
-      }
     });
+    function outsideClick(event) {
+      if (!box.contains(event.target) && event.target !== btn) {
+        box.style.display = "none";
+        document.removeEventListener("click", outsideClick);
+      }
+    }
   });
+});
+
     
 .qv-logo-wrapper,
 .sofe-logo-wrapper {
@@ -536,7 +544,7 @@ body:not(.dark) .logo-qv {
       <a href="#kontakt">Kontakt</a>
       <a href="#login">Login</a>
       <a href="#" id="showTranslate" class="icon-btn" title="Sprache wählen" style="font-size:1.18em; vertical-align:middle;">🌐</a>
-      <span id="google_translate_element" style="display:none; position:absolute; right:4.2em; top:2.7em; z-index:1001;"></span>
+      <span id="google_translate_element" style="position:absolute; right:4.2em; top:2.7em; z-index:1001;"></span>
       <button id="themeSwitcher" aria-label="Theme wechseln">🌓</button>
       <a href="#" id="scrollTopBtn" class="icon-btn" title="Nach oben">⇧</a>
     </nav>
