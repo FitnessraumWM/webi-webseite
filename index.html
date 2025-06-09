@@ -137,7 +137,7 @@
   }
 }
     nav {
-  position: sticky;
+  position: sticky; top: 0; /* ... */ }
   top: 0;
   background: #2d2d2d;
   color: white;
@@ -371,8 +371,6 @@ body.dark section a:hover {
   box-shadow: 0 4px 12px #2227;
   font-size: 1em;
 }
-nav { position: sticky; top: 0; /* ... */ }
-/* ...rest wie gehabt... */
 
 .goog-te-gadget {
   font-size: 1em !important;
@@ -443,7 +441,28 @@ nav { position: sticky; top: 0; /* ... */ }
   </script>
   <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
   </script>
-  
+  <script>
+setTimeout(function() {
+  var langMap = {
+    'Englisch': 'English',
+    'Italienisch': 'Italiano',
+    'Spanisch': 'Español',
+    'Französisch': 'Français',
+    'Türkisch': 'Türkçe',
+    'Albanisch': 'Shqip',
+    'Kroatisch': 'Hrvatski',
+    'Portugiesisch': 'Português',
+    'Polnisch': 'Polski',
+    'Slowakisch': 'Slovenský'
+  };
+  document.querySelectorAll('.goog-te-combo option').forEach(function(opt) {
+    if (langMap[opt.textContent]) {
+      opt.textContent = langMap[opt.textContent];
+    }
+  });
+}, 1100);
+</script>
+
   <script>
   document.addEventListener("DOMContentLoaded", function() {
   var btn = document.getElementById("showTranslate");
