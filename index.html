@@ -130,9 +130,10 @@
     nav {
   position: absolute;
   left: 0;
-  right: 0;
+  width: 100vw;
   bottom: 0;
   z-index: 100;
+  transition: top 0.44s cubic-bezier(.77,0,.18,1.05), transform 0.34s;
   background: #2d2d2d;
   color: white;
   display: flex;
@@ -143,22 +144,19 @@
   font-weight: bold;
   padding: 0.22em 1em 0.18em 1em;
   min-height: 2.6em;
-  width: 100vw;
-  transition: top 0.44s cubic-bezier(.77,0,.18,1.05), transform 0.34s;
 }
 
+/* Sticky wenn außerhalb vom Bild */
 nav.stuck {
   position: fixed !important;
   top: 0 !important;
   bottom: auto !important;
-  left: 0;
-  right: 0;
   width: 100vw;
 }
-
 nav.hidden {
   transform: translateY(-120%);
 }
+
     nav a, nav button {
       color: white;
       text-decoration: none;
@@ -539,34 +537,43 @@ document.addEventListener('DOMContentLoaded', function() {
   let navHidden = false;
   let ticking = false;
 
-  function onScroll() {
+  function updateNav() {
     const headerHeight = header.offsetHeight;
     const scrollY = window.scrollY;
 
+    // Wenn im Headerbereich (Bild) -> Nav an Bildkante unten
     if (scrollY < headerHeight) {
       nav.classList.remove('stuck', 'hidden');
       nav.style.top = '';
+      nav.style.bottom = '0';
+      nav.style.position = 'absolute';
     } else {
+      // Sticky oben
       nav.classList.add('stuck');
+      nav.style.bottom = '';
+      nav.style.position = 'fixed';
       if (scrollY > lastScrollY && scrollY > headerHeight + 20) {
         nav.classList.add('hidden');
       } else {
         nav.classList.remove('hidden');
       }
+      nav.style.top = '0';
     }
     lastScrollY = scrollY;
     ticking = false;
   }
 
+  // Immer beim Scrollen/Resize prüfen
   window.addEventListener('scroll', () => {
     if (!ticking) {
-      window.requestAnimationFrame(onScroll);
+      window.requestAnimationFrame(updateNav);
       ticking = true;
     }
   });
+  window.addEventListener('resize', updateNav);
 
-  window.addEventListener('resize', onScroll);
-  onScroll();
+  // *** GANZ WICHTIG: Sofort initial positionieren ***
+  updateNav();
 });
 </script>
 
