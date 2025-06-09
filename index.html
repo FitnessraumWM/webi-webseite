@@ -371,16 +371,16 @@ body.dark section a:hover {
   #google_translate_element {
   display: none;
   position: absolute;
-  right: 4.2em;        /* ggf. anpassen, je nach Abstand zum Rand */
-  bottom: 100%;        /* <-- Menü nach oben ausklappen lassen! */
-  margin-bottom: 0.28em; /* kleiner Abstand über dem Icon */
+  right: 3.6em;      /* passend zum Menü, ggf. anpassen */
+  top: 2.8em;        /* etwas unterhalb der Menüleiste */
   z-index: 1001;
-  font-size: 1em;
   background: #232323;
   padding: 0.18em 0.38em;
   border-radius: 6px;
   box-shadow: 0 4px 12px #2227;
+  font-size: 1em;
 }
+nav { position: sticky; top: 0; /* ... */ }
 .goog-te-gadget {
   font-size: 1em !important;
   height: 1.34em !important;
@@ -441,21 +441,21 @@ body.dark section a:hover {
   </style>
 
   <script type="text/javascript">
-    function googleTranslateElementInit() {
-      new google.translate.TranslateElement(
-        {pageLanguage: 'de', includedLanguages: 'en,it,es,tr,sq,hr,pt,pl,sk,fr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE},
-        'google_translate_element'
-      );
-    }
-  </script>
-  <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
-  </script>
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement(
+      {pageLanguage: 'de', includedLanguages: 'en,it,es,tr,sq,hr,pt,pl,sk,fr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE},
+      'google_translate_element'
+    );
+  }
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
   
   <script>
   document.addEventListener("DOMContentLoaded", function() {
   var btn = document.getElementById("showTranslate");
   var box = document.getElementById("google_translate_element");
-  box.style.display = "none"; // Sicherstellen, dass es zu Beginn versteckt ist
+  box.style.display = "none";
 
   btn.addEventListener("click", function(e) {
     e.preventDefault();
@@ -476,8 +476,9 @@ body.dark section a:hover {
     }
   });
 });
+  </script>
 
-    
+  <script>  
 .qv-logo-wrapper,
 .sofe-logo-wrapper {
   text-align: center;
@@ -537,7 +538,7 @@ body:not(.dark) .logo-qv {
       <a href="#kontakt">Kontakt</a>
       <a href="#login">Login</a>
       <a href="#" id="showTranslate" class="icon-btn" title="Sprache wählen">🌐</a>
-      <span id="google_translate_element" style="display:none; position:absolute; right:4.2em; top:2.7em; z-index:1001;"></span>
+      <div id="google_translate_element"></div>
       <button id="themeSwitcher" aria-label="Theme wechseln">🌓</button>
       <a href="#" id="scrollTopBtn" class="icon-btn" title="Nach oben">⇧</a>
     </nav>
