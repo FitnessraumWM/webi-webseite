@@ -140,8 +140,10 @@
   }
 }
     nav {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  width: 100vw;
   background: #2d2d2d;
   color: white;
   display: flex;
@@ -151,11 +153,11 @@
   font-size: 1.07em;
   font-weight: bold;
   padding: 0.22em 1em 0.18em 1em;
-  min-height: 2.6em; 
+  min-height: 2.6em;
   z-index: 100;
   transition: top 0.44s cubic-bezier(.77,0,.18,1.05);
-  width: 100%;
 }
+
 nav a, nav button {
   color: white;
   text-decoration: none;
