@@ -362,16 +362,18 @@ body.dark section a:hover {
   #google_translate_element {
   display: none;
   position: absolute;
-  right: 4.2em;        /* ggf. anpassen, je nach Abstand zum Rand */
-  bottom: 100%;        /* <-- Menü nach oben ausklappen lassen! */
-  margin-bottom: 0.28em; /* kleiner Abstand über dem Icon */
+  right: 11em;      /* passend zum Menü, ggf. anpassen */
+  top: 2.8em;        /* etwas unterhalb der Menüleiste */
   z-index: 1001;
-  font-size: 1em;
   background: #232323;
   padding: 0.18em 0.38em;
   border-radius: 6px;
   box-shadow: 0 4px 12px #2227;
+  font-size: 1em;
 }
+nav { position: sticky; top: 0; /* ... */ }
+/* ...rest wie gehabt... */
+
 .goog-te-gadget {
   font-size: 1em !important;
   height: 1.34em !important;
@@ -444,28 +446,29 @@ body.dark section a:hover {
   
   <script>
   document.addEventListener("DOMContentLoaded", function() {
-    var btn = document.getElementById("showTranslate");
-    var box = document.getElementById("google_translate_element");
-    btn.addEventListener("click", function(e) {
-      e.preventDefault();
-      if (box.style.display === "none" || box.style.display === "") {
-        box.style.display = "block";
-        // Optional: Klick außerhalb schließt wieder
-        setTimeout(function() {
-          document.addEventListener("click", outsideClick);
-        }, 100);
-      } else {
+  var btn = document.getElementById("showTranslate");
+  var box = document.getElementById("google_translate_element");
+  box.style.display = "none";
+
+  btn.addEventListener("click", function(e) {
+    e.preventDefault();
+    if (box.style.display === "none" || box.style.display === "") {
+      box.style.display = "block";
+      setTimeout(function() {
+        document.addEventListener("click", outsideClick);
+      }, 100);
+    } else {
+      box.style.display = "none";
+      document.removeEventListener("click", outsideClick);
+    }
+    function outsideClick(event) {
+      if (!box.contains(event.target) && event.target !== btn) {
         box.style.display = "none";
         document.removeEventListener("click", outsideClick);
       }
-      function outsideClick(event) {
-        if (!box.contains(event.target) && event.target !== btn) {
-          box.style.display = "none";
-          document.removeEventListener("click", outsideClick);
-        }
-      }
-    });
+    }
   });
+});
     
 .qv-logo-wrapper,
 .sofe-logo-wrapper {
