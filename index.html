@@ -13,9 +13,6 @@
       background: #fff;
       color: #222;
       scroll-behavior: smooth;
-      width: 100%;
-      max-width: 100vw;
-      overflow-x: hidden !important;
     }
     header {
       background: url('webermuehle-gesamt.jpg') center/cover no-repeat;
@@ -139,13 +136,9 @@
     top: 50vh;
   }
 }
-  nav {
-  position: absolute;
-  left: 0;
-  width: 100vw;
-  bottom: 0;
-  z-index: 100;
-  transition: top 0.44s cubic-bezier(.77,0,.18,1.05), transform 0.34s;
+    nav {
+  position: sticky;
+  top: 0;
   background: #2d2d2d;
   color: white;
   display: flex;
@@ -155,23 +148,10 @@
   font-size: 1.07em;
   font-weight: bold;
   padding: 0.22em 1em 0.18em 1em;
-  min-height: 2.6em;
+  min-height: 2.6em; 
+  z-index: 100;
+  transition: top 0.44s cubic-bezier(.77,0,.18,1.05);
 }
-
-/* Sticky Zustand */
-nav.stuck {
-  position: fixed !important;
-  top: 0 !important;
-  bottom: auto !important;
-  width: 100vw;
-}
-
-/* Menü verstecken beim Scrollen */
-nav.hidden {
-  transform: translateY(-120%);
-}
-
-
 nav a, nav button {
   color: white;
   text-decoration: none;
@@ -449,9 +429,6 @@ body.dark section a:hover {
       margin-bottom: 0.3em;
     }
   }
- * {
-  box-sizing: border-box;
-}
   </style>
 
   <script type="text/javascript">
@@ -1016,46 +993,5 @@ document.getElementById('scrollTopBtn').onclick = function(e) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
   </script>
-
-  <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const nav = document.querySelector('nav');
-  const header = document.querySelector('header');
-  let lastScrollY = window.scrollY;
-  let navHidden = false;
-  let ticking = false;
-
-  function onScroll() {
-    const headerHeight = header.offsetHeight;
-    const scrollY = window.scrollY;
-
-    // Solange im Headerbereich – Menü bleibt unten am Bild
-    if (scrollY < headerHeight) {
-      nav.classList.remove('stuck', 'hidden');
-      nav.style.top = '';
-    } else {
-      // Menü sticky oben
-      nav.classList.add('stuck');
-      if (scrollY > lastScrollY && scrollY > headerHeight + 20) {
-        nav.classList.add('hidden'); // nach unten scrollen → verstecken
-      } else {
-        nav.classList.remove('hidden'); // nach oben scrollen → zeigen
-      }
-    }
-    lastScrollY = scrollY;
-    ticking = false;
-  }
-
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      window.requestAnimationFrame(onScroll);
-      ticking = true;
-    }
-  });
-  window.addEventListener('resize', onScroll);
-  onScroll();
-});
-</script>
-
 </body>
 </html>
