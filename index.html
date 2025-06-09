@@ -360,7 +360,7 @@ body.dark section a:hover {
   }
 
   #google_translate_element {
-  display: none;
+   /* display: none;  <--- DIESE ZEILE ENTFERNEN ODER AUSKOMMENTIEREN */
   position: absolute;
   right: 4.2em;        /* ggf. anpassen, je nach Abstand zum Rand */
   bottom: 100%;        /* <-- Menü nach oben ausklappen lassen! */
@@ -446,6 +446,7 @@ body.dark section a:hover {
   document.addEventListener("DOMContentLoaded", function() {
     var btn = document.getElementById("showTranslate");
     var box = document.getElementById("google_translate_element");
+box.style.display = "none";
     btn.addEventListener("click", function(e) {
       e.preventDefault();
       if (box.style.display === "none" || box.style.display === "") {
@@ -955,36 +956,8 @@ window.addEventListener('scroll', () => {
     updateSommerfestCountdown();
     setInterval(updateSommerfestCountdown, 1000);
 
-    // Counter-Namen anpassen!
-const base = "webi-webermuehle";
-
-// Inkrementiere alle Zähler beim Laden
-Promise.all([
-  fetch(`https://api.counterapi.dev/v1/${base}/visits/incr`, { method: "POST" }),
-  fetch(`https://api.counterapi.dev/v1/${base}-today/visits/incr`, { method: "POST" }),
-  fetch(`https://api.counterapi.dev/v1/${base}-week/visits/incr`, { method: "POST" }),
-  fetch(`https://api.counterapi.dev/v1/${base}-month/visits/incr`, { method: "POST" })
-]).then(updateCounterInfo).catch(() => updateCounterInfo());
-
-// Funktion zum Anzeigen der Werte
-async function updateCounterInfo() {
-  try {
-    const [all, today, week, month] = await Promise.all([
-      fetch(`https://api.counterapi.dev/v1/${base}/visits`).then(r => r.json()),
-      fetch(`https://api.counterapi.dev/v1/${base}-today/visits`).then(r => r.json()),
-      fetch(`https://api.counterapi.dev/v1/${base}-week/visits`).then(r => r.json()),
-      fetch(`https://api.counterapi.dev/v1/${base}-month/visits`).then(r => r.json())
-    ]);
-    let text = `Seitenbesuche gesamt: ${all.count}<br>
-      Heute: ${today.count}<br>
-      Diese Woche: ${week.count}<br>
-      Diesen Monat: ${month.count}`;
-    document.getElementById("besucherinfo").innerHTML = text;
-  } catch(e) {
-    document.getElementById("besucherinfo").textContent = "Besucherzähler offline";
-  }
-}
-
+  
+  
   </script>
 </body>
 </html>
