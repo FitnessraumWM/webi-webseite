@@ -531,54 +531,6 @@ body:not(.dark) .logo-qv {
       <button id="themeSwitcher" aria-label="Theme wechseln">🌓</button>
       <a href="#" id="scrollTopBtn" class="icon-btn" title="Nach oben">⇧</a>
     </nav>
-      <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const nav = document.querySelector('nav');
-  const header = document.querySelector('header');
-  let lastScrollY = window.scrollY;
-  let navHidden = false;
-  let ticking = false;
-
-  function updateNav() {
-    const headerHeight = header.offsetHeight;
-    const scrollY = window.scrollY;
-
-    // Wenn im Headerbereich (Bild) -> Nav an Bildkante unten
-    if (scrollY < headerHeight) {
-      nav.classList.remove('stuck', 'hidden');
-      nav.style.top = '';
-      nav.style.bottom = '0';
-      nav.style.position = 'absolute';
-    } else {
-      // Sticky oben
-      nav.classList.add('stuck');
-      nav.style.bottom = '';
-      nav.style.position = 'fixed';
-      if (scrollY > lastScrollY && scrollY > headerHeight + 20) {
-        nav.classList.add('hidden');
-      } else {
-        nav.classList.remove('hidden');
-      }
-      nav.style.top = '0';
-    }
-    lastScrollY = scrollY;
-    ticking = false;
-  }
-
-  // Immer beim Scrollen/Resize prüfen
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      window.requestAnimationFrame(updateNav);
-      ticking = true;
-    }
-  });
-  window.addEventListener('resize', updateNav);
-
-  // *** GANZ WICHTIG: Sofort initial positionieren ***
-  updateNav();
-});
-</script>
-
   <!-- ===== SECTIONS, GALLERIES, ALLE TEXTE ===== -->
   <section id="historie">
   <h2>Historie der Webermühle</h2>
