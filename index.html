@@ -949,10 +949,63 @@ window.addEventListener('scroll', () => {
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-  // =======================
-  // 1. THEME SWITCHER
-  // =======================
-  const themeBtn = document.getElementById('themeSwitcher');
+         
+<script type="text/javascript">
+  // Google Translate Widget initialisieren (wie gehabt)
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement(
+      {pageLanguage: 'de', includedLanguages: 'en,it,es,tr,sq,hr,pt,pl,sk,fr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE},
+      'google_translate_element'
+    );
+  }
+});
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Warte kurz, bis das Google-Widget geladen ist (es lädt async!)
+  setTimeout(function() {
+    var languageSelect = document.getElementById('languageSelect');
+    languageSelect.addEventListener('change', function() {
+      var lang = this.value;
+      // Google Combo suchen und triggern!
+      var googleCombo = document.querySelector('.goog-te-combo');
+      if (googleCombo) {
+        googleCombo.value = lang;
+        // Manuell das Change-Event auslösen
+        googleCombo.dispatchEvent(new Event('change'));
+      }
+    });
+  }, 800); // Zeit ggf. anpassen (Google braucht manchmal länger)
+});
+
+  function updateSommerfestCountdown() {
+  const target = new Date(2025, 7, 30, 14, 0, 0); // 30. August 2025, 14:00
+  const now = new Date();
+  let diff = target - now;
+  if (diff < 0) {
+    document.getElementById('sommerfest-countdown').innerText = "Das Sommerfest läuft!";
+    return;
+  }
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  diff -= days * 1000 * 60 * 60 * 24;
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  diff -= hours * 1000 * 60 * 60;
+  const mins = Math.floor(diff / (1000 * 60));
+  diff -= mins * 1000 * 60;
+  const secs = Math.floor(diff / 1000);
+  document.getElementById('sommerfest-countdown').innerText =
+    days.toString().padStart(2, '0') + " Tage " +
+    hours.toString().padStart(2, '0') + ":" +
+    mins.toString().padStart(2, '0') + ":" +
+    secs.toString().padStart(2, '0');
+}
+updateSommerfestCountdown();
+setInterval(updateSommerfestCountdown, 1000);
+</script>
+  // Theme Switcher inkl. Logo-Wechsel
+    <script>const themeBtn = document.getElementById('themeSwitcher');
   const body = document.body;
   const logos = {
     sofe: { hell: "verein-sofe-logo-w.png", dunkel: "verein-sofe-logo-s.png" },
@@ -976,84 +1029,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   themeBtn.onclick = () => setTheme(body.classList.contains('dark') ? 'light' : 'dark');
-  // Setze Theme beim Laden!
+  // Setze das Theme beim Laden!
   const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   setTheme(theme);
-
-  // =======================
-  // 2. MENÜ HIDE ON SCROLL
-  // =======================
-  let lastScrollY = window.scrollY, nav = document.querySelector('nav');
-  let navHidden = false, ticking = false, navHeight = nav.offsetHeight;
-  function handleNavScroll() {
-    if (window.scrollY > lastScrollY && window.scrollY > navHeight + 10) {
-      if (!navHidden) { nav.style.top = `-${navHeight + 20}px`; navHidden = true; }
-    } else {
-      if (navHidden) { nav.style.top = '0'; navHidden = false; }
-    }
-    lastScrollY = window.scrollY; ticking = false;
-  }
-  window.addEventListener('scroll', () => {
-    if (!ticking) { window.requestAnimationFrame(handleNavScroll); ticking = true; }
-  });
-
-  // =======================
-  // 3. SOMMERFEST COUNTDOWN
-  // =======================
-  function updateSommerfestCountdown() {
-    const target = new Date(2025, 7, 30, 14, 0, 0); // 30. August 2025, 14:00
-    const now = new Date();
-    let diff = target - now;
-    if (diff < 0) {
-      document.getElementById('sommerfest-countdown').innerText = "Das Sommerfest läuft!";
-      return;
-    }
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    diff -= days * 1000 * 60 * 60 * 24;
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    diff -= hours * 1000 * 60 * 60;
-    const mins = Math.floor(diff / (1000 * 60));
-    diff -= mins * 1000 * 60;
-    const secs = Math.floor(diff / 1000);
-    document.getElementById('sommerfest-countdown').innerText =
-      days.toString().padStart(2, '0') + " Tage " +
-      hours.toString().padStart(2, '0') + ":" +
-      mins.toString().padStart(2, '0') + ":" +
-      secs.toString().padStart(2, '0');
-  }
-  updateSommerfestCountdown();
-  setInterval(updateSommerfestCountdown, 1000);
-
-  // =======================
-  // 4. MODAL BILDVORSCHAU
-  // =======================
-  document.querySelectorAll('.gallery img').forEach(img => {
-    img.addEventListener('click', () => {
-      const modal = document.getElementById('modalOverlay');
-      const modalImg = modal.querySelector('img');
-      modalImg.src = img.src; modalImg.alt = img.alt;
-      modal.classList.add('active');
-      setTimeout(() => {
-        modalImg.style.transform = 'scale(1.0)';
-        modalImg.style.opacity = '1';
-      }, 10);
-      modalImg.onclick = closeModal;
-    });
-  });
-  document.querySelector('#modalOverlay .closeModal').onclick = closeModal;
-  document.getElementById('modalOverlay').onclick = function(e) { if (e.target === this) closeModal(); };
-  document.addEventListener('keydown', function(e) { if (e.key === "Escape") closeModal(); });
-  function closeModal() {
-    const modal = document.getElementById('modalOverlay');
-    const modalImg = modal.querySelector('img');
-    modalImg.style.transform = 'scale(0.7)';
-    modalImg.style.opacity = '0';
-    setTimeout(() => { modal.classList.remove('active'); modalImg.src = ''; }, 180);
-  }
-
-  // =======================
-  // 5. SPRACHWAHL (GOOGLE TRANSLATE)
-  // =======================
+</script>
+       // --- SPRACHWAHL DROPDOWN ---
   setTimeout(function() {
     var languageSelect = document.getElementById('languageSelect');
     if (!languageSelect) return;
@@ -1066,19 +1046,10 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }, 900); // Google braucht manchmal etwas
-
 });
 </script>
-<!-- Google Translate Widget -->
-<script type="text/javascript">
-  function googleTranslateElementInit() {
-    new google.translate.TranslateElement(
-      {pageLanguage: 'de', includedLanguages: 'en,it,es,tr,sq,hr,pt,pl,sk,fr', layout: google.translate.TranslateElement.InlineLayout.SIMPLE},
-      'google_translate_element'
-    );
-  }
-</script>
-<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 <div id="google_translate_element" style="display:none;"></div>
+ </body>
+</html>
  </body>
 </html>
