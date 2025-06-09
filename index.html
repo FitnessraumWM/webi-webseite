@@ -368,12 +368,11 @@ body.dark section a:hover {
     }
   }
 
-  #google_translate_element {
+ #google_translate_element {
   display: none;
   position: absolute;
-  /* Positionierung RELATIV zum Nav-Menü */
-  right: 9.8em;   /* Passe den Wert an, damit es genau über dem 🌐 steht */
-  top: -2.6em;    /* Negativ = oberhalb vom Menü! */
+  right: 11em;   /* Passe ggf. an: so dass es über deinem Globus-Icon ist */
+  top: 2.7em;    /* Unterkante von nav, ggf. feintunen */
   z-index: 1001;
   background: #232323;
   padding: 0.18em 0.38em;
@@ -381,6 +380,7 @@ body.dark section a:hover {
   box-shadow: 0 4px 12px #2227;
   font-size: 1em;
 }
+
 nav { position: relative; top: 0; /* ... */ }
 .goog-te-gadget {
   font-size: 1em !important;
@@ -539,10 +539,10 @@ body:not(.dark) .logo-qv {
       <a href="#kontakt">Kontakt</a>
       <a href="#login">Login</a>
       <a href="#" id="showTranslate" class="icon-btn" title="Sprache wählen">🌐</a>
-      <div id="google_translate_element"></div>
       <button id="themeSwitcher" aria-label="Theme wechseln">🌓</button>
       <a href="#" id="scrollTopBtn" class="icon-btn" title="Nach oben">⇧</a>
     </nav>
+      <div id="google_translate_element"></div>
   <!-- ===== SECTIONS, GALLERIES, ALLE TEXTE ===== -->
   <section id="historie">
   <h2>Historie der Webermühle</h2>
