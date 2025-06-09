@@ -139,11 +139,13 @@
     top: 50vh;
   }
 }
-    nav {
-  position: fixed;
-  top: 0;
+  nav {
+  position: absolute;
   left: 0;
   width: 100vw;
+  bottom: 0;
+  z-index: 100;
+  transition: top 0.44s cubic-bezier(.77,0,.18,1.05), transform 0.34s;
   background: #2d2d2d;
   color: white;
   display: flex;
@@ -154,9 +156,21 @@
   font-weight: bold;
   padding: 0.22em 1em 0.18em 1em;
   min-height: 2.6em;
-  z-index: 100;
-  transition: top 0.44s cubic-bezier(.77,0,.18,1.05);
 }
+
+/* Sticky Zustand */
+nav.stuck {
+  position: fixed !important;
+  top: 0 !important;
+  bottom: auto !important;
+  width: 100vw;
+}
+
+/* Menü verstecken beim Scrollen */
+nav.hidden {
+  transform: translateY(-120%);
+}
+
 
 nav a, nav button {
   color: white;
