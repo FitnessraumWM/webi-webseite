@@ -945,30 +945,28 @@ setTheme(theme);
 
   // ==== 3. Google Translate Integration ====
  // ---- Sprach-Dropdown verbindet sich NACHLADEND mit Google Translate ----
-function setupLanguageDropdown() {
-  const languageSelect = document.getElementById('languageSelect');
-  if (!languageSelect) return;
-
-  languageSelect.addEventListener('change', function() {
-    const lang = this.value;
-    // Warten bis Google-Widget geladen ist!
-    function trySetLanguage(retries = 15) {
-      const googleCombo = document.querySelector('.goog-te-combo');
-      if (googleCombo) {
-        googleCombo.value = lang;
-        googleCombo.dispatchEvent(new Event('change'));
-      } else if (retries > 0) {
-        setTimeout(() => trySetLanguage(retries - 1), 300); // noch mal probieren
+// Sprach-Dropdown wartet, bis Google geladen ist
+function setupLanguageDropdownWhenReady() {
+  function tryAttachDropdown(retries = 18) { // ca. 5 Sekunden lang probieren
+    const googleCombo = document.querySelector('.goog-te-combo');
+    const languageSelect = document.getElementById('languageSelect');
+    if (googleCombo && languageSelect) {
+      // Nur EINEN Listener anfügen!
+      if (!languageSelect.hasAttribute('data-bound')) {
+        languageSelect.setAttribute('data-bound', '1');
+        languageSelect.addEventListener('change', function() {
+          const lang = this.value;
+          googleCombo.value = lang;
+          googleCombo.dispatchEvent(new Event('change'));
+        });
       }
+    } else if (retries > 0) {
+      setTimeout(() => tryAttachDropdown(retries - 1), 300);
     }
-    trySetLanguage();
-  });
+  }
+  tryAttachDropdown();
 }
-// Später ausführen, weil Google Translate async lädt!
-window.addEventListener('DOMContentLoaded', () => {
-  setTimeout(setupLanguageDropdown, 1800); // etwas länger warten
-});
-
+window.addEventListener('DOMContentLoaded', setupLanguageDropdownWhenReady);
   // ==== 4. Sommerfest Countdown ====
   function updateSommerfestCountdown() {
     const target = new Date(2025, 7, 30, 14, 0, 0); // 30. August 2025, 14:00
