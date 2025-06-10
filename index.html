@@ -911,7 +911,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const body = document.body;
   const logos = {
     sofe: { hell: "verein-sofe-logo-w.png", dunkel: "verein-sofe-logo-s.png" },
-    qv:   { hell: "logo-qv-schwarz.png",   dunkel: "logo-qv-weiss.png" }
+    qv:   { hell: "logo-qv-weiss.png",   dunkel: "logo-qv-schwarz.png" }
   };
   function setTheme(mode) {
     if (mode === 'dark') {
@@ -1025,6 +1025,9 @@ window.googleTranslateElementInit = function() {
   );
 }
 </script>
-
+<div id="modalOverlay">
+  <span class="closeModal" title="Schließen">&times;</span>
+  <img src="" alt="Vorschau" />
+</div>
  </body>
 </html>
