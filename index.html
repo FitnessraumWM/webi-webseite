@@ -500,8 +500,8 @@ body:not(.dark) .logo-qv {
 </head>
 <body>
   <header>
-    <a href="#" class="logos-left"><img src="verein-sofe-logo-w.png" alt="Logo SOFE Webi" /></a>
-    <a href="#" class="logos-right"><img id="logo-qv-header" src="logo-qv-weiss.png" alt="Logo Quartierverein" /></a>
+   <a href="#" class="logos-left"><img id="logo-sofe-header" src="verein-sofe-logo-w.png" alt="Logo SOFE Webi" /></a>
+<a href="#" class="logos-right"><img id="logo-qv-header" src="logo-qv-weiss.png" alt="Logo Quartierverein" /></a>
     <!-- BANNER -->
     <div class="welcome-headline">Willkommen in der Webermühle</div>
 <div class="sommerfest-timer-container">
@@ -711,7 +711,7 @@ body:not(.dark) .logo-qv {
   Du hast Fragen, möchtest einen Raum buchen oder hast ein Anliegen?
 </p>
 <div style="text-align:center; display:flex; justify-content:center; align-items:center; gap: 0.7em; flex-wrap:wrap;">
-<img id="logo-qv-kontakt" src="logo-qv-schwarz.png" alt="Logo Quartierverein" style="height:130px;" />
+  <img id="logo-qv-kontakt" src="logo-qv-schwarz.png" alt="Logo Quartierverein" style="height:130px;" />
   <h2 style="margin: 0;">Quartierverein Webermühle - Klosterrütti (Vorstand)</h2>
 </div>
 
@@ -792,7 +792,7 @@ body:not(.dark) .logo-qv {
 
   
 <div style="text-align:center; display: flex; justify-content: center; align-items: center; gap: 0.5em; flex-wrap: wrap;">
-  <img class="verein-sofe-logo-w" src="verein-sofe-logo-w.png" alt="Logo SOFE Webi" style="height: 130px;" />
+  <img id="logo-sofe-kontakt" src="verein-sofe-logo-w.png" alt="Logo SOFE Webi" style="height:130px;" />
   <h2 style="margin: 0;">Verein SOFE Webi</h2>
   </div>
 
@@ -883,28 +883,38 @@ document.addEventListener('DOMContentLoaded', function() {
   const themeBtn = document.getElementById('themeSwitcher');
 const body = document.body;
 const logos = {
-  sofe: { hell: "verein-sofe-logo-w.png", dunkel: "verein-sofe-logo-w.png" },
-  qv:   { hell: "logo-qv-weiss.png", dunkel: "logo-qv-.schwarz.png" }
+  sofe: "verein-sofe-logo-w.png", // SOFE immer weiß!
+  qv:   {
+    header: { hell: "logo-qv-weiss.png", dunkel: "logo-qv-schwarz.png" },
+    kontakt: { hell: "logo-qv-schwarz.png", dunkel: "logo-qv-weiss.png" }
+  }
 };
 function setTheme(mode) {
+  // Header-Logos
+  document.getElementById('logo-sofe-header').src = logos.sofe; // immer weiß
+  document.getElementById('logo-qv-header').src = (mode === 'dark')
+    ? logos.qv.header.dunkel
+    : logos.qv.header.hell;
+
+  // Kontakt-Logos
+  document.getElementById('logo-sofe-kontakt').src = logos.sofe; // immer weiß
+  document.getElementById('logo-qv-kontakt').src = (mode === 'dark')
+    ? logos.qv.kontakt.dunkel
+    : logos.qv.kontakt.hell;
+
+  // Theme-Klasse & Button
   if (mode === 'dark') {
     body.classList.add('dark');
-    document.getElementById('logo-qv-header').src = logos.qv.dunkel;
-    document.getElementById('logo-qv-kontakt').src = logos.qv.dunkel;    // <----- NEU!
-    document.querySelector('.logos-left img').src = logos.sofe.hell;
     themeBtn.textContent = "🌞";
     localStorage.setItem('theme', 'dark');
   } else {
     body.classList.remove('dark');
-    document.getElementById('logo-qv-header').src = logos.qv.hell;
-    document.getElementById('logo-qv-kontakt').src = logos.qv.hell;      // <----- NEU!
-    document.querySelector('.logos-left img').src = logos.sofe.hell;
     themeBtn.textContent = "🌙";
     localStorage.setItem('theme', 'light');
   }
 }
 themeBtn.onclick = () => setTheme(body.classList.contains('dark') ? 'light' : 'dark');
-// Setze das Theme beim Laden!
+// Beim Laden richtig setzen:
 const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 setTheme(theme);
 
