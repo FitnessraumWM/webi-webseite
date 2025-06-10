@@ -884,25 +884,28 @@ document.addEventListener('DOMContentLoaded', function() {
   const body = document.body;
   const logos = {
     sofe: { hell: "verein-sofe-logo-w.png", dunkel: "verein-sofe-logo-s.png" },
-    qv:   { hell: "logo-qv-weiss.png",   dunkel: "logo-qv-schwarz.png" }
+    qv:   { hell: "logo-qv-weiss.png", dunkel: "logo-qv-schwarz.png" } // <--- Schwarz für hell, Weiss für dunkel
   };
   function setTheme(mode) {
-  if (mode === 'dark') {
-    body.classList.add('dark');
-    document.getElementById('logo-qv-header').src = logos.qv.dunkel;
-    document.querySelector('.logos-left img').src = logos.sofe.dunkel;
-    // document.getElementById('logo-qv-kontakt').src = logos.qv.dunkel; // ENTFERNE ODER KOMMENTIERE DAS AUS!
-    themeBtn.textContent = "🌞";
-    localStorage.setItem('theme', 'dark');
-  } else {
-    body.classList.remove('dark');
-    document.getElementById('logo-qv-header').src = logos.qv.hell;
-    document.querySelector('.logos-left img').src = logos.sofe.hell;
-    // document.getElementById('logo-qv-kontakt').src = logos.qv.hell; // ENTFERNE ODER KOMMENTIERE DAS AUS!
-    themeBtn.textContent = "🌙";
-    localStorage.setItem('theme', 'light');
+    if (mode === 'dark') {
+      body.classList.add('dark');
+      document.getElementById('logo-qv-header').src = logos.qv.dunkel;
+      document.querySelector('.logos-left img').src = logos.sofe.dunkel;
+      themeBtn.textContent = "🌞";
+      localStorage.setItem('theme', 'dark');
+    } else {
+      body.classList.remove('dark');
+      document.getElementById('logo-qv-header').src = logos.qv.hell;
+      document.querySelector('.logos-left img').src = logos.sofe.hell;
+      themeBtn.textContent = "🌙";
+      localStorage.setItem('theme', 'light');
+    }
+    // Kontaktbereich NIE anfassen!
   }
-}
+  themeBtn.onclick = () => setTheme(body.classList.contains('dark') ? 'light' : 'dark');
+  // Setze das Theme beim Laden!
+  const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  setTheme(theme);
 
   // ==== 2. Modale Bildvorschau ====
   document.querySelectorAll('.gallery img').forEach(img => {
@@ -930,19 +933,18 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ==== 3. Google Translate Integration ====
-  // (das Widget initialisiert sich mit window.googleTranslateElementInit!)
   setTimeout(function() {
-  var languageSelect = document.getElementById('languageSelect');
-  if (!languageSelect) return;
-  languageSelect.addEventListener('change', function() {
-    var lang = this.value;
-    var googleCombo = document.querySelector('.goog-te-combo');
-    if (googleCombo) {
-      googleCombo.value = lang;
-      googleCombo.dispatchEvent(new Event('change'));
-    }
-  });
-}, 1200);
+    var languageSelect = document.getElementById('languageSelect');
+    if (!languageSelect) return;
+    languageSelect.addEventListener('change', function() {
+      var lang = this.value;
+      var googleCombo = document.querySelector('.goog-te-combo');
+      if (googleCombo) {
+        googleCombo.value = lang;
+        googleCombo.dispatchEvent(new Event('change'));
+      }
+    });
+  }, 1500); // Google braucht manchmal etwas länger!
 
   // ==== 4. Sommerfest Countdown ====
   function updateSommerfestCountdown() {
@@ -968,7 +970,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   updateSommerfestCountdown();
   setInterval(updateSommerfestCountdown, 1000);
-  console.log("Countdown-Skript läuft!");
 
   // ==== 5. Menü Hide on Scroll ====
   let lastScrollY = window.scrollY, nav = document.querySelector('nav');
@@ -994,6 +995,7 @@ window.googleTranslateElementInit = function() {
     'google_translate_element'
   );
 }
+</script>
 </script>
 <div id="modalOverlay">
   <span class="closeModal" title="Schließen">&times;</span>
