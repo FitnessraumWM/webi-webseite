@@ -465,33 +465,6 @@ body.dark #my-translate-dropdown select {
   color: #ffe066;
 }
       </style>
-
-  <script>
-document.addEventListener("DOMContentLoaded", function() {
-  var btn = document.getElementById("showTranslate");
-  var box = document.getElementById("google_translate_element");
-  box.style.display = "none";
-
-  btn.addEventListener("click", function(e) {
-    e.preventDefault();
-    if (box.style.display === "none" || box.style.display === "") {
-      box.style.display = "block";
-      setTimeout(function() {
-        document.addEventListener("click", outsideClick);
-      }, 100);
-    } else {
-      box.style.display = "none";
-      document.removeEventListener("click", outsideClick);
-    }
-    function outsideClick(event) {
-      if (!box.contains(event.target) && event.target !== btn) {
-        box.style.display = "none";
-        document.removeEventListener("click", outsideClick);
-      }
-    }
-  });
-});
-</script>
  <script>
 .qv-logo-wrapper,
 .sofe-logo-wrapper {
@@ -902,7 +875,7 @@ body:not(.dark) .logo-qv {
   </div>
   &copy; 2025 Verein Webermühle &middot; Alle Rechte vorbehalten
 </footer>
-  <div id="google_translate_element" style="display:none;"></div>
+<div id="google_translate_element" style="opacity:0; position:absolute; left:-9999px; width:1px; height:1px;"></div>
 <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -914,26 +887,22 @@ document.addEventListener('DOMContentLoaded', function() {
     qv:   { hell: "logo-qv-weiss.png",   dunkel: "logo-qv-schwarz.png" }
   };
   function setTheme(mode) {
-    if (mode === 'dark') {
-      body.classList.add('dark');
-      document.getElementById('logo-qv-header').src = logos.qv.dunkel;
-      document.getElementById('logo-qv-kontakt').src = logos.qv.dunkel;
-      document.querySelector('.logos-left img').src = logos.sofe.dunkel;
-      themeBtn.textContent = "🌞";
-      localStorage.setItem('theme', 'dark');
-    } else {
-      body.classList.remove('dark');
-      document.getElementById('logo-qv-header').src = logos.qv.hell;
-      document.getElementById('logo-qv-kontakt').src = logos.qv.hell;
-      document.querySelector('.logos-left img').src = logos.sofe.hell;
-      themeBtn.textContent = "🌙";
-      localStorage.setItem('theme', 'light');
-    }
+  if (mode === 'dark') {
+    body.classList.add('dark');
+    document.getElementById('logo-qv-header').src = logos.qv.dunkel;
+    document.querySelector('.logos-left img').src = logos.sofe.dunkel;
+    // document.getElementById('logo-qv-kontakt').src = logos.qv.dunkel; // ENTFERNE ODER KOMMENTIERE DAS AUS!
+    themeBtn.textContent = "🌞";
+    localStorage.setItem('theme', 'dark');
+  } else {
+    body.classList.remove('dark');
+    document.getElementById('logo-qv-header').src = logos.qv.hell;
+    document.querySelector('.logos-left img').src = logos.sofe.hell;
+    // document.getElementById('logo-qv-kontakt').src = logos.qv.hell; // ENTFERNE ODER KOMMENTIERE DAS AUS!
+    themeBtn.textContent = "🌙";
+    localStorage.setItem('theme', 'light');
   }
-  themeBtn.onclick = () => setTheme(body.classList.contains('dark') ? 'light' : 'dark');
-  // Setze das Theme beim Laden!
-  const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  setTheme(theme);
+}
 
   // ==== 2. Modale Bildvorschau ====
   document.querySelectorAll('.gallery img').forEach(img => {
@@ -963,17 +932,17 @@ document.addEventListener('DOMContentLoaded', function() {
   // ==== 3. Google Translate Integration ====
   // (das Widget initialisiert sich mit window.googleTranslateElementInit!)
   setTimeout(function() {
-    var languageSelect = document.getElementById('languageSelect');
-    if (!languageSelect) return;
-    languageSelect.addEventListener('change', function() {
-      var lang = this.value;
-      var googleCombo = document.querySelector('.goog-te-combo');
-      if (googleCombo) {
-        googleCombo.value = lang;
-        googleCombo.dispatchEvent(new Event('change'));
-      }
-    });
-  }, 1200); // Google braucht manchmal etwas länger
+  var languageSelect = document.getElementById('languageSelect');
+  if (!languageSelect) return;
+  languageSelect.addEventListener('change', function() {
+    var lang = this.value;
+    var googleCombo = document.querySelector('.goog-te-combo');
+    if (googleCombo) {
+      googleCombo.value = lang;
+      googleCombo.dispatchEvent(new Event('change'));
+    }
+  });
+}, 1200);
 
   // ==== 4. Sommerfest Countdown ====
   function updateSommerfestCountdown() {
