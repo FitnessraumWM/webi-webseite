@@ -883,15 +883,15 @@ document.addEventListener('DOMContentLoaded', function() {
   const themeBtn = document.getElementById('themeSwitcher');
 const body = document.body;
 const logos = {
-  sofe: { hell: "verein-sofe-logo-w.png", dunkel: "verein-sofe-logo-s.png" },
-  qv:   { hell: "logo-qv-schwarz.png", dunkel: "logo-qv-weiss.png" }
+  sofe: { hell: "verein-sofe-logo-w.png", dunkel: "verein-sofe-logo-w.png" },
+  qv:   { hell: "logo-qv-weiss.png", dunkel: "logo-qv-.schwarz.png" }
 };
 function setTheme(mode) {
   if (mode === 'dark') {
     body.classList.add('dark');
     document.getElementById('logo-qv-header').src = logos.qv.dunkel;
     document.getElementById('logo-qv-kontakt').src = logos.qv.dunkel;    // <----- NEU!
-    document.querySelector('.logos-left img').src = logos.sofe.dunkel;
+    document.querySelector('.logos-left img').src = logos.sofe.hell;
     themeBtn.textContent = "🌞";
     localStorage.setItem('theme', 'dark');
   } else {
