@@ -944,8 +944,6 @@ setTheme(theme);
   }
 
   // ==== 3. Google Translate Integration ====
- // ---- Sprach-Dropdown verbindet sich NACHLADEND mit Google Translate ----
-// Sprach-Dropdown wartet, bis Google geladen ist
 function setupLanguageDropdownWhenReady() {
   function tryAttachDropdown(retries = 18) { // ca. 5 Sekunden lang probieren
     const googleCombo = document.querySelector('.goog-te-combo');
@@ -956,8 +954,16 @@ function setupLanguageDropdownWhenReady() {
         languageSelect.setAttribute('data-bound', '1');
         languageSelect.addEventListener('change', function() {
           const lang = this.value;
+          if (!lang) return;
           googleCombo.value = lang;
-          googleCombo.dispatchEvent(new Event('change'));
+          // Trick: Fokus auf das Google Dropdown, dann Event, dann ein zweites Mal
+          googleCombo.focus();
+          googleCombo.dispatchEvent(new Event('change', { bubbles: true }));
+          setTimeout(() => {
+            googleCombo.value = lang;
+            googleCombo.focus();
+            googleCombo.dispatchEvent(new Event('change', { bubbles: true }));
+          }, 400);
         });
       }
     } else if (retries > 0) {
@@ -967,6 +973,7 @@ function setupLanguageDropdownWhenReady() {
   tryAttachDropdown();
 }
 window.addEventListener('DOMContentLoaded', setupLanguageDropdownWhenReady);
+
   // ==== 4. Sommerfest Countdown ====
   function updateSommerfestCountdown() {
     const target = new Date(2025, 7, 30, 14, 0, 0); // 30. August 2025, 14:00
