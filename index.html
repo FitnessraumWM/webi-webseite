@@ -711,7 +711,7 @@ body:not(.dark) .logo-qv {
   Du hast Fragen, möchtest einen Raum buchen oder hast ein Anliegen?
 </p>
 <div style="text-align:center; display:flex; justify-content:center; align-items:center; gap: 0.7em; flex-wrap:wrap;">
-  <img id="logo-qv-kontakt" class="logo-qv" src="logo-qv-schwarz.png" alt="Logo Quartierverein" style="height:130px;" />
+<img id="logo-qv-kontakt" src="logo-qv-schwarz.png" alt="Logo Quartierverein" style="height:130px;" />
   <h2 style="margin: 0;">Quartierverein Webermühle - Klosterrütti (Vorstand)</h2>
 </div>
 
@@ -881,31 +881,32 @@ body:not(.dark) .logo-qv {
 document.addEventListener('DOMContentLoaded', function() {
   // ==== 1. Theme Switcher ====
   const themeBtn = document.getElementById('themeSwitcher');
-  const body = document.body;
-  const logos = {
-    sofe: { hell: "verein-sofe-logo-w.png", dunkel: "verein-sofe-logo-s.png" },
-    qv:   { hell: "logo-qv-weiss.png", dunkel: "logo-qv-schwarz.png" } // <--- Schwarz für hell, Weiss für dunkel
-  };
-  function setTheme(mode) {
-    if (mode === 'dark') {
-      body.classList.add('dark');
-      document.getElementById('logo-qv-header').src = logos.qv.dunkel;
-      document.querySelector('.logos-left img').src = logos.sofe.dunkel;
-      themeBtn.textContent = "🌞";
-      localStorage.setItem('theme', 'dark');
-    } else {
-      body.classList.remove('dark');
-      document.getElementById('logo-qv-header').src = logos.qv.hell;
-      document.querySelector('.logos-left img').src = logos.sofe.hell;
-      themeBtn.textContent = "🌙";
-      localStorage.setItem('theme', 'light');
-    }
-    // Kontaktbereich NIE anfassen!
+const body = document.body;
+const logos = {
+  sofe: { hell: "verein-sofe-logo-w.png", dunkel: "verein-sofe-logo-s.png" },
+  qv:   { hell: "logo-qv-schwarz.png", dunkel: "logo-qv-weiss.png" }
+};
+function setTheme(mode) {
+  if (mode === 'dark') {
+    body.classList.add('dark');
+    document.getElementById('logo-qv-header').src = logos.qv.dunkel;
+    document.getElementById('logo-qv-kontakt').src = logos.qv.dunkel;    // <----- NEU!
+    document.querySelector('.logos-left img').src = logos.sofe.dunkel;
+    themeBtn.textContent = "🌞";
+    localStorage.setItem('theme', 'dark');
+  } else {
+    body.classList.remove('dark');
+    document.getElementById('logo-qv-header').src = logos.qv.hell;
+    document.getElementById('logo-qv-kontakt').src = logos.qv.hell;      // <----- NEU!
+    document.querySelector('.logos-left img').src = logos.sofe.hell;
+    themeBtn.textContent = "🌙";
+    localStorage.setItem('theme', 'light');
   }
-  themeBtn.onclick = () => setTheme(body.classList.contains('dark') ? 'light' : 'dark');
-  // Setze das Theme beim Laden!
-  const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  setTheme(theme);
+}
+themeBtn.onclick = () => setTheme(body.classList.contains('dark') ? 'light' : 'dark');
+// Setze das Theme beim Laden!
+const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+setTheme(theme);
 
   // ==== 2. Modale Bildvorschau ====
   document.querySelectorAll('.gallery img').forEach(img => {
@@ -944,7 +945,7 @@ document.addEventListener('DOMContentLoaded', function() {
         googleCombo.dispatchEvent(new Event('change'));
       }
     });
-  }, 1500); // Google braucht manchmal etwas länger!
+  }, 3000); // Google braucht manchmal etwas länger!
 
   // ==== 4. Sommerfest Countdown ====
   function updateSommerfestCountdown() {
