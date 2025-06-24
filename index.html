@@ -359,29 +359,20 @@ body.dark section a:hover {
     }
   }
 
-  #my-translate-dropdown select {
-  background: none !important;
-  border: none !important;
-  color: #2da6df !important;
-  font-size: 1.32em !important;
-  padding: 0 !important;
-  width: 2.3em !important;
-  cursor: pointer;
-  outline: none;
-  box-shadow: none !important;
-  min-width: 0 !important;
-  transition: background 0.14s, color 0.14s;
+#google_translate_element {
+  display: none;
+  position: absolute;
+  left: 50%;
+  top: 60px; /* Standard-Offset, wird per JS überschrieben */
+  transform: translateX(-50%);
+  z-index: 9999;
+  min-width: 150px;
+  max-width: 220px;
+  background: #fff;
+  border-radius: 7px;
+  box-shadow: 0 6px 20px #0003;
+  padding: 4px 10px;
 }
-#my-translate-dropdown select:hover,
-#my-translate-dropdown select:focus {
-  color: #ffe066 !important;
-  background: none !important;
-}
-body.dark #my-translate-dropdown select {
-  color: #ffd200 !important;
-  background: none !important;
-}
-
 
 .goog-te-gadget {
   font-size: 1em !important;
@@ -440,29 +431,6 @@ body.dark #my-translate-dropdown select {
       margin-bottom: 0.3em;
     }
   }
-
-.translate-popover {
-  position: relative;
-  display: inline-block;
-}
-
-#google_translate_element {
-  display: none;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 2.2em;    /* nach oben raus, sonst top:2.2em für nach unten */
-  z-index: 9999;
-  background: #fff;   /* schöner */
-  border-radius: 6px;
-  box-shadow: 0 4px 18px #0002;
-  padding: 0.3em 0.5em;
-}
-
-.translate-popover:focus-within #google_translate_element,
-.translate-popover:hover #google_translate_element {
-  display: block;
-}
 
 .qv-logo-wrapper,
 .sofe-logo-wrapper {
@@ -531,10 +499,8 @@ autoDisplay: false // Wichtig, damit Googles Standard-Dropdown nicht sofort ange
   <a href="#downloads">Downloads</a>
   <a href="#kontakt">Kontakt</a>
   <a href="#login">Login</a>
-  <div class="translate-popover">
   <span id="globe-btn" tabindex="0" style="cursor:pointer; color:#1caafc;">🌐</span>
-  <div id="google_translate_element"></div>
-</div>
+	<div id="google_translate_element"></div>
   <button id="themeSwitcher" aria-label="Theme wechseln">🌓</button>
   <a href="#" id="scrollTopBtn" class="icon-btn" title="Nach oben">⇧</a>
 </nav>
@@ -877,27 +843,7 @@ autoDisplay: false // Wichtig, damit Googles Standard-Dropdown nicht sofort ange
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
- // --- SPRACHWAHL DROPDOWN ---
-  var languageSelect = document.getElementById('languageSelect');
-  if (languageSelect) { // Überprüfen, ob das Element existiert
-    languageSelect.addEventListener('change', function() {
-      var lang = this.value;
-      var googleCombo = document.querySelector('.goog-te-combo'); // Googles Select-Element
-      if (googleCombo) {
-        googleCombo.value = lang; // Wert setzen
-
-        // Ein natives 'change'-Event erstellen und auslösen
-        if ("createEvent" in document) {
-              var evt = document.createEvent("HTMLEvents");
-              evt.initEvent("change", false, true);
-              googleCombo.dispatchEvent(evt);
-          } else { // Für ältere IE-Versionen
-              googleCombo.fireEvent("onchange");
-          }
-      }
-    });
-  }
-    // ==== 1. Theme Switcher ====
+     // ==== 1. Theme Switcher ====
   const themeBtn = document.getElementById('themeSwitcher');
 const body = document.body;
 const logos = {
@@ -961,38 +907,7 @@ setTheme(theme);
     setTimeout(() => { modal.classList.remove('active'); modalImg.src = ''; }, 180);
   }
 
-  // ==== 3. Google Translate Integration ====
-function setupLanguageDropdownWhenReady() {
-  function tryAttachDropdown(retries = 18) { // ca. 5 Sekunden lang probieren
-    const googleCombo = document.querySelector('.goog-te-combo');
-    const languageSelect = document.getElementById('languageSelect');
-    if (googleCombo && languageSelect) {
-      // Nur EINEN Listener anfügen!
-      if (!languageSelect.hasAttribute('data-bound')) {
-        languageSelect.setAttribute('data-bound', '1');
-        languageSelect.addEventListener('change', function() {
-          const lang = this.value;
-          if (!lang) return;
-          googleCombo.value = lang;
-          // Trick: Fokus auf das Google Dropdown, dann Event, dann ein zweites Mal
-          googleCombo.focus();
-          googleCombo.dispatchEvent(new Event('change', { bubbles: true }));
-          setTimeout(() => {
-            googleCombo.value = lang;
-            googleCombo.focus();
-            googleCombo.dispatchEvent(new Event('change', { bubbles: true }));
-          }, 400);
-        });
-      }
-    } else if (retries > 0) {
-      setTimeout(() => tryAttachDropdown(retries - 1), 300);
-    }
-  }
-  tryAttachDropdown();
-}
-window.addEventListener('DOMContentLoaded', setupLanguageDropdownWhenReady);
-
-  // ==== 4. Sommerfest Countdown ====
+    // ==== 4. Sommerfest Countdown ====
   function updateSommerfestCountdown() {
     const target = new Date(2025, 7, 30, 14, 0, 0); // 30. August 2025, 14:00
     const now = new Date();
@@ -1047,5 +962,40 @@ window.googleTranslateElementInit = function() {
   <span class="closeModal" title="Schließen">&times;</span>
   <img src="" alt="Vorschau" />
 </div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const globe = document.getElementById("globe-btn");
+  const widget = document.getElementById("google_translate_element");
+
+  // Anfangs verstecken & absichern
+  widget.style.display = "none";
+  widget.style.position = "absolute";
+  widget.style.zIndex = "9999";
+
+  globe.addEventListener("click", function (event) {
+    event.stopPropagation();
+    if (widget.style.display === "none" || widget.style.display === "") {
+      widget.style.display = "block";
+      // Widget mittig unter dem Globus platzieren
+      const globeRect = globe.getBoundingClientRect();
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
+      widget.style.left = (globeRect.left + globeRect.width / 2 + scrollLeft) + "px";
+      widget.style.top = (globeRect.bottom + scrollTop + 10) + "px";
+      widget.style.transform = "translateX(-50%)";
+    } else {
+      widget.style.display = "none";
+    }
+  });
+
+  // Klick außerhalb schließt das Widget
+  document.addEventListener("click", function(e) {
+    if (widget.style.display === "block" && !widget.contains(e.target) && e.target !== globe) {
+      widget.style.display = "none";
+    }
+  });
+});
+</script>
+
  </body>
 </html>
