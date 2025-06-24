@@ -371,20 +371,47 @@ body.dark section a:hover {
   padding: 4px 10px;
 }
 
-.goog-te-gadget {
-  font-size: 1em !important;
-  height: 1.34em !important;
-  display: flex !important;
+/* Versteckt den Großteil des Google Translate Widgets, lässt nur das G-Logo übrig */
+#google_translate_element .goog-te-gadget {
+  font-size: 0 !important; /* Versteckt den Text "Google Translate" */
+  color: transparent !important; /* Macht den Text transparent */
+  /* Wichtig: Um sicherzustellen, dass nur das G sichtbar ist, müssen wir die Breite und Höhe des Gadgets anpassen */
+  width: 25px !important; /* Breite des G-Logos */
+  height: 25px !important; /* Höhe des G-Logos */
+  overflow: hidden !important; /* Schneidet Überlauf ab */
+  display: flex !important; /* Flexbox für Zentrierung */
+  justify-content: center !important;
   align-items: center !important;
+  border: none !important; /* Entfernt den Standardrand */
+  background-color: transparent !important; /* Entfernt den Hintergrund */
 }
+
+/* Versteckt den Link zum Google Logo Text */
+#google_translate_element .goog-logo-link {
+  display: none !important;
+}
+
+/* Versteckt den Text 'Google Translate' im Gadget */
+#google_translate_element .goog-te-gadget-simple span {
+  display: none !important;
+}
+
+/* Stellt sicher, dass das Dropdown sichtbar wird, wenn es aktiv ist */
+#google_translate_element.visible .goog-te-gadget {
+  /* Wenn unser JavaScript das Element auf 'display: block' setzt, wird es sichtbar */
+  /* Die Größe wird dann automatisch durch den Inhalt des Widgets angepasst */
+  width: auto !important;
+  height: auto !important;
+}
+
+/* Spezifisches Anpassen des select-Elements, das von Google Translate generiert wird */
 .goog-te-combo {
   font-size: 1em !important;
   border-radius: 4px !important;
   padding: 0.1em 0.4em !important;
   height: 1.18em !important;
-}
-.goog-logo-link, .goog-te-gadget span {
-  display: none !important;
+  /* Stellen Sie sicher, dass dies nur sichtbar ist, wenn das Element angezeigt wird */
+  display: block !important;
 }
 
 .vorstand-table {
@@ -909,7 +936,9 @@ setTheme(theme);
   const googleTranslateEl = document.getElementById('google_translate_element');
 
   let isGoogleTranslateVisible = false;
+  let hasTranslated = false; // Neu: Flag, um zu sehen, ob schon einmal übersetzt wurde
 
+  // Funktion zum Positionieren des Google Translate Elements
   function positionGoogleTranslateElement() {
     const globeRect = globeBtn.getBoundingClientRect();
     // Positioniert das Google Translate Element oberhalb und horizontal zentriert zum Globus-Button
@@ -918,19 +947,34 @@ setTheme(theme);
     googleTranslateEl.style.top = `${globeRect.top - googleTranslateEl.offsetHeight - 10}px`;
   }
 
+  // Funktion zum Initialisieren und Verstecken des Google Translate Widgets
+  // Diese wird einmalig beim Laden der Seite aufgerufen.
+  function initializeGoogleTranslateDisplay() {
+    // Wenn das Google Translate Element noch nicht da ist, warten
+    if (!googleTranslateEl.querySelector('.goog-te-gadget')) {
+      setTimeout(initializeGoogleTranslateDisplay, 100);
+      return;
+    }
+
+    // Temporär sichtbar machen, um korrekte Größen zu erhalten
+    googleTranslateEl.style.display = 'block';
+    positionGoogleTranslateElement(); // Positionieren
+    googleTranslateEl.style.display = 'none'; // Direkt wieder verstecken
+  }
+
+  // Rufe die Initialisierungsfunktion auf, sobald DOM geladen ist
+  initializeGoogleTranslateDisplay();
+
   globeBtn.addEventListener('click', function(event) {
     event.stopPropagation(); // Verhindert, dass der Klick nach außen weitergegeben wird
+
     isGoogleTranslateVisible = !isGoogleTranslateVisible;
     if (isGoogleTranslateVisible) {
-      googleTranslateEl.style.display = 'block'; // Temporär sichtbar machen, um Breite/Höhe zu messen
-      // Verwende einen Timeout, um sicherzustellen, dass 'display: block' angewendet wurde,
-      // bevor die Messungen für die Positionierung vorgenommen werden.
-      setTimeout(() => {
-        positionGoogleTranslateElement();
-        // Event-Listener hinzufügen, um es auszublenden, wenn außerhalb geklickt wird
-        document.addEventListener('click', hideGoogleTranslateOnClickOutside);
-        document.addEventListener('scroll', hideGoogleTranslateOnClickOutside); // Auch beim Scrollen ausblenden
-      }, 0);
+      googleTranslateEl.style.display = 'block'; // Jetzt wirklich sichtbar machen
+      // Stelle sicher, dass die Positionierung korrekt ist, falls sich die Fenstergröße geändert hat
+      positionGoogleTranslateElement();
+      document.addEventListener('click', hideGoogleTranslateOnClickOutside);
+      document.addEventListener('scroll', hideGoogleTranslateOnClickOutside);
     } else {
       googleTranslateEl.style.display = 'none';
       document.removeEventListener('click', hideGoogleTranslateOnClickOutside);
@@ -939,7 +983,6 @@ setTheme(theme);
   });
 
   function hideGoogleTranslateOnClickOutside(event) {
-    // Überprüfen, ob das Klick-/Scroll-Ziel weder der Globus-Button noch das Translate-Element selbst ist
     if (!googleTranslateEl.contains(event.target) && event.target !== globeBtn) {
       googleTranslateEl.style.display = 'none';
       isGoogleTranslateVisible = false;
@@ -948,7 +991,7 @@ setTheme(theme);
     }
   }
 
-  // Position bei Fenstergrößenänderung neu berechnen
+  // Optional: Recalculate position on window resize
   window.addEventListener('resize', () => {
     if (isGoogleTranslateVisible) {
       positionGoogleTranslateElement();
