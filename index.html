@@ -360,17 +360,14 @@ body.dark section a:hover {
   }
 
 #google_translate_element {
-  display: none;
-  position: absolute;
-  left: 50%;
-  top: 60px; /* Standard-Offset, wird per JS überschrieben */
-  transform: translateX(-50%);
-  z-index: 9999;
+  display: none; /* Standardmäßig ausgeblendet */
+  position: fixed; /* Positionierung relativ zum Viewport */
+  z-index: 9999; /* Immer im Vordergrund */
   min-width: 150px;
   max-width: 220px;
   background: #fff;
   border-radius: 7px;
-  box-shadow: 0 6px 20px #0003;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2); /* Etwas stärkerer Schatten für bessere Sichtbarkeit */
   padding: 4px 10px;
 }
 
@@ -907,36 +904,56 @@ setTheme(theme);
     setTimeout(() => { modal.classList.remove('active'); modalImg.src = ''; }, 180);
   }
 
-  // ==== 3. Google Translate Integration ====
-function setupLanguageDropdownWhenReady() {
-  function tryAttachDropdown(retries = 18) { // ca. 5 Sekunden lang probieren
-    const googleCombo = document.querySelector('.goog-te-combo');
-    const languageSelect = document.getElementById('languageSelect');
-    if (googleCombo && languageSelect) {
-      // Nur EINEN Listener anfügen!
-      if (!languageSelect.hasAttribute('data-bound')) {
-        languageSelect.setAttribute('data-bound', '1');
-        languageSelect.addEventListener('change', function() {
-          const lang = this.value;
-          if (!lang) return;
-          googleCombo.value = lang;
-          // Trick: Fokus auf das Google Dropdown, dann Event, dann ein zweites Mal
-          googleCombo.focus();
-          googleCombo.dispatchEvent(new Event('change', { bubbles: true }));
-          setTimeout(() => {
-            googleCombo.value = lang;
-            googleCombo.focus();
-            googleCombo.dispatchEvent(new Event('change', { bubbles: true }));
-          }, 400);
-        });
-      }
-    } else if (retries > 0) {
-      setTimeout(() => tryAttachDropdown(retries - 1), 300);
+  // ==== 3. Google Translate Globe Logic ====
+  const globeBtn = document.getElementById('globe-btn');
+  const googleTranslateEl = document.getElementById('google_translate_element');
+
+  let isGoogleTranslateVisible = false;
+
+  function positionGoogleTranslateElement() {
+    const globeRect = globeBtn.getBoundingClientRect();
+    // Positioniert das Google Translate Element oberhalb und horizontal zentriert zum Globus-Button
+    googleTranslateEl.style.left = `${globeRect.left + (globeRect.width / 2) - (googleTranslateEl.offsetWidth / 2)}px`;
+    // Positioniert es oberhalb des Globus, mit etwas Abstand (10px Puffer)
+    googleTranslateEl.style.top = `${globeRect.top - googleTranslateEl.offsetHeight - 10}px`;
+  }
+
+  globeBtn.addEventListener('click', function(event) {
+    event.stopPropagation(); // Verhindert, dass der Klick nach außen weitergegeben wird
+    isGoogleTranslateVisible = !isGoogleTranslateVisible;
+    if (isGoogleTranslateVisible) {
+      googleTranslateEl.style.display = 'block'; // Temporär sichtbar machen, um Breite/Höhe zu messen
+      // Verwende einen Timeout, um sicherzustellen, dass 'display: block' angewendet wurde,
+      // bevor die Messungen für die Positionierung vorgenommen werden.
+      setTimeout(() => {
+        positionGoogleTranslateElement();
+        // Event-Listener hinzufügen, um es auszublenden, wenn außerhalb geklickt wird
+        document.addEventListener('click', hideGoogleTranslateOnClickOutside);
+        document.addEventListener('scroll', hideGoogleTranslateOnClickOutside); // Auch beim Scrollen ausblenden
+      }, 0);
+    } else {
+      googleTranslateEl.style.display = 'none';
+      document.removeEventListener('click', hideGoogleTranslateOnClickOutside);
+      document.removeEventListener('scroll', hideGoogleTranslateOnClickOutside);
+    }
+  });
+
+  function hideGoogleTranslateOnClickOutside(event) {
+    // Überprüfen, ob das Klick-/Scroll-Ziel weder der Globus-Button noch das Translate-Element selbst ist
+    if (!googleTranslateEl.contains(event.target) && event.target !== globeBtn) {
+      googleTranslateEl.style.display = 'none';
+      isGoogleTranslateVisible = false;
+      document.removeEventListener('click', hideGoogleTranslateOnClickOutside);
+      document.removeEventListener('scroll', hideGoogleTranslateOnClickOutside);
     }
   }
-  tryAttachDropdown();
-}
-window.addEventListener('DOMContentLoaded', setupLanguageDropdownWhenReady);
+
+  // Position bei Fenstergrößenänderung neu berechnen
+  window.addEventListener('resize', () => {
+    if (isGoogleTranslateVisible) {
+      positionGoogleTranslateElement();
+    }
+  });
 
   // ==== 4. Sommerfest Countdown ====
   function updateSommerfestCountdown() {
