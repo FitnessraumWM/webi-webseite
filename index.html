@@ -907,6 +907,49 @@ setTheme(theme);
     setTimeout(() => { modal.classList.remove('active'); modalImg.src = ''; }, 180);
   }
 
+    // ==== 3. Google Translate ====
+  function waitForTranslateWidget(retries = 24) {
+    const globe = document.getElementById("globe-btn");
+    const widget = document.getElementById("google_translate_element");
+    const googleCombo = document.querySelector('.goog-te-combo');
+    if (!globe || !widget) return;
+
+    if (!googleCombo && retries > 0) {
+      setTimeout(() => waitForTranslateWidget(retries - 1), 250); // warte weiter
+      return;
+    }
+
+    // Anfangs verstecken & absichern
+    widget.style.display = "none";
+    widget.style.position = "absolute";
+    widget.style.zIndex = "9999";
+
+    globe.addEventListener("click", function (event) {
+      event.stopPropagation();
+      if (widget.style.display === "none" || widget.style.display === "") {
+        widget.style.display = "block";
+        // Widget mittig unter dem Globus platzieren
+        const globeRect = globe.getBoundingClientRect();
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
+        widget.style.left = (globeRect.left + globeRect.width / 2 + scrollLeft) + "px";
+        widget.style.top = (globeRect.bottom + scrollTop + 10) + "px";
+        widget.style.transform = "translateX(-50%)";
+      } else {
+        widget.style.display = "none";
+      }
+    });
+
+    // Klick außerhalb schließt das Widget
+    document.addEventListener("click", function(e) {
+      if (widget.style.display === "block" && !widget.contains(e.target) && e.target !== globe) {
+        widget.style.display = "none";
+      }
+    });
+  }
+  waitForTranslateWidget();
+});
+
     // ==== 4. Sommerfest Countdown ====
   function updateSommerfestCountdown() {
     const target = new Date(2025, 7, 30, 14, 0, 0); // 30. August 2025, 14:00
@@ -962,40 +1005,5 @@ window.googleTranslateElementInit = function() {
   <span class="closeModal" title="Schließen">&times;</span>
   <img src="" alt="Vorschau" />
 </div>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  const globe = document.getElementById("globe-btn");
-  const widget = document.getElementById("google_translate_element");
-
-  // Anfangs verstecken & absichern
-  widget.style.display = "none";
-  widget.style.position = "absolute";
-  widget.style.zIndex = "9999";
-
-  globe.addEventListener("click", function (event) {
-    event.stopPropagation();
-    if (widget.style.display === "none" || widget.style.display === "") {
-      widget.style.display = "block";
-      // Widget mittig unter dem Globus platzieren
-      const globeRect = globe.getBoundingClientRect();
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
-      widget.style.left = (globeRect.left + globeRect.width / 2 + scrollLeft) + "px";
-      widget.style.top = (globeRect.bottom + scrollTop + 10) + "px";
-      widget.style.transform = "translateX(-50%)";
-    } else {
-      widget.style.display = "none";
-    }
-  });
-
-  // Klick außerhalb schließt das Widget
-  document.addEventListener("click", function(e) {
-    if (widget.style.display === "block" && !widget.contains(e.target) && e.target !== globe) {
-      widget.style.display = "none";
-    }
-  });
-});
-</script>
-
  </body>
 </html>
