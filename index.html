@@ -209,14 +209,15 @@ nav button#themeSwitcher:focus {
 }
 #google_translate_element {
   display: none;
-  position: absolute;
+  position: fixed;
+  left: 0;   /* wird von JS überschrieben */
+  top: 0;    /* wird von JS überschrieben */
   z-index: 9999;
   min-width: 120px;
   background: white;
   box-shadow: 0 2px 12px #0002;
   border-radius: 7px;
   padding: 0.4em 0.7em;
-  /* left/top werden per JS gesetzt */
 }
 
 /* Menü auf kleinen Geräten */
@@ -451,6 +452,31 @@ body.dark #my-translate-dropdown select {
       margin-bottom: 0.3em;
     }
   }
+
+#google_translate_element .goog-te-gadget {
+  font-size: 1em !important;
+  padding: 0 !important;
+}
+#google_translate_element .goog-te-combo {
+  font-size: 1em !important;
+  border-radius: 6px !important;
+  padding: 0.2em 0.5em !important;
+  background: #2d2d2d !important;
+  color: #ffe066 !important;
+  border: none !important;
+  outline: none !important;
+  margin: 0 !important;
+  min-width: 90px !important;
+  box-shadow: none !important;
+}
+body.dark #google_translate_element .goog-te-combo {
+  background: #111 !important;
+  color: #ffe066 !important;
+}
+#google_translate_element .goog-logo-link,
+#google_translate_element .goog-te-gadget span {
+  display: none !important;
+}
 
 .qv-logo-wrapper,
 .sofe-logo-wrapper {
@@ -1038,24 +1064,35 @@ window.googleTranslateElementInit = function() {
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  const globe = document.getElementById("globe-btn");
-  const widget = document.getElementById("google_translate_element");
-  globe.addEventListener("click", function(event) {
-    // Toggle Anzeige
-    if (widget.style.display === "none" || widget.style.display === "") {
-      widget.style.display = "block";
-      // Widget oberhalb vom Globus mittig platzieren
-      const globeRect = globe.getBoundingClientRect();
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
-      widget.style.left = (globeRect.left + globeRect.width / 2 + scrollLeft) + "px";
-      widget.style.top = (globeRect.top + scrollTop - widget.offsetHeight - 8) + "px";
-      widget.style.bottom = ""; // bottom entfernen
-      widget.style.transform = "translateX(-50%)";
-    } else {
-      widget.style.display = "none";
-    }
-  });
+	const globe = document.getElementById("globe-btn");
+	const widget = document.getElementById("google_translate_element");
+
+globe.addEventListener("click", function (event) {
+  if (widget.style.display === "none" || widget.style.display === "") {
+    widget.style.display = "block";
+    // Position berechnen – Widget direkt oberhalb vom Globus mittig
+    const globeRect = globe.getBoundingClientRect();
+    // mittig über das Icon
+    const widgetWidth = 170; // oder je nach Breite des Dropdowns (ggf. anpassen)
+    const left = globeRect.left + globeRect.width / 2 - widgetWidth / 2;
+    let top = globeRect.top - 50; // 50px über dem Globus
+
+    // wenn zu weit links/rechts, anpassen:
+    const maxLeft = window.innerWidth - widgetWidth - 8;
+    const minLeft = 8;
+    const finalLeft = Math.max(minLeft, Math.min(left, maxLeft));
+    if (top < 8) top = globeRect.bottom + 10; // falls zu weit oben
+
+    widget.style.left = finalLeft + "px";
+    widget.style.top = top + "px";
+    widget.style.right = "";  // falls gesetzt, löschen
+    widget.style.bottom = ""; // falls gesetzt, löschen
+    widget.style.transform = ""; // nicht nötig!
+  } else {
+    widget.style.display = "none";
+  }
+});
+
   // Optional: Klick außerhalb schließt das Widget
   document.addEventListener("click", function(e) {
     if (widget.style.display === "block" && !widget.contains(e.target) && e.target !== globe) {
