@@ -207,6 +207,17 @@ nav button#themeSwitcher:focus {
   outline: none;
   box-shadow: none;
 }
+#google_translate_element {
+  display: none;
+  position: absolute;
+  z-index: 9999;
+  min-width: 120px;
+  background: white;
+  box-shadow: 0 2px 12px #0002;
+  border-radius: 7px;
+  padding: 0.4em 0.7em;
+  /* left/top werden per JS gesetzt */
+}
 
 /* Menü auf kleinen Geräten */
 @media (max-width: 900px) {
@@ -440,31 +451,32 @@ body.dark #my-translate-dropdown select {
       margin-bottom: 0.3em;
     }
   }
-    #my-translate-dropdown {
-  display: flex;
-  align-items: center;
-  background: none;         /* Kein dunkler Kasten! */
-  margin: 0 0.2em;
+
+#google_translate_element .goog-te-gadget {
+  font-size: 1em !important;
+  padding: 0 !important;
 }
-#my-translate-dropdown select {
-  border-radius: 6px;
-  padding: 0.18em 1.1em;
-  font-size: 1em;
-  background: #2d2d2d;
-  color: #ffe066;
-  border: none;
-  cursor: pointer;
-  transition: background 0.17s, color 0.17s;
+#google_translate_element .goog-te-combo {
+  font-size: 1em !important;
+  border-radius: 6px !important;
+  padding: 0.2em 0.5em !important;
+  background: #2d2d2d !important;
+  color: #ffe066 !important;
+  border: none !important;
+  outline: none !important;
+  margin: 0 !important;
+  min-width: 90px !important;
+  box-shadow: none !important;
 }
-#my-translate-dropdown select:hover {
-  background: #ffe066;
-  color: #222;
+body.dark #google_translate_element .goog-te-combo {
+  background: #111 !important;
+  color: #ffe066 !important;
 }
-body.dark #my-translate-dropdown select {
-  background: #111;
-  color: #ffe066;
+#google_translate_element .goog-logo-link,
+#google_translate_element .goog-te-gadget span {
+  display: none !important;
 }
-    
+
 .qv-logo-wrapper,
 .sofe-logo-wrapper {
   text-align: center;
@@ -533,8 +545,9 @@ autoDisplay: false // Wichtig, damit Googles Standard-Dropdown nicht sofort ange
   <a href="#kontakt">Kontakt</a>
   <a href="#login">Login</a>
   <div style="position: relative; display: inline-block;">
-  <span id="globe-btn" style="cursor: pointer; color:#1caafc;">🌐</span>
-  <div id="google_translate_element" style="display:none; position:absolute; left:50%; transform:translateX(-50%); z-index:9999;"></div>
+    <span id="globe-btn" style="cursor: pointer; color:#1caafc; font-size:1.25em;">🌐</span>
+    <div id="google_translate_element" style="display:none; position:absolute; z-index:9999;"></div>
+  </div>
   <button id="themeSwitcher" aria-label="Theme wechseln">🌓</button>
   <a href="#" id="scrollTopBtn" class="icon-btn" title="Nach oben">⇧</a>
 </nav>
@@ -874,7 +887,6 @@ autoDisplay: false // Wichtig, damit Googles Standard-Dropdown nicht sofort ange
   </div>
   &copy; 2025 Verein Webermühle &middot; Alle Rechte vorbehalten
 </footer>
-<div id="google_translate_element"></div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -1048,37 +1060,35 @@ window.googleTranslateElementInit = function() {
   <span class="closeModal" title="Schließen">&times;</span>
   <img src="" alt="Vorschau" />
 </div>
+
 <script>
-document.getElementById('globe-btn').addEventListener('click', function() {
-  var el = document.getElementById('google_translate_element');
-  if (el.style.display === 'none' || el.style.display === '') {
-    el.style.display = 'block';
-  } else {
-    el.style.display = 'none';
-  }
+document.addEventListener("DOMContentLoaded", function() {
+  const globe = document.getElementById("globe-btn");
+  const widget = document.getElementById("google_translate_element");
+  globe.addEventListener("click", function(event) {
+    // Toggle Anzeige
+    if (widget.style.display === "none" || widget.style.display === "") {
+      widget.style.display = "block";
+      // Widget oberhalb vom Globus mittig platzieren
+      const globeRect = globe.getBoundingClientRect();
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
+      widget.style.left = (globeRect.left + globeRect.width / 2 + scrollLeft) + "px";
+      widget.style.top = (globeRect.top + scrollTop - widget.offsetHeight - 8) + "px";
+      widget.style.bottom = ""; // bottom entfernen
+      widget.style.transform = "translateX(-50%)";
+    } else {
+      widget.style.display = "none";
+    }
+  });
+  // Optional: Klick außerhalb schließt das Widget
+  document.addEventListener("click", function(e) {
+    if (widget.style.display === "block" && !widget.contains(e.target) && e.target !== globe) {
+      widget.style.display = "none";
+    }
+  });
 });
 </script>
-const globe = document.getElementById("globe-btn");
-const widget = document.getElementById("google_translate_element");
-
-globe.addEventListener("click", function (event) {
-  // Toggle Anzeige
-  if (widget.style.display === "none" || widget.style.display === "") {
-    // Widget zeigen
-    widget.style.display = "block";
-    // Position berechnen – Widget direkt oberhalb vom Globus mittig
-    const globeRect = globe.getBoundingClientRect();
-    const scrollTop = window.scrollY || document.documentElement.scrollTop;
-    const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
-    widget.style.left = (globeRect.left + globeRect.width/2 + scrollLeft) + "px";
-    widget.style.top = (globeRect.top + scrollTop - 55) + "px"; // 55px über dem Globus
-    widget.style.bottom = ""; // bottom muss leer sein
-    widget.style.transform = "translateX(-50%)";
-  } else {
-    // Widget verstecken
-    widget.style.display = "none";
-  }
-});
 
  </body>
 </html>
