@@ -371,37 +371,43 @@ body.dark section a:hover {
   padding: 4px 10px;
 }
 
-/* Versteckt den Großteil des Google Translate Widgets, lässt nur das G-Logo übrig */
+/* Nur das kleine, viereckige G-Logo anzeigen */
 #google_translate_element .goog-te-gadget {
-  font-size: 0 !important; /* Versteckt den Text "Google Translate" */
-  color: transparent !important; /* Macht den Text transparent */
-  /* Wichtig: Um sicherzustellen, dass nur das G sichtbar ist, müssen wir die Breite und Höhe des Gadgets anpassen */
-  width: 25px !important; /* Breite des G-Logos */
-  height: 25px !important; /* Höhe des G-Logos */
-  overflow: hidden !important; /* Schneidet Überlauf ab */
-  display: flex !important; /* Flexbox für Zentrierung */
-  justify-content: center !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  display: flex !important;
   align-items: center !important;
-  border: none !important; /* Entfernt den Standardrand */
-  background-color: transparent !important; /* Entfernt den Hintergrund */
+  justify-content: center !important;
+  background: #fff;
+  border-radius: 7px;
+  box-shadow: 0 4px 16px #0002;
+  font-size: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
 }
-
-/* Versteckt den Link zum Google Logo Text */
 #google_translate_element .goog-logo-link {
-  display: none !important;
+  display: block !important;
+  width: 24px !important;
+  height: 24px !important;
+  margin: 0 auto !important;
+  background: none !important;
 }
-
-/* Versteckt den Text 'Google Translate' im Gadget */
+#google_translate_element .goog-logo-link img {
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 6px !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  background: none !important;
+  display: block !important;
+}
+/* Verstecke den Google-Text und das Label */
+#google_translate_element .goog-te-gadget span,
 #google_translate_element .goog-te-gadget-simple span {
   display: none !important;
-}
-
-/* Stellt sicher, dass das Dropdown sichtbar wird, wenn es aktiv ist */
-#google_translate_element.visible .goog-te-gadget {
-  /* Wenn unser JavaScript das Element auf 'display: block' setzt, wird es sichtbar */
-  /* Die Größe wird dann automatisch durch den Inhalt des Widgets angepasst */
-  width: auto !important;
-  height: auto !important;
 }
 
 /* Spezifisches Anpassen des select-Elements, das von Google Translate generiert wird */
