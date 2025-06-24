@@ -532,10 +532,10 @@ autoDisplay: false // Wichtig, damit Googles Standard-Dropdown nicht sofort ange
   <a href="#downloads">Downloads</a>
   <a href="#kontakt">Kontakt</a>
   <a href="#login">Login</a>
-  <div id="my-translate-dropdown" style="display: flex; align-items: center; background: none;">
-  <select id="languageSelect" aria-label="Sprache wählen"
-    style="background: none; border: none; color: #2da6df; font-size: 1.32em; padding: 0; width: 2.3em; cursor:pointer; outline: none;">
-    <option value="" style="color:#2da6df;">🌐</option>
+  <div style="position: relative; display: inline-block;">
+  <span id="globe-btn" style="font-size: 2rem; cursor: pointer;">🌐</span>
+  <div id="google_translate_element" style="display:none; position:absolute; left:50%; transform:translateX(-50%); bottom:2.5rem; z-index:9999;"></div>
+</div>
     <option value="de">Deutsch</option>
     <option value="en">English</option>
     <option value="it">Italiano</option>
@@ -1063,5 +1063,16 @@ window.googleTranslateElementInit = function() {
   <span class="closeModal" title="Schließen">&times;</span>
   <img src="" alt="Vorschau" />
 </div>
+<script>
+document.getElementById('globe-btn').addEventListener('click', function() {
+  var el = document.getElementById('google_translate_element');
+  if (el.style.display === 'none' || el.style.display === '') {
+    el.style.display = 'block';
+  } else {
+    el.style.display = 'none';
+  }
+});
+</script>
+
  </body>
 </html>
