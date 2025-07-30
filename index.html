@@ -538,13 +538,41 @@ body:not(.dark) .logo-qv {
   transition: box-shadow 0.2s;
 }
 
+.welcome-subline {
+  margin-top: 1.1em;
+  font-size: 1.3rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: #ffe066;
+  text-shadow: 1px 2px 7px #000a;
+  pointer-events: none;
+  text-align: center;
+  line-height: 1.18;
+}
+@media (max-width: 900px) {
+  .welcome-subline { font-size: 1.05rem; }
+}
+@media (max-width: 600px) {
+  .welcome-subline { font-size: 0.99rem; }
+}
+
+#downloads a {
+  display: inline-flex;
+  align-items: center;
+}
+#downloads a::before {
+  content: "📄";
+  margin-right: 0.28em;
+  font-size: 1.2em;
+}
+
 </style>
 
 <script type="text/javascript">
 function googleTranslateElementInit() {
 new google.translate.TranslateElement({
 pageLanguage: 'de', // Ihre Original-Sprache
-includedLanguages: 'de,en,it,fr,es,tr,sq,hr,pt,pl,sk', // Die Sprachen, die Sie anbieten möchten
+includedLanguages: 'de,en,it,fr,es,tr,sq,hr,pt,pl,sk', // Die Sprachen, die wir anbieten möchten
 layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
 autoDisplay: false // Wichtig, damit Googles Standard-Dropdown nicht sofort angezeigt wird
 }, 'google_translate_element');
@@ -558,6 +586,7 @@ autoDisplay: false // Wichtig, damit Googles Standard-Dropdown nicht sofort ange
 <a href="#" class="logos-right"><img id="logo-qv-header" src="logo-qv-weiss.png" alt="Logo Quartierverein" /></a>
     <!-- BANNER -->
     <div class="welcome-headline">Willkommen in der Webermühle</div>
+	  <div class="welcome-subline">368 Wohnungen · 1500 Menschen · Ein Quartier für alle Generationen</div>
 <div class="sommerfest-timer-container">
   <div class="sommerfest-label">
     <span class="emoji">☀️</span> nächstes <b>SOMMERFEST</b> in <span class="emoji">🥳</span>
