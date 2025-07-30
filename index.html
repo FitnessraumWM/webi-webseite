@@ -511,6 +511,33 @@ body:not(.dark) .logo-qv {
   margin: 0 !important;
 }
 
+.sponsor-logos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2em;
+  justify-content: center;
+  align-items: center;
+  margin: 1.2em 0 1.5em 0;
+}
+.sponsor-logos a {
+  display: inline-block;
+  transition: transform 0.19s;
+  filter: grayscale(30%);
+}
+.sponsor-logos a:hover {
+  transform: scale(1.08);
+  filter: none;
+}
+.sponsor-logos img {
+  max-height: 72px;
+  max-width: 180px;
+  padding: 0.7em 0.9em;
+  background: #fff;
+  border-radius: 9px;
+  box-shadow: 0 1px 8px #0001;
+  transition: box-shadow 0.2s;
+}
+
 </style>
 
 <script type="text/javascript">
@@ -549,6 +576,7 @@ autoDisplay: false // Wichtig, damit Googles Standard-Dropdown nicht sofort ange
   <a href="#fitness">Fitnessraum</a>
   <a href="#spielgruppe">Spielgruppe</a>
   <a href="#downloads">Downloads</a>
+  <a href="#sponsoren">Sponsoren</a>
   <a href="#kontakt">Kontakt</a>
   <a href="#login">Login</a>
   <span id="globe-btn" tabindex="0" style="cursor:pointer; color:#1caafc;">🌐</span>
@@ -900,6 +928,22 @@ autoDisplay: false // Wichtig, damit Googles Standard-Dropdown nicht sofort ange
   </ul>
 </section>
 
+<section id="sponsoren">
+  <h2>Sponsoren</h2>
+  <p>
+    Ein herzlicher Dank an unseren Sponsor für die Unterstützung des Sommerfests und der Aktivitäten im Quartier!
+  </p>
+  <div class="sponsor-logos">
+    <a href="https://www.allianz.ch/de/ueber-uns/allianz-standorte/allianz-suisse-generalagentur-brugg.html" 
+       target="_blank" rel="noopener" title="Allianz Suisse Generalagentur Brugg">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/Allianz.svg" 
+           alt="Allianz Suisse Logo" />
+    </a>
+  </div>
+  <p style="margin-top:2em;">
+    Sie möchten Sponsor werden? <a href="mailto:sommerfest@webi.family" class="contact-link">Kontaktieren Sie uns!</a>
+  </p>
+</section>
 
 <section id="login">
   <h2>Interner Bereich</h2>
