@@ -125,9 +125,12 @@
 }
 
 .welcome-subline {
-  display: block;
-  margin: 0 auto;
-  margin-top: 0.9em;     /* alebo podľa vkusu 0.6em, 1em ... */
+  position: absolute;
+  left: 50%;
+  top: 52vh;           /* určite väčšie číslo ako headline! */
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  width: 92vw;
   font-size: 1.3rem;
   font-weight: 400;
   letter-spacing: 0.01em;
@@ -137,7 +140,7 @@
   text-align: center;
   line-height: 1.18;
   max-width: 95vw;
-  position: static;      /* najdôležitejšie – žiadne absolute! */
+  margin: 0;           /* zruš margin, absolute ho nepotrebuje */
 }
 
 @media (max-width: 900px) {
