@@ -106,40 +106,35 @@
   .sommerfest-countdown { font-size: 1.17em; }
 }
     /* ======= Willkommen-Schrift ======= */
-.welcome-abs-container {
+.welcome-headline {
   position: absolute;
   left: 50%;
-  top: 47vh;  /* alebo jemne uprav podla svojho vkusu */
+  top: 47vh;
   transform: translate(-50%, -50%);
   z-index: 10;
-  width: 98vw;
-  text-align: center;
-  pointer-events: none;
-}
-.welcome-headline {
+  width: 94vw;
   font-size: 3.4rem;
   font-weight: 900;
   letter-spacing: 0.03em;
   color: #fff;
   text-shadow: 3px 3px 12px #000c, 0 2px 8px #444b;
+  pointer-events: none;
   line-height: 1.13;
-  margin-bottom: 0.32em;  /* rozostup podnadpis */
+  text-align: center;
+  white-space: pre-line;
 }
-.welcome-subline {
-  font-size: 1.3rem;
-  font-weight: 400;
-  color: #ffe066;
-  text-shadow: 1px 2px 7px #000a;
-  line-height: 1.18;
-}
+
 @media (max-width: 900px) {
-  .welcome-headline { font-size: 2.1rem; }
-  .welcome-subline { font-size: 1.05rem; }
+  .welcome-headline {
+    font-size: 2.1rem;
+    top: 44vh;
+  }
 }
 @media (max-width: 600px) {
-  .welcome-headline { font-size: 2.5rem; }
-  .welcome-subline { font-size: 0.99rem; }
-}
+  .welcome-headline {
+    font-size: 2.5rem;
+    top: 50vh;
+  }
 
 }
     nav {
