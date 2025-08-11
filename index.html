@@ -574,6 +574,23 @@ body:not(.dark) .logo-qv {
 .sponsor-logos img.allianz {
   max-height: 88px; /* väčšie ako bežných 72px */
 }
+/* Allianz: žiadne zosivenie + väčšia výška */
+.sponsor-logos a.allianz { 
+  filter: none;                 /* nechaj modrú farbu */
+}
+
+.sponsor-logos img.allianz {
+  max-height: 110px;            /* viac ako bežných 72px */
+  max-width: 260px;             /* poistka, keby bol horizontálne dlhý */
+  object-fit: contain;
+}
+
+/* Mobil – trochu menšie, ale stále väčšie než ostatné */
+@media (max-width: 700px) {
+  .sponsor-logos img.allianz {
+    max-height: 96px;
+  }
+}
 
 </style>
 
@@ -974,16 +991,16 @@ Wir danken unseren Sponsoren herzlich für ihr grosszügiges Engagement und die 
 <b>Herzlichen Dank!</b>
 </p>
   <div class="sponsor-logos">
-    <a href="https://www.allianz.ch/de/beratung/brugg.html#/home" 
-   target="_blank" rel="noopener" title="Allianz Suisse Generalagentur Brugg">
-  <img src="Allianz-Logo_GA.jpg" 
-       alt="Allianz Suisse Logo" 
-       class="allianz" />
-</a>
-    <a href="https://www.raiffeisen.ch/wuerenlos/de/ueber-uns/oeffnungszeiten.html#content_www_wuerenlos_jcr_content" target="_blank" title="Raiffeisenbank Neuenhof">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/9/98/Raiffeisen_Schweiz_Logo.svg" alt="Raiffeisenbank Logo" style="height: 52px; width: auto; object-fit: contain; background: #fff; padding: 8px; border-radius: 8px; box-shadow: 0 2px 8px #0001;">
-    </a>
-  </div>
+  <a class="allianz" href="https://www.allianz.ch/de/beratung/brugg.html#/home"
+     target="_blank" rel="noopener" title="Allianz Suisse Generalagentur Brugg">
+    <img src="Allianz-Logo_GA.jpg" alt="Allianz Suisse Logo" class="allianz">
+  </a>
+
+  <a href="https://www.raiffeisen.ch/wuerenlos/de/ueber-uns/oeffnungszeiten.html#content_www_wuerenlos_jcr_content"
+     target="_blank" rel="noopener" title="Raiffeisenbank Neuenhof">
+    <img src="raiffeisen-logo.svg" alt="Raiffeisen Logo">
+  </a>
+</div>
   <p style="margin-top:2em;">
     Sie möchten Sponsor werden? <a href="mailto:sommerfest@webi.family" class="contact-link">Kontaktieren Sie uns!</a>
   </p>
@@ -1198,6 +1215,7 @@ window.googleTranslateElementInit = function() {
 </div>
  </body>
 </html>
+
 
 
 
