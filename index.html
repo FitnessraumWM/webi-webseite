@@ -489,21 +489,12 @@
   .sponsor-logos img.mssports { max-height: 120px; max-width: 320px; }
 }
 
-/* Dark mode – čitateľnosť v #sponsoren */
-/* Textové farby v sekcii Sponsoren */
-#sponsoren p,
-#sponsoren h2 { color: #2a2a2a; }            /* svetlý režim */
-
-#sponsoren p b { color: #111; }               /* zvýraznené slovo */
-#sponsoren p span { color: #c79228; }         /* "Sommerfest Sponsoren" */
-
-/* Dark mode – lepší kontrast */
-body.dark #sponsoren h2 { color: #f1f1f1; border-bottom-color: #444; }
-body.dark #sponsoren p  { color: #e6e6e6; }
-body.dark #sponsoren p b { color: #ffffff; }
-body.dark #sponsoren a { color: #ffd84d; }
-body.dark #sponsoren a:hover { color: #ffffff; text-decoration: underline; }
-
+@media (prefers-color-scheme: dark) {
+  #sponsoren p {
+    color: #f5f5f5; /* alebo iná svetlá farba */
+  }
+}
+    
 /* Video ako pozadie headeru */
 .header-video {
   position: absolute;
@@ -1084,6 +1075,7 @@ header::after {
   </div>
 </body>
 </html>
+
 
 
 
