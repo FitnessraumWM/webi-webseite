@@ -475,6 +475,18 @@
       padding: 0.5em 0.6em;
       object-fit: contain;
     }
+
+    /* Dark mode – lepšia čitateľnosť v #sponsoren */
+body.dark #sponsoren { color: #eee; }                 /* default text */
+body.dark #sponsoren p { color: #e9e9e9; }            /* odsekový text */
+body.dark #sponsoren b { color: #fff; }               /* hrubý text ako "Herzlichen Dank!" */
+body.dark #sponsoren a { color: #ffd84d; }            /* linky viditeľnejšie */
+body.dark #sponsoren a:hover { color: #ffffff; }
+
+body.dark #sponsoren h2 {
+  border-bottom-color: #444;                          /* jemnejšia deliaca čiara na tmavom pozadí */
+}
+
 /* Video ako pozadie headeru */
 .header-video {
   position: absolute;
@@ -1057,6 +1069,7 @@ header::after {
   </div>
 </body>
 </html>
+
 
 
 
