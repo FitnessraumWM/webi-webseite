@@ -475,6 +475,18 @@
       padding: 0.5em 0.6em;
       object-fit: contain;
     }
+
+    /* Dark mode – lepšia čitateľnosť v #sponsoren */
+body.dark #sponsoren { color: #eee; }                 /* default text */
+body.dark #sponsoren p { color: #e9e9e9; }            /* odsekový text */
+body.dark #sponsoren b { color: #fff; }               /* hrubý text ako "Herzlichen Dank!" */
+body.dark #sponsoren a { color: #ffd84d; }            /* linky viditeľnejšie */
+body.dark #sponsoren a:hover { color: #ffffff; }
+
+body.dark #sponsoren h2 {
+  border-bottom-color: #444;                          /* jemnejšia deliaca čiara na tmavom pozadí */
+}
+
 /* Video ako pozadie headeru */
 .header-video {
   position: absolute;
@@ -540,18 +552,10 @@ header::after {
 <body>
   <header>
   <!-- BACKGROUND VIDEO -->
-  <video
-    class="header-video"
-    autoplay
-    muted
-    loop
-    playsinline
-    poster="webermuehle-gesamt.jpg">
-    <source src="video/webermuehle.mp4" type="video/mp4" />
-    <!-- Voliteľne druhý formát:
-    <source src="video/webermuehle.webm" type="video/webm" />
-    -->
-  </video>
+  <video class="header-video" autoplay muted loop playsinline poster="webermuehle-gesamt.jpg">
+  <source src="video/webermuehle_720p.mp4" type="video/mp4" />
+  <source src="video/webermuehle_720p.webm" type="video/webm" />
+</video>
 
   <a href="#" class="logos-left"><img id="logo-sofe-header" src="verein-sofe-logo-w.png" alt="Logo SOFE Webi" /></a>
   <a href="#" class="logos-right"><img id="logo-qv-header" src="logo-qv-weiss.png" alt="Logo Quartierverein" /></a>
@@ -1057,6 +1061,9 @@ header::after {
   </div>
 </body>
 </html>
+
+
+
 
 
 
