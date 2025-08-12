@@ -428,64 +428,75 @@
     body:not(.dark) .logo-qv { content: url('logo-qv-schwarz.png') !important; }
 
     /* ======= Sponsoren ======= */
-    .sponsor-logos {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 2em;
-      justify-content: center;
-      align-items: center;
-      margin: 1.2em 0 1.5em 0;
-    }
-    .sponsor-logos a {
-      display: inline-block;
-      transition: transform 0.19s;
-      filter: grayscale(30%);
-    }
-    .sponsor-logos a:hover { transform: scale(1.08); filter: none; }
-
-    .sponsor-logos img {
-      max-height: 72px;
-      max-width: 180px;
-      padding: 0.7em 0.9em;
-      background: #fff;
-      border-radius: 9px;
-      box-shadow: 0 1px 8px #0001;
-      transition: box-shadow 0.2s;
-    }
-
-    /* Allianz väčšie a bez sivej */
-    .sponsor-logos a.allianz { filter: none; }
-    .sponsor-logos img.allianz {
-      max-height: 130px;
-      max-width: 260px;
-      object-fit: contain;
-    }
-    @media (max-width: 700px) {
-      .sponsor-logos img.allianz { max-height: 115px; }
-    }
-
-    /* FC Neuenhof */
-    .sponsor-logos img.fcneuenhof { max-height: 130px; }
-
-    /* Raiffeisen – prebi globálne obmedzenia šírky */
-    .sponsor-logos img.raiffeisen {
-      max-height: 110px;
-      max-width: 280px;  /* kľúčové, inak ho reže 180px limit */
-      width: auto;
-      padding: 0.5em 0.6em;
-      object-fit: contain;
-    }
-
-    /* Dark mode – lepšia čitateľnosť v #sponsoren */
-body.dark #sponsoren { color: #eee; }                 /* default text */
-body.dark #sponsoren p { color: #e9e9e9; }            /* odsekový text */
-body.dark #sponsoren b { color: #fff; }               /* hrubý text ako "Herzlichen Dank!" */
-body.dark #sponsoren a { color: #ffd84d; }            /* linky viditeľnejšie */
-body.dark #sponsoren a:hover { color: #ffffff; }
-
-body.dark #sponsoren h2 {
-  border-bottom-color: #444;                          /* jemnejšia deliaca čiara na tmavom pozadí */
+    /* ======= Sponsoren ======= */
+.sponsor-logos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2em;
+  justify-content: center;
+  align-items: center;
+  margin: 1.2em 0 1.5em 0;
 }
+
+.sponsor-logos a {
+  display: inline-block;
+  transition: transform 0.19s;
+  filter: grayscale(30%);
+}
+.sponsor-logos a:hover { transform: scale(1.08); filter: none; }
+
+.sponsor-logos img.logo {
+  height: auto;
+  width: auto;
+  max-height: 84px;     /* základ pre väčšinu log */
+  max-width: 220px;
+  padding: 0.7em 0.9em;
+  background: #fff;
+  border-radius: 9px;
+  box-shadow: 0 1px 8px #0001;
+  transition: box-shadow 0.2s;
+  object-fit: contain;
+}
+
+/* Allianz – väčšie kvôli textu */
+.sponsor-logos img.allianz {
+  max-height: 130px;
+  max-width: 260px;
+}
+/* menší kompromis na užších displejoch */
+@media (max-width: 700px) {
+  .sponsor-logos img.allianz { max-height: 115px; }
+}
+
+/* FC Neuenhof – trochu väčšie, aby sedelo s Allianz */
+.sponsor-logos img.fcneuenhof { max-height: 110px; }
+
+/* Raiffeisen – zmenšiť, aby neprebíjal ostatných */
+.sponsor-logos img.raiffeisen {
+  max-height: 95px;
+  max-width: 240px;
+  padding: 0.5em 0.6em;
+}
+@media (max-width: 700px) {
+  .sponsor-logos img.raiffeisen { max-height: 82px; max-width: 200px; }
+}
+
+/* MS Sports – zväčšiť (na mobile ešte o kúsok) */
+.sponsor-logos img.mssports {
+  max-height: 110px;
+  max-width: 300px;
+}
+@media (max-width: 700px) {
+  .sponsor-logos img.mssports { max-height: 120px; max-width: 320px; }
+}
+
+/* Dark mode – čitateľnosť v #sponsoren (ponechávam, čo si mal) */
+body.dark #sponsoren { color: #eee; }
+body.dark #sponsoren p { color: #e9e9e9; }
+body.dark #sponsoren b { color: #fff; }
+body.dark #sponsoren a { color: #ffd84d; }
+body.dark #sponsoren a:hover { color: #ffffff; }
+body.dark #sponsoren h2 { border-bottom-color: #444; }
 
 /* Video ako pozadie headeru */
 .header-video {
@@ -862,42 +873,42 @@ header::after {
   </section>
 
   <section id="sponsoren">
-    <h2>Sponsoren</h2>
-    <p style="font-size: 1.15rem; font-weight: 500; text-align: center; margin-bottom: 1em; color: #333;">
-  Wir danken unseren <span style="color: #c79228; font-weight: 700;">Sommerfest Sponsoren</span> herzlich 
-  für ihr grosszügiges Engagement und die wertvolle Förderung des Gemeinschaftslebens in der Webermühle!
-      <b>Herzlichen Dank!</b>
-</p>
-    
-    <div class="sponsor-logos">
-      <!-- Allianz -->
-      <a class="allianz" href="https://www.allianz.ch/de/beratung/brugg.html#/home"
-         target="_blank" rel="noopener" title="Allianz Suisse Generalagentur Brugg">
-        <img src="Allianz-Logo_GA.jpg" alt="Allianz Suisse Logo" class="allianz" decoding="async">
-      </a>
+  <h2>Sponsoren</h2>
 
-      <!-- Raiffeisen -->
-      <a href="https://www.raiffeisen.ch/wuerenlos/de/ueber-uns/oeffnungszeiten.html#content_www_wuerenlos_jcr_content"
-         target="_blank" rel="noopener" title="Raiffeisenbank Neuenhof">
-        <img src="raiffeisen-logo.svg" alt="Raiffeisen Logo" class="raiffeisen" decoding="async">
-      </a>
+  <p style="font-size:1.15rem;font-weight:500;text-align:center;margin-bottom:1em;color:#333;">
+    Wir danken unseren <span style="color:#c79228;font-weight:700;">Sommerfest Sponsoren</span> herzlich
+    für ihr grosszügiges Engagement und die wertvolle Förderung des Gemeinschaftslebens in der Webermühle!
+    <b>Herzlichen Dank!</b>
+  </p>
 
-      <!-- FC Neuenhof -->
-      <a href="https://www.fcneuenhof.ch" target="_blank" rel="noopener" title="FC Neuenhof">
-        <img src="Logo_FC_Neuenhof.jpg" alt="FC Neuenhof Logo" class="fcneuenhof" decoding="async">
-      </a>
-    </div>
+  <div class="sponsor-logos">
+    <!-- Allianz -->
+    <a class="allianz" href="https://www.allianz.ch/de/beratung/brugg.html#/home" target="_blank" rel="noopener"
+       title="Allianz Suisse Generalagentur Brugg">
+      <img src="Allianz-Logo_GA.jpg" alt="Allianz Suisse Logo" class="logo allianz" decoding="async" fetchpriority="high">
+    </a>
+
+    <!-- Raiffeisen -->
+    <a class="raiffeisen" href="https://www.raiffeisen.ch/wuerenlos/de/ueber-uns/oeffnungszeiten.html#content_www_wuerenlos_jcr_content"
+       target="_blank" rel="noopener" title="Raiffeisenbank Neuenhof">
+      <img src="raiffeisen-logo.svg" alt="Raiffeisen Logo" class="logo raiffeisen" decoding="async">
+    </a>
+
+    <!-- FC Neuenhof -->
+    <a class="fcneuenhof" href="https://www.fcneuenhof.ch" target="_blank" rel="noopener" title="FC Neuenhof">
+      <img src="Logo_FC_Neuenhof.jpg" alt="FC Neuenhof Logo" class="logo fcneuenhof" decoding="async">
+    </a>
 
     <!-- MS Sports -->
-      <a href="https://www.mssports.ch/" target="_blank" rel="noopener" title="MS Sports">
-        <img src="MSSports.jpg" alt="MS Sports Logo" class="mssports" decoding="async">
-      </a>
-    </div>
+    <a class="mssports" href="https://www.mssports.ch/" target="_blank" rel="noopener" title="MS Sports">
+      <img src="MSSports.jpg" alt="MS Sports Logo" class="logo mssports" decoding="async">
+    </a>
+  </div>
 
-    <p style="margin-top:2em;">
-      Sie möchten Sponsor werden? <a href="mailto:sommerfest@webi.family" class="contact-link">Kontaktieren Sie uns!</a>
-    </p>
-  </section>
+  <p style="margin-top:2em;">
+    Sie möchten Sponsor werden? <a href="mailto:sommerfest@webi.family" class="contact-link">Kontaktieren Sie uns!</a>
+  </p>
+</section>
 
   <section id="login">
     <h2>Interner Bereich</h2>
@@ -1067,5 +1078,6 @@ header::after {
   </div>
 </body>
 </html>
+
 
 
