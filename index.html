@@ -482,7 +482,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;     /* vyplní priestor bez skreslenia */
-  z-index: 0;            /* pod všetkým ostatným v headeri */
+  z-index: -1;            /* pod všetkým ostatným v headeri */
   pointer-events: none;  /* aby video "nechytilo" kliky */
 }
 
@@ -547,7 +547,7 @@ header::after {
     loop
     playsinline
     poster="webermuehle-gesamt.jpg">
-    <source src="video/webermuehle.mp4" type="video/mp4" />
+    <source src="video/webermuehle_720p.webm" type="video/webm" />
     <!-- Voliteľne druhý formát:
     <source src="video/webermuehle.webm" type="video/webm" />
     -->
@@ -1057,6 +1057,7 @@ header::after {
   </div>
 </body>
 </html>
+
 
 
 
