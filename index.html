@@ -458,13 +458,16 @@
 
 /* Allianz – väčšie kvôli textu */
 .sponsor-logos img.allianz {
-  max-height: 145px;
-  max-width: 260px;
+  max-height: 150px;   /* vorher 145px */
+  max-width: 290px;    /* breiter, damit das Format passt */
   padding: 0.6em 1em;
 }
-/* menší kompromis na užších displejoch */
+
 @media (max-width: 700px) {
-  .sponsor-logos img.allianz { max-height: 130px; max-width: 260px; }
+  .sponsor-logos img.allianz {
+    max-height: 135px;
+    max-width: 270px;
+  }
 }
 
 /* FC Neuenhof – trochu väčšie, aby sedelo s Allianz */
@@ -497,16 +500,21 @@
 
 /* TopPharm Neuenhofer Apotheke – groesser anzeigen */
 .sponsor-logos img.neuenhoferapotheke {
-  max-height: 130px;   /* vorher 84px – jetzt aehnlich wie Radi/Elinag */
-  max-width: 360px;    /* etwas Luft nach rechts/links */
+  max-height: 130px;   /* vorher 120px */
+  max-width: 380px;    /* mehr Breite erlaubt */
   padding: 0.6em 1.0em;
 }
 
 @media (max-width: 700px) {
   .sponsor-logos img.neuenhoferapotheke {
-    max-height: 125px; /* auf Mobile ruhig minimal groesser, wegen flachem Logo */
-    max-width: 380px;
+    max-height: 135px;
+    max-width: 400px;
   }
+}
+
+.sponsor-logos img.radisgarage {
+  max-height: 115px;  /* vorher wie default (84px) mit grossem Bild – hier leicht reduziert */
+  max-width: 300px;
 }
     
 /* Video ako pozadie headeru */
@@ -1097,6 +1105,7 @@ header::after {
   </div>
 </body>
 </html>
+
 
 
 
