@@ -493,6 +493,20 @@
     color: #f5f5f5; /* alebo iná svetlá farba */
   }
 }
+
+/* TopPharm Neuenhofer Apotheke – groesser anzeigen */
+.sponsor-logos img.neuenhoferapotheke {
+  max-height: 120px;   /* vorher 84px – jetzt aehnlich wie Radi/Elinag */
+  max-width: 360px;    /* etwas Luft nach rechts/links */
+  padding: 0.6em 1.0em;
+}
+
+@media (max-width: 700px) {
+  .sponsor-logos img.neuenhoferapotheke {
+    max-height: 125px; /* auf Mobile ruhig minimal groesser, wegen flachem Logo */
+    max-width: 380px;
+  }
+}
     
 /* Video ako pozadie headeru */
 .header-video {
@@ -1082,15 +1096,3 @@ header::after {
   </div>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
