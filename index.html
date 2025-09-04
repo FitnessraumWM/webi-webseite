@@ -44,70 +44,66 @@
       .logos-right { right: 3px; }
     }
 
-    /* ======= BANNER (Sommerfest-Timer) ======= */
-    .sommerfest-timer-container {
-      position: absolute;
-      left: 50%;
-      top: 31vh;
-      transform: translateX(-50%) rotate(-7deg);
-      z-index: 8;
-      background: rgba(32,32,32, 0.85);
-      border-radius: 0.9em;
-      box-shadow: 0 0 10px #0008;
-      padding: 0.8em 2em 1em 2em;
-      pointer-events: none;
-      max-width: 470px;
-      min-width: 195px;
-      text-align: center;
-      font-size: 1.07em;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.17em;
-    }
-    .sommerfest-label {
-      color: #ffe066;
-      font-size: 1.22em;
-      font-weight: bold;
-      letter-spacing: 0.01em;
-      text-shadow: 1px 2px 7px #000a;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.19em;
-      margin-bottom: 0.10em;
-    }
-    .sommerfest-label .emoji { font-size: 1.2em; margin: 0 0.06em; }
-    .sommerfest-countdown {
-      color: #fff;
-      font-size: 1.08em;
-      font-family: 'Consolas', 'Courier New', monospace;
-      font-weight: 800;
-      text-shadow: 1px 2px 8px #000b;
-      letter-spacing: 0.03em;
-      margin-top: 0.1em;
-    }
-    @media (max-width: 950px) {
-      .sommerfest-timer-container {
-        font-size: 0.92em;
-        max-width: 75vw;
-        min-width: 120px;
-        top: 18vh;
-        padding: 0.7em 1em 1em 1em;
-      }
-    }
-    @media (max-width: 650px) {
-      .sommerfest-timer-container {
-        font-size: 1em;
-        max-width: 98vw;
-        min-width: 1px;
-        left: 50%;
-        top: 26vh;
-        padding: 1.1em 0.7em 1.2em 0.7em;
-      }
-      .sommerfest-label { font-size: 1.4em; }
-      .sommerfest-countdown { font-size: 1.17em; }
-    }
+    /* ======= BANNER (Event-Timer – Halloween) ======= */
+.event-timer-container{
+  position:absolute;
+  left:50%;
+  top:31vh;
+  transform:translateX(-50%) rotate(-4deg);
+  z-index:8;
+  background:rgba(20,12,24,0.86);           /* temný fialový */
+  border:2px solid rgba(255,140,0,.25);
+  border-radius:0.9em;
+  box-shadow:0 0 16px #000a, 0 0 22px rgba(255,140,0,.15);
+  padding:.9em 2em 1.05em 2em;
+  pointer-events:none;
+  max-width:470px;
+  min-width:195px;
+  text-align:center;
+  font-size:1.07em;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:.18em;
+}
+.event-label{
+  color:#ff8c00;                             /* Halloween oranžová */
+  font-size:1.22em;
+  font-weight:800;
+  letter-spacing:.01em;
+  text-shadow:1px 2px 7px #000a;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:.22em;
+  margin-bottom:.12em;
+}
+.event-label .emoji{font-size:1.2em;margin:0 .06em}
+.event-countdown{
+  color:#fff;
+  font-size:1.08em;
+  font-family:'Consolas','Courier New',monospace;
+  font-weight:800;
+  text-shadow:1px 2px 8px #000b;
+  letter-spacing:.03em;
+  margin-top:.12em;
+}
+
+@media (max-width:950px){
+  .event-timer-container{
+    font-size:.92em;max-width:75vw;min-width:120px;top:18vh;padding:.7em 1em 1em 1em;
+  }
+}
+@media (max-width:650px){
+  .event-timer-container{
+    font-size:1em;max-width:98vw;min-width:1px;left:50%;top:26vh;padding:1.1em .7em 1.2em .7em;
+  }
+  .event-label{font-size:1.35em}
+  .event-countdown{font-size:1.12em}
+}
+
+/* Dark mode drobnosti */
+body.dark .event-timer-container{background:rgba(12,8,14,.9);border-color:rgba(255,140,0,.22)}
 
     /* ======= Willkommen-Schrift ======= */
     .welcome-headline {
@@ -618,12 +614,12 @@ header::after {
   <div class="welcome-headline">Willkommen in der Webermühle</div>
   <div class="welcome-subline">368 Wohnungen · 1500 Menschen · Ein Quartier für alle Generationen</div>
 
-  <div class="sommerfest-timer-container">
-    <div class="sommerfest-label">
-      <span class="emoji">☀️</span> nächstes <b>SOMMERFEST</b> in <span class="emoji">🥳</span>
-    </div>
-    <span class="sommerfest-countdown" id="sommerfest-countdown">00 Tage 00:00:00</span>
+  <div class="event-timer-container" aria-live="polite" aria-label="Countdown bis Halloween">
+  <div class="event-label">
+    <span class="emoji">🕸️</span> Countdown bis <b>HALLOWEEN 2025</b> <span class="emoji">🎃</span>
   </div>
+  <span class="event-countdown" id="event-countdown">00 Tage 00:00:00</span>
+</div>
 </header>
 
   <nav>
@@ -1091,30 +1087,36 @@ header::after {
         if (isGoogleTranslateVisible) positionGoogleTranslateElement();
       });
 
-      // ==== Sommerfest Countdown ====
-      function updateSommerfestCountdown() {
-        const target = new Date(2025, 7, 30, 14, 0, 0); // 30. August 2025, 14:00
-        const now = new Date();
-        let diff = target - now;
-        if (diff < 0) {
-          document.getElementById('sommerfest-countdown').innerText = "Das Sommerfest läuft!";
-          return;
-        }
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        diff -= days * 1000 * 60 * 60 * 24;
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        diff -= hours * 1000 * 60 * 60;
-        const mins = Math.floor(diff / (1000 * 60));
-        diff -= mins * 1000 * 60;
-        const secs = Math.floor(diff / 1000);
-        document.getElementById('sommerfest-countdown').innerText =
-          days.toString().padStart(2, '0') + " Tagen " +
-          hours.toString().padStart(2, '0') + ":" +
-          mins.toString().padStart(2, '0') + ":" +
-          secs.toString().padStart(2, '0');
+      // ==== Halloween Countdown (31. Okt 2025, 18:00) ====
+  (function(){
+    // 31.10.2025 18:00 lokálneho času
+    const target = new Date(2025, 9, 31, 18, 0, 0); // mesiac je 0-indexovaný (9 = október)
+    const el = document.getElementById('event-countdown');
+
+    function tick(){
+      const now = new Date();
+      let diff = target - now;
+
+      if (diff <= 0){
+        el.textContent = "Happy Halloween! 🎃";
+        clearInterval(tmr);
+        return;
       }
-      updateSommerfestCountdown();
-      setInterval(updateSommerfestCountdown, 1000);
+      const d = Math.floor(diff / (1000*60*60*24));     diff -= d*(1000*60*60*24);
+      const h = Math.floor(diff / (1000*60*60));        diff -= h*(1000*60*60);
+      const m = Math.floor(diff / (1000*60));           diff -= m*(1000*60);
+      const s = Math.floor(diff / 1000);
+
+      el.textContent =
+        d.toString().padStart(2,'0') + " Tage " +
+        h.toString().padStart(2,'0') + ":" +
+        m.toString().padStart(2,'0') + ":" +
+        s.toString().padStart(2,'0');
+    }
+
+    tick();
+    const tmr = setInterval(tick, 1000);
+  })();
 
       // ==== Menü Hide on Scroll ====
       let lastScrollY = window.scrollY, nav = document.querySelector('nav');
@@ -1140,6 +1142,7 @@ header::after {
   </div>
 </body>
 </html>
+
 
 
 
