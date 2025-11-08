@@ -3,12 +3,14 @@
 <head>
 <meta charset="utf-8" />
 <title>FlapFlap</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <style>
     body {
         margin: 0;
         background: #70c5ce;
         overflow: hidden;
         font-family: Arial, sans-serif;
+        touch-action: none; /* zabráni scrollu pri tapovaní na mobile */
     }
     canvas {
         display: block;
@@ -19,29 +21,45 @@
         left: 50%;
         transform: translateX(-50%);
         text-align: center;
+        z-index: 10;
     }
     .ui {
         top: 50%;
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 16px;
     }
     .how-ui {
-        top: 35%; /* moved slightly higher */
-        max-width: 500px;
+        top: 30%;
+        max-width: 90vw;
         display: none;
         flex-direction: column;
-        gap: 20px;
+        gap: 12px;
+        padding: 10px;
+        background: rgba(255,255,255,0.9);
+        border-radius: 8px;
     }
     .btn {
-        padding: 10px 30px;
+        padding: 10px 24px;
         background: #888;
         border: 2px solid #555;
         cursor: pointer;
         user-select: none;
+        border-radius: 6px;
+        color: #fff;
+        font-weight: bold;
     }
     .btn:hover {
         background: #aaa;
+    }
+    @media (max-width: 600px) {
+        .ui {
+            top: 55%;
+        }
+        .btn {
+            padding: 12px 20px;
+            font-size: 16px;
+        }
     }
 </style>
 </head>
@@ -49,86 +67,139 @@
 <canvas id="game"></canvas>
 
 <div class="ui" id="mainUI">
-    <div class="btn" id="startBtn">Press S to Start</div>
+    <div class="btn" id="startBtn">Tap / Press S to Start</div>
     <div class="btn" id="howBtn">How to Play</div>
     <div class="btn" id="exitBtn">Exit</div>
 </div>
 
 <div class="how-ui" id="howUI">
-    <p style="color:#000;">Use SPACE to flap normally</p>
-    <p style="color:#000;">Use F for stronger flap</p>
-    <p style="color:#000;">Use D to descend faster</p>
+    <p style="color:#000; margin:0;">PC: SPACE = normal flap</p>
+    <p style="color:#000; margin:0;">PC: F = stronger flap, D = descend faster</p>
+    <p style="color:#000; margin:0;">Mobile: TAP anywhere to flap</p>
     <div class="btn" id="backBtn">Back</div>
 </div>
 
 <script>
-// Canvas Setup
-var canvas = document.getElementById('game');
-var ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+// ----- Canvas Setup -----
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
 
-// Scale
-var scale = canvas.height / 800;
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    scale = canvas.height / 800;
+    reset();   // po otočení / zmene veľkosti reštart (jednoduché a funkčné)
+    render();
+}
+window.addEventListener('resize', resizeCanvas);
 
-// Load pipe texture
-var pipeImg = new Image();
+// ----- Assets -----
+const pipeImg = new Image();
 pipeImg.src = "Pipe_1.png";
 
-// Load jump sound
-var jumpSound = new Audio("Jump.wav");
+const jumpSound = new Audio("Jump.wav");
 jumpSound.volume = 0.3;
 
 // ----- Game variables -----
-var gravity = 1400;
-var flapImpulse = -500;     
-var pipeSpacing = 500;
-var speed = 200;            
-var maxSpeed = 500;         
-var pipeWidth = 80;         
+let scale = 1;
 
-// descent boost settings
-var descentBoost = 2000; 
-var shiftPressed = false;
+let gravity = 1400;
+let flapImpulse = -500;
+let pipeSpacing = 500;
+let speed = 200;
+let maxSpeed = 500;
+let pipeWidth = 80;
 
-// Player
-var player = { 
-    x: 150, 
-    y: canvas.height / 2, 
-    w: 40 * scale, 
-    h: 40 * scale, 
-    vy: 0 
+let descentBoost = 2000;
+let shiftPressed = false;
+
+let player = {
+    x: 150,
+    y: 0,
+    w: 40,
+    h: 40,
+    vy: 0
 };
 
-// Game state
-var pipes = [];
-var lastPipeX = canvas.width;
-var score = 0;
-var lastScore = 0;
-var running = false;
+let pipes = [];
+let lastPipeX = 0;
+let score = 0;
+let lastScore = 0;
+let running = false;
 
-// Difficulty
-var difficultyTimer = 0;
-var difficultyInterval = 5;
+let difficultyTimer = 0;
+let difficultyInterval = 5;
 
-// Add pipe pair
+// ----- Helpers -----
+function startGame() {
+    reset();
+    running = true;
+    document.getElementById('mainUI').style.display = 'none';
+}
+
+function flapNormal() {
+    if (!running) return;
+    player.vy = flapImpulse;
+    try {
+        jumpSound.currentTime = 0;
+        jumpSound.play();
+    } catch (e) {
+        // na mobile môže byť blokované, nevadí
+    }
+}
+
+// ----- Pipes -----
 function addPipe(){
-    var topHeight = Math.floor(Math.random() * (canvas.height - 400 - 200)) + 50;
+    const gap = 400; // výška medzery
+    const margin = 50;
+    const maxTop = canvas.height - gap - 200;
+    const topHeight = Math.floor(Math.random() * (maxTop - margin)) + margin;
+
     pipes.push({ x: canvas.width, y: 0, w: pipeWidth * scale, h: topHeight, flipped: false });
-    pipes.push({ x: canvas.width, y: topHeight + 400, w: pipeWidth * scale, h: canvas.height - topHeight - 400, flipped: true });
+    pipes.push({ x: canvas.width, y: topHeight + gap, w: pipeWidth * scale, h: canvas.height - topHeight - gap, flipped: true });
+
     lastPipeX = canvas.width;
 }
 
-// Input
-document.onkeydown = function(e){
-    if(e.keyCode === 32 && running){ player.vy = flapImpulse; jumpSound.play(); }
-    if(e.keyCode === 70 && running){ player.vy = flapImpulse * 1.3; jumpSound.play(); }
-    if(e.keyCode === 68 && running){ shiftPressed = true; }
-    if(e.keyCode === 83 && !running){ reset(); running = true; document.getElementById('mainUI').style.display='none'; }
-};
-document.onkeyup = function(e){ if(e.keyCode === 68){ shiftPressed = false; } };
+// ----- Input: Keyboard (PC) -----
+document.addEventListener('keydown', function(e){
+    if(e.code === 'Space' && running){
+        e.preventDefault();
+        flapNormal();
+    }
+    if(e.code === 'KeyF' && running){
+        player.vy = flapImpulse * 1.3;
+        try {
+            jumpSound.currentTime = 0;
+            jumpSound.play();
+        } catch(e){}
+    }
+    if(e.code === 'KeyD' && running){
+        shiftPressed = true;
+    }
+    if(e.code === 'KeyS' && !running){
+        startGame();
+    }
+});
 
-// Update
+document.addEventListener('keyup', function(e){
+    if(e.code === 'KeyD'){
+        shiftPressed = false;
+    }
+});
+
+// ----- Input: Pointer/Touch (Mobile + PC click) -----
+// Jednoducho: TAP / KLIK = flap, ak hra beží.
+// Ak nebeží -> spustí hru.
+canvas.addEventListener('pointerdown', function(e){
+    if (!running) {
+        startGame();
+    } else {
+        flapNormal();
+    }
+});
+
+// ----- Update -----
 function update(dt){
     if(!running) return;
 
@@ -138,34 +209,43 @@ function update(dt){
 
     if(lastPipeX < canvas.width - pipeSpacing) addPipe();
 
-    for(var i=0; i<pipes.length; i++){ pipes[i].x -= speed * dt; }
-    pipes = pipes.filter(function(p){ return p.x + p.w > 0; });
+    for(let i=0; i<pipes.length; i++){
+        pipes[i].x -= speed * dt;
+    }
+    pipes = pipes.filter(p => p.x + p.w > 0);
 
-    for(var j=0; j<pipes.length; j++){
-        var p = pipes[j];
-        if(player.x < p.x + p.w &&
-           player.x + player.w > p.x &&
-           player.y < p.y + p.h &&
-           player.y + player.h > p.y){
-            running = false;
-            document.getElementById('mainUI').style.display='flex';
+    // kolízie
+    for(let j=0; j<pipes.length; j++){
+        const p = pipes[j];
+        if(
+            player.x < p.x + p.w &&
+            player.x + player.w > p.x &&
+            player.y < p.y + p.h &&
+            player.y + player.h > p.y
+        ){
+            gameOver();
+            return;
         }
     }
 
+    // mimo obrazovky
     if(player.y < 0 || player.y + player.h > canvas.height){
-        running = false;
-        document.getElementById('mainUI').style.display='flex';
+        gameOver();
+        return;
     }
 
-    for(var k=0; k<pipes.length; k += 2){
-        if(pipes[k].x + pipeWidth * scale < player.x && !pipes[k].passed){
-            pipes[k].passed = true;
+    // skóre
+    for(let k=0; k<pipes.length; k += 2){
+        const p = pipes[k];
+        if(!p.passed && p.x + p.w < player.x){
+            p.passed = true;
             score++;
         }
     }
 
     lastPipeX -= speed * dt;
 
+    // zvyšovanie obtiažnosti
     difficultyTimer += dt;
     if(difficultyTimer >= difficultyInterval){
         difficultyTimer = 0;
@@ -173,32 +253,46 @@ function update(dt){
     }
 }
 
-// Render pipes without stretching
+function gameOver() {
+    running = false;
+    document.getElementById('mainUI').style.display = 'flex';
+}
+
+// ----- Render pipe tiles -----
 function drawPipe(p){
-    if (!pipeImg.complete) return;
+    if (!pipeImg.complete || !pipeImg.width || !pipeImg.height) {
+        ctx.fillStyle = "#0a0";
+        ctx.fillRect(p.x, p.y, p.w, p.h);
+        return;
+    }
+
     if(p.flipped){
         let yStart = p.y;
         for(let y=0; y < p.h; y += pipeImg.height){
-            ctx.drawImage(pipeImg, p.x, yStart + y, p.w, pipeImg.height);
+            let h = Math.min(pipeImg.height, p.h - y);
+            ctx.drawImage(pipeImg, p.x, yStart + y, p.w, h);
         }
     } else {
-        let yStart = p.y + p.h;
+        let yEnd = p.y + p.h;
         for(let y=0; y < p.h; y += pipeImg.height){
-            ctx.drawImage(pipeImg, p.x, yStart - y - pipeImg.height, p.w, pipeImg.height);
+            let h = Math.min(pipeImg.height, p.h - y);
+            ctx.drawImage(pipeImg, p.x, yEnd - y - h, p.w, h);
         }
     }
 }
 
-// Render
+// ----- Render -----
 function render(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    // Player
+    // player
     ctx.fillStyle = "#ff0";
     ctx.fillRect(player.x, player.y, player.w, player.h);
 
-    // Draw pipes
-    for(var i=0; i<pipes.length; i++){ drawPipe(pipes[i]); }
+    // pipes
+    for(let i=0; i<pipes.length; i++){
+        drawPipe(pipes[i]);
+    }
 
     // HUD
     ctx.fillStyle="#000";
@@ -214,30 +308,34 @@ function render(){
     ctx.fillText("Speed: "+speed.toFixed(0),20*scale,55*scale);
 
     if(!running){
-        ctx.font=(40*scale)+"px Arial";
+        ctx.font=(32*scale)+"px Arial";
         ctx.textAlign="center";
         ctx.fillStyle="#000";
-        ctx.fillText("Press S to Start", canvas.width/2, canvas.height/2);
+        ctx.fillText("Tap or press S to start", canvas.width/2, canvas.height/2 - 40*scale);
         ctx.textAlign="left";
     }
 }
 
-// Reset
+// ----- Reset -----
 function reset(){
     lastScore = score;
-    player.x = 150;
-    player.y = canvas.height / 2;
-    player.vy = 0;
-    pipes = [];
     score = 0;
-    lastPipeX = canvas.width;
+    pipes = [];
     speed = 200;
     difficultyTimer = 0;
     shiftPressed = false;
+
+    player.x = 150 * scale;
+    player.y = canvas.height / 2;
+    player.w = 40 * scale;
+    player.h = 40 * scale;
+    player.vy = 0;
+
+    lastPipeX = canvas.width;
     addPipe();
 }
 
-// UI buttons
+// ----- UI Buttons -----
 document.getElementById('howBtn').onclick = function(){
     document.getElementById('howUI').style.display='flex';
     document.getElementById('mainUI').style.display='none';
@@ -246,23 +344,29 @@ document.getElementById('backBtn').onclick = function(){
     document.getElementById('howUI').style.display='none';
     document.getElementById('mainUI').style.display='flex';
 };
-document.getElementById('exitBtn').onclick = function(){ window.close(); };
+document.getElementById('startBtn').onclick = function(){
+    startGame();
+};
+document.getElementById('exitBtn').onclick = function(){
+    // window.close() väcsinou na mobile / v prehliadači nefunguje,
+    // tak aspon zobrazíme menu a stopneme hru
+    running = false;
+    document.getElementById('mainUI').style.display='flex';
+};
 
-// Loop
-var last = Date.now();
-function loop(){
-    var now = Date.now();
-    var dt = (now - last) / 1000;
-    if(dt > 0.05) dt = 0.05;
+// ----- Loop -----
+let last = performance.now();
+function loop(now){
+    const dt = Math.min((now - last) / 1000, 0.05);
     update(dt);
     render();
     last = now;
     requestAnimationFrame(loop);
 }
 
-// Start loop
-reset();
-loop();
+// Init
+resizeCanvas();
+loop(performance.now());
 </script>
 </body>
 </html>
