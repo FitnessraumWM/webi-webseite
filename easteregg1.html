@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autobahn Racer</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(180deg, #87CEEB 0%, #98FB98 70%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Arial Black', Arial;
+            overflow: hidden;
+            touch-action: none;
+        }
+        #menu, #game, #gameOver, #scoreboard {
+            text-align: center;
+            background: rgba(0,0,0,0.85);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            max-width: 450px;
+            width: 90%;
+        }
+        h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px gold, 0 0 20px orange;
+            animation: glow 2s infinite alternate;
+        }
+        @keyframes glow {
+            from { text-shadow: 0 0 10px gold; }
+            to { text-shadow: 0 0 20px orange, 0 0 30px red; }
+        }
+        input, select, button {
+            padding: 15px;
+            margin: 10px;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 300px;
+        }
+        button {
+            background: #FFD700;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        button:hover { background: #FFC107; transform: scale(1.05); }
+        .exit-btn {
+            background: #DC3545 !important;
+            color: white;
+        }
+        .exit-btn:hover {
+            background: #C82333 !important;
+        }
+        canvas {
+            border: 4px solid #000;
+            background: #333;
+            max-width: 100%;
+            max-height: 70vh;
+            margin: 10px 0;
+        }
+        #ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: space-between;
+            color: yellow;
+            font: bold 22px Arial;
+            text-shadow: 2px 2px 4px #000;
+            pointer-events: none;
+            z-index: 10;
+        }
+        #levelDisplay {
+            background: rgba(0,0,0,0.7);
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-weight: bold;
+        }
+        #levelBar {
+            position: absolute;
+            bottom: 60px;
+            left: 10px;
+            right: 10px;
+            height: 20px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        #levelProgress {
+            height: 100%;
+            background: linear-gradient(90deg, #00FF00, #FFD700, #FF0000);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .color-option {
+            width: 60px; height: 60px;
+            border-radius: 50%; border: 4px solid white;
+            cursor: pointer; margin: 8px;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        .color-option:hover, .color-option.selected {
+            transform: scale(1.2); box-shadow: 0 0 20px gold;
+        }
+        #levelSelect {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .level-btn {
+            width: 60px;
+            height: 60px;
+            background: #444;
+            color: white;
+            font: bold 20px Arial;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .level-btn:hover, .level-btn.selected {
+            background: #FFD700;
+            color: black;
+            transform: scale(1.1);
+        }
+        .hidden { display: none !important; }
+        #instructions {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            color: white;
+            font-size: 14px;
+            text-shadow: 1px 1px 2px #000;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MENÜ -->
+    <div id="menu">
+	<h1>🏎️ AUTOBAHN RACER PRO 🏎️</h1>
+        <div>
+            <input type="text" id="playerName" placeholder="Dein Name" maxlength="12">
+        </div>
+        <h3>🚗 Auto Farbe wählen:</h3>
+                <div>
+            <div class="color-option selected" data-color="#FF0000" style="background:#FF0000"></div>
+            <div class="color-option" data-color="#00FF00" style="background:#00FF00"></div>
+            <div class="color-option" data-color="#0000FF" style="background:#0000FF"></div>
+            <div class="color-option" data-color="#FF00FF" style="background:#FF00FF"></div>
+            <div class="color-option" data-color="#FFFF00" style="background:#FFFF00"></div>
+            <div class="color-option" data-color="#FF8000" style="background:#FF8000"></div>
+        </div>
+
+        <h3>Start-Level wählen:</h3>
+        <div id="levelSelect">
+            <div class="level-btn selected" data-level="1">1</div>
+            <div class="level-btn" data-level="2">2</div>
+            <div class="level-btn" data-level="3">3</div>
+            <div class="level-btn" data-level="4">4</div>
+            <div class="level-btn" data-level="5">5</div>
+        </div>
+
+        <button onclick="startGame()">START LEVEL</button>
+        <button onclick="showScoreboard()" style="background:#4CAF50">SCOREBOARD</button>
+        <button class="exit-btn" onclick="exitGame()">EXIT</button>
+    </div>
+
+    <!-- SPIEL -->
+    <div id="game" class="hidden">
+        <div id="ui">
+            <div id="levelDisplay">Level: 1</div>
+            <div>Score: <span id="score">0</span></div>
+            <div id="playerNameDisplay"></div>
+        </div>
+        <div id="levelBar">
+            <div id="levelProgress"></div>
+        </div>
+        <canvas id="canvas"></canvas>
+        <div id="instructions">
+            PC: Left/Right | Handy: Swipe | Collect Power | Avoid Cars!
+        </div>
+    </div>
+
+    <!-- GAME OVER -->
+    <div id="gameOver" class="hidden">
+        <h1>CRASH IN LEVEL <span id="crashLevel">1</span>!</h1>
+        <p id="finalScore"></p>
+        <p id="newRecord" style="color:gold; font-weight:bold; display:none;">NEW HIGHSCORE!</p>
+        <button onclick="showMenu()">New Game</button>
+        <button onclick="showScoreboard()" style="background:#4CAF50">Scoreboard</button>
+        <button class="exit-btn" onclick="exitGame()">EXIT</button>
+    </div>
+
+    <!-- SCOREBOARD -->
+    <div id="scoreboard" class="hidden">
+        <h1>TOP 10 DRIVERS</h1>
+        <div id="scoreboardList">Loading...</div>
+        <button onclick="showMenu()">Back</button>
+        <button class="exit-btn" onclick="exitGame()">EXIT</button>
+    </div>
+
+    <script>
+        const menu = document.getElementById('menu');
+        const game = document.getElementById('game');
+        const gameOver = document.getElementById('gameOver');
+        const scoreboard = document.getElementById('scoreboard');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        let playerName = 'Driver';
+        let playerColor = '#FF0000';
+        let startLevel = 1;
+        let score = 0;
+        let level = 1;
+        let gameActive = false;
+        let crashed = false;
+        let player, lanes, obstacles = [], boosters = [], smoke = [], roadY = 0;
+        let animId, nextLevelScore = 1000;
+
+        // Farbe wählen
+        document.querySelectorAll('.color-option').forEach(opt => {
+            opt.onclick = () => {
+                document.querySelector('.selected').classList.remove('selected');
+                opt.classList.add('selected');
+                playerColor = opt.dataset.color;
+            };
+        });
+
+        // Level wählen
+        document.querySelectorAll('.level-btn').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelector('.level-btn.selected').classList.remove('selected');
+                btn.classList.add('selected');
+                startLevel = parseInt(btn.dataset.level);
+            };
+        });
+
+        // EXIT
+        function exitGame() {
+            if (confirm("Spiel beenden und Tab schließen?")) {
+                window.close();
+            }
+        }
+
+        // Scoreboard
+        function loadScoreboard() {
+            const scores = JSON.parse(localStorage.getItem('autobahnScores') || '[]');
+            const list = document.getElementById('scoreboardList');
+            if (scores.length === 0) {
+                list.innerHTML = '<p>No records yet!</p>';
+                return;
+            }
+            list.innerHTML = '';
+            scores.slice(0, 10).forEach((s, i) => {
+                const entry = document.createElement('div');
+                entry.className = 'score-entry';
+                entry.innerHTML = `
+                    <span class="score-rank">#${i+1}</span>
+                    <span class="score-name">${s.name} (Lv.${s.level})</span>
+                    <span class="score-points">${s.score} pts</span>
+                `;
+                if (i === 0) entry.style.background = 'rgba(255,215,0,0.3)';
+                list.appendChild(entry);
+            });
+        }
+
+        function saveScore() {
+            const scores = JSON.parse(localStorage.getItem('autobahnScores') || '[]');
+            const newScore = {
+                name: playerName,
+                score: Math.floor(score),
+                level: level,
+                date: new Date().toLocaleDateString('de-DE')
+            };
+            scores.push(newScore);
+            scores.sort((a,b) => b.score - a.score);
+            localStorage.setItem('autobahnScores', JSON.stringify(scores.slice(0, 100)));
+        }
+
+        function startGame() {
+            playerName = document.getElementById('playerName').value.trim() || 'Driver';
+            document.getElementById('playerNameDisplay').textContent = playerName;
+            level = startLevel;
+            nextLevelScore = level * 1000;
+            menu.classList.add('hidden');
+            game.classList.remove('hidden');
+            initGame();
+            loop();
+        }
+
+        function showMenu() {
+            game.classList.add('hidden');
+            gameOver.classList.add('hidden');
+            scoreboard.classList.add('hidden');
+            menu.classList.remove('hidden');
+        }
+
+        function showScoreboard() {
+            menu.classList.add('hidden');
+            game.classList.add('hidden');
+            gameOver.classList.add('hidden');
+            scoreboard.classList.remove('hidden');
+            loadScoreboard();
+        }
+
+        function resize() {
+            canvas.width = Math.min(window.innerWidth * 0.9, 450);
+            canvas.height = canvas.width * 1.5;
+        }
+        window.addEventListener('resize', resize);
+
+        function initGame() {
+            resize();
+            score = 0;
+            gameActive = true;
+            crashed = false;
+            obstacles = [];
+            boosters = [];
+            smoke = [];
+            roadY = 0;
+
+            const laneW = canvas.width / 4;
+            lanes = [laneW/2-25, laneW*1.5-25, laneW*2.5-25, laneW*3.5-25];
+            player = { x: lanes[1], y: canvas.height - 120, w: 50, h: 80, lane: 1 };
+            
+            updateUI();
+            cancelAnimationFrame(animId);
+        }
+
+        function updateUI() {
+            document.getElementById('levelDisplay').textContent = `Level: ${level}`;
+            document.getElementById('score').textContent = Math.floor(score);
+            const progress = ((score % 1000) / 1000) * 100;
+            document.getElementById('levelProgress').style.width = progress + '%';
+        }
+
+        function checkLevelUp() {
+            if (score >= nextLevelScore) {
+                level++;
+                nextLevelScore += 1000;
+                updateUI();
+                return true;
+            }
+            return false;
+        }
+
+        function getLevelSpeed() {
+            return 3 + (level * 1.8);
+        }
+
+        function drawCar(x, y, color) {
+            ctx.fillStyle = color;
+            ctx.fillRect(x, y, 50, 80);
+            ctx.fillStyle = '#87CEEB';
+            ctx.fillRect(x+12, y+15, 26, 20);
+            ctx.fillRect(x+12, y+45, 26, 20);
+            ctx.fillStyle = '#000';
+            ctx.fillRect(x+5, y+10, 12, 22);
+            ctx.fillRect(x+33, y+10, 12, 22);
+            ctx.fillRect(x+5, y+50, 12, 22);
+            ctx.fillRect(x+33, y+50, 12, 22);
+        }
+
+        function createCrashSmoke() {
+            for (let i = 0; i < 25; i++) {
+                smoke.push({
+                    x: player.x + 25,
+                    y: player.y + 40,
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: Math.random() * -4 - 2,
+                    alpha: 1,
+                    size: Math.random() * 6 + 4
+                });
+            }
+        }
+
+        function drawSmoke() {
+            for (let i = smoke.length - 1; i >= 0; i--) {
+                const p = smoke[i];
+                ctx.save();
+                ctx.globalAlpha = p.alpha;
+                ctx.fillStyle = '#888';
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+                p.x += p.vx; p.y += p.vy;
+                p.alpha -= 0.015; p.size += 0.6;
+                if (p.alpha <= 0) smoke.splice(i, 1);
+            }
+        }
+
+        function drawRoad() {
+            ctx.fillStyle = '#555';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#FFF'; ctx.lineWidth = 6;
+            ctx.setLineDash([35, 25]); ctx.beginPath();
+            ctx.moveTo(canvas.width/2, 0); ctx.lineTo(canvas.width/2, canvas.height);
+            ctx.stroke(); ctx.setLineDash([]);
+            ctx.strokeStyle = '#FFD700'; ctx.lineWidth = 4;
+            for (let i = 1; i < 4; i++) {
+                const x = canvas.width / 4 * i;
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+            ctx.fillStyle = '#FFF';
+            const roadSpeed = getLevelSpeed();
+            for (let i = 0; i < 25; i++) {
+                const y = (roadY + i * 45) % (canvas.height + 45) - 45;
+                ctx.fillRect(canvas.width/2 - 6, y, 12, 35);
+            }
+            roadY += roadSpeed;
+            if (roadY > canvas.height) roadY = 0;
+        }
+
+        function drawBooster(b) {
+            const g = ctx.createRadialGradient(b.x+15, b.y+15, 0, b.x+15, b.y+15, 20);
+            g.addColorStop(0, '#FFFF00'); g.addColorStop(1, '#FF8800');
+            ctx.fillStyle = g; ctx.beginPath();
+            ctx.arc(b.x+15, b.y+15, 18, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#FFF'; ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center'; ctx.fillText('Power', b.x+15, b.y+22); ctx.textAlign = 'left';
+        }
+
+        function hit(a, b) {
+            return a.x < b.x + b.w && a.x + a.w > b.x &&
+                   a.y < b.y + b.h && a.y + a.h > b.y;
+        }
+
+        function update() {
+            if (!gameActive || crashed) return;
+
+            const roadSpeed = getLevelSpeed();
+            const spawnRate = 0.01 + (level * 0.006);
+
+            if (Math.random() < spawnRate) {
+                const colors = ['#4444FF','#FF4444','#44FF44','#FF44FF','#44FFFF','#FFFF44'];
+                const lane = Math.floor(Math.random() * 4);
+                obstacles.push({
+                    x: lanes[lane], y: -90, w: 50, h: 80,
+                    speed: roadSpeed + (level * 0.6),
+                    color: colors[Math.floor(Math.random() * colors.length)]
+                });
+            }
+
+            if (Math.random() < 0.007 + (level * 0.002)) {
+                const lane = Math.floor(Math.random() * 4);
+                boosters.push({ x: lanes[lane] + 10, y: -50, w: 30, h: 30, speed: roadSpeed });
+            }
+
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                const o = obstacles[i];
+                o.y += o.speed;
+                if (hit(player, o)) {
+                    gameActive = false;
+                    crashed = true;
+                    createCrashSmoke();
+                    document.getElementById('crashLevel').textContent = level;
+                    setTimeout(() => { saveScore(); endGame(); }, 1500);
+                    return;
+                }
+                if (o.y > canvas.height + 50) obstacles.splice(i, 1);
+            }
+
+            for (let i = boosters.length - 1; i >= 0; i--) {
+                const b = boosters[i];
+                b.y += b.speed;
+                if (hit(player, b)) {
+                    score += 100 + (level * 30);
+                    boosters.splice(i, 1);
+                } else if (b.y > canvas.height) {
+                    boosters.splice(i, 1);
+                }
+            }
+
+            score += 0.5 + (level * 0.25);
+            if (!checkLevelUp()) updateUI();
+        }
+
+        function endGame() {
+            document.getElementById('finalScore').textContent = `${playerName}: Level ${level} - ${Math.floor(score)} Points`;
+            if (Math.floor(score) > (JSON.parse(localStorage.getItem('autobahnScores') || '[]')[0]?.score || 0)) {
+                document.getElementById('newRecord').style.display = 'block';
+            }
+            game.classList.add('hidden');
+            gameOver.classList.remove('hidden');
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawRoad();
+            if (crashed) {
+                ctx.globalAlpha = 0.7 + Math.sin(Date.now()/100)*0.3;
+                drawCar(player.x, player.y, '#FF0000');
+                ctx.globalAlpha = 1;
+            } else {
+                drawCar(player.x, player.y, playerColor);
+            }
+            obstacles.forEach(o => drawCar(o.x, o.y, o.color));
+            boosters.forEach(drawBooster);
+            drawSmoke();
+        }
+
+        function loop() {
+            update();
+            draw();
+            animId = requestAnimationFrame(loop);
+        }
+
+        function move(dir) {
+            if (!gameActive || crashed) return;
+            player.lane = Math.max(0, Math.min(3, player.lane + dir));
+            player.x = lanes[player.lane];
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowLeft') move(-1);
+            if (e.key === 'ArrowRight') move(1);
+        });
+
+        let touchX = 0;
+        canvas.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; e.preventDefault(); });
+        canvas.addEventListener('touchend', e => {
+            const diff = e.changedTouches[0].clientX - touchX;
+            if (Math.abs(diff) > 50) move(diff > 0 ? 1 : -1);
+            e.preventDefault();
+        });
+
+        loadScoreboard();
+    </script>
+</body>
+</html>
