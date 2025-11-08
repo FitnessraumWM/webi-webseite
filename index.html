@@ -1092,35 +1092,39 @@ header::after {
       });
 
       // ==== Halloween Countdown (31. Okt 2025, 18:00) ====
-  (function(){
-    // 31.10.2025 18:00 lokálneho času
-    const target = new Date(2025, 9, 31, 17, 0, 0); // mesiac je 0-indexovaný (9 = október)
-    const el = document.getElementById('event-countdown');
+  // ==== Halloween Countdown (optional – safe) ====
+(function(){
+  const el = document.getElementById('event-countdown');
+  if (!el) return; // ak element neexistuje, preskočíme celý countdown
 
-    function tick(){
-      const now = new Date();
-      let diff = target - now;
+  const target = new Date(2025, 9, 31, 17, 0, 0); // 31. október 2025, 18:00
+  let tmr; // definujeme dopredu
 
-      if (diff <= 0){
-        el.textContent = "Happy Halloween! 🎃";
-        clearInterval(tmr);
-        return;
-      }
-      const d = Math.floor(diff / (1000*60*60*24));     diff -= d*(1000*60*60*24);
-      const h = Math.floor(diff / (1000*60*60));        diff -= h*(1000*60*60);
-      const m = Math.floor(diff / (1000*60));           diff -= m*(1000*60);
-      const s = Math.floor(diff / 1000);
+  function tick(){
+    const now = new Date();
+    let diff = target - now;
 
-      el.textContent =
-        d.toString().padStart(2,'0') + " Tage " +
-        h.toString().padStart(2,'0') + ":" +
-        m.toString().padStart(2,'0') + ":" +
-        s.toString().padStart(2,'0');
+    if (diff <= 0){
+      el.textContent = "Happy Halloween! 🎃";
+      clearInterval(tmr);
+      return;
     }
 
-    tick();
-    const tmr = setInterval(tick, 1000);
-  })();
+    const d = Math.floor(diff / (1000*60*60*24)); diff -= d*(1000*60*60*24);
+    const h = Math.floor(diff / (1000*60*60));    diff -= h*(1000*60*60);
+    const m = Math.floor(diff / (1000*60));       diff -= m*(1000*60);
+    const s = Math.floor(diff / 1000);
+
+    el.textContent =
+      d.toString().padStart(2,'0') + " Tage " +
+      h.toString().padStart(2,'0') + ":" +
+      m.toString().padStart(2,'0') + ":" +
+      s.toString().padStart(2,'0');
+  }
+
+  tick();
+  tmr = setInterval(tick, 1000);
+})();
 
       // ==== Menü Hide on Scroll ====
       let lastScrollY = window.scrollY, nav = document.querySelector('nav');
@@ -1149,6 +1153,7 @@ header::after {
   </div>
 </body>
 </html>
+
 
 
 
