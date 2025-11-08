@@ -578,6 +578,8 @@ header::after {
   .header-video { display: none; }  /* zobrazí sa fallback background image */
 }
 
+.event-timer-container { display: none !important; }
+
   </style>
 
   <!-- Google Translate init (iba jedna verzia) -->
@@ -614,14 +616,13 @@ header::after {
   <div class="welcome-headline">Willkommen in der Webermühle</div>
   <div class="welcome-subline">368 Wohnungen · 1500 Menschen · Ein Quartier für alle Generationen</div>
 
-  <!--
-<div class="event-timer-container" aria-live="polite" aria-label="Countdown bis Halloween">
+  <div class="event-timer-container" aria-live="polite" aria-label="Countdown bis Halloween">
   <div class="event-label">
     <span class="emoji">🕸️</span> <b>HALLOWEEN 2025</b> <span class="emoji">🎃</span>
   </div>
   <span class="event-countdown" id="event-countdown">00 Tage 00:00:00</span>
 </div>
--->
+</header>
 
   <nav>
     <a href="#historie">Historie</a>
@@ -1047,8 +1048,8 @@ header::after {
 
       function positionGoogleTranslateElement() {
         const globeRect = globeBtn.getBoundingClientRect();
-        googleTranslateEl.style.left = `${globeRect.left + (globeRect.width / 2) - (googleTranslateEl.offsetWidth / 2) + 60}px`;
-        googleTranslateEl.style.top = `${globeRect.top - googleTranslateEl.offsetHeight - 10}px`;
+        googleTranslateEl.style.left = ${globeRect.left + (globeRect.width / 2) - (googleTranslateEl.offsetWidth / 2) + 60}px;
+        googleTranslateEl.style.top = ${globeRect.top - googleTranslateEl.offsetHeight - 10}px;
       }
 
       function initializeGoogleTranslateDisplay() {
@@ -1088,7 +1089,7 @@ header::after {
         if (isGoogleTranslateVisible) positionGoogleTranslateElement();
       });
 
-      /* // ==== Halloween Countdown (31. Okt 2025, 18:00) ====
+      // ==== Halloween Countdown (31. Okt 2025, 18:00) ====
   (function(){
     // 31.10.2025 18:00 lokálneho času
     const target = new Date(2025, 9, 31, 17, 0, 0); // mesiac je 0-indexovaný (9 = október)
@@ -1117,14 +1118,14 @@ header::after {
 
     tick();
     const tmr = setInterval(tick, 1000);
-  })(); */
+  })();
 
       // ==== Menü Hide on Scroll ====
       let lastScrollY = window.scrollY, nav = document.querySelector('nav');
       let navHidden = false, ticking = false, navHeight = nav.offsetHeight;
       function handleNavScroll() {
         if (window.scrollY > lastScrollY && window.scrollY > navHeight + 10) {
-          if (!navHidden) { nav.style.top = `-${navHeight + 20}px`; navHidden = true; }
+          if (!navHidden) { nav.style.top = -${navHeight + 20}px; navHidden = true; }
         } else {
           if (navHidden) { nav.style.top = '0'; navHidden = false; }
         }
@@ -1143,17 +1144,3 @@ header::after {
   </div>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
