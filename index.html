@@ -1046,10 +1046,13 @@ header::after {
       let isGoogleTranslateVisible = false;
 
       function positionGoogleTranslateElement() {
-        const globeRect = globeBtn.getBoundingClientRect();
-        googleTranslateEl.style.left = ${globeRect.left + (globeRect.width / 2) - (googleTranslateEl.offsetWidth / 2) + 60}px;
-        googleTranslateEl.style.top = ${globeRect.top - googleTranslateEl.offsetHeight - 10}px;
-      }
+  const globeRect = globeBtn.getBoundingClientRect();
+  googleTranslateEl.style.left =
+    `${globeRect.left + (globeRect.width / 2) - (googleTranslateEl.offsetWidth / 2) + 60}px`;
+  googleTranslateEl.style.top =
+    `${globeRect.top - googleTranslateEl.offsetHeight - 10}px`;
+}
+
 
       function initializeGoogleTranslateDisplay() {
         if (!googleTranslateEl.querySelector('.goog-te-gadget')) {
@@ -1124,7 +1127,10 @@ header::after {
       let navHidden = false, ticking = false, navHeight = nav.offsetHeight;
       function handleNavScroll() {
         if (window.scrollY > lastScrollY && window.scrollY > navHeight + 10) {
-          if (!navHidden) { nav.style.top = -${navHeight + 20}px; navHidden = true; }
+          if (!navHidden) {
+  nav.style.top = `-${navHeight + 20}px`;
+  navHidden = true;
+}
         } else {
           if (navHidden) { nav.style.top = '0'; navHidden = false; }
         }
@@ -1143,5 +1149,6 @@ header::after {
   </div>
 </body>
 </html>
+
 
 
