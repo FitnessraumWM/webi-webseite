@@ -161,10 +161,6 @@ function resizeCanvas() {
 }
 window.addEventListener('resize', resizeCanvas);
 
-// ===== Assets (optional) =====
-const pipeImg = new Image();
-pipeImg.src = "Pipe_1.png"; // if missing, vector style is used
-
 let jumpSound = null;
 try {
     jumpSound = new Audio("Jump.wav");
@@ -595,27 +591,7 @@ function drawPipe(p) {
     const w = p.w;
     const h = p.h;
 
-    // Use texture if available
-    if (pipeImg.complete && pipeImg.naturalWidth > 0 && pipeImg.naturalHeight > 0) {
-        if (p.flipped) {
-            let yy = y;
-            while (yy < y + h) {
-                const hh = Math.min(pipeImg.height, y + h - yy);
-                ctx.drawImage(pipeImg, x, yy, w, hh);
-                yy += pipeImg.height;
-            }
-        } else {
-            let yy = y + h;
-            while (yy > y) {
-                const hh = Math.min(pipeImg.height, yy - y);
-                ctx.drawImage(pipeImg, x, yy - hh, w, hh);
-                yy -= pipeImg.height;
-            }
-        }
-        return;
-    }
-
-    // Vector metal style
+    // Pure vector metal heli-tunnel
     const grad = ctx.createLinearGradient(x, y, x, y + h);
     grad.addColorStop(0, "#4f5e66");
     grad.addColorStop(0.35, "#7e8b95");
@@ -653,8 +629,10 @@ function drawPipe(p) {
     // hazard cap at gap-facing end
     const capThickness = 14 * scale;
     if (p.flipped) {
+        // bottom pipe -> cap at top
         drawCapWithStripes(x, y, w, capThickness);
     } else {
+        // top pipe -> cap at bottom
         drawCapWithStripes(x, y + h - capThickness, w, capThickness);
     }
 }
@@ -957,3 +935,4 @@ loop(performance.now());
 </script>
 </body>
 </html>
+
