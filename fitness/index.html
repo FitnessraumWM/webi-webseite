@@ -48,6 +48,19 @@
     .muted { color:#a9b6c7; font-size:12px; }
 
     .scroll { max-height:520px; overflow:auto; padding-right:6px; }
+
+    .loadingLine {
+      display:flex; align-items:center; gap:8px;
+      color:#a9b6c7; font-size:12px;
+      margin: 6px 0 0;
+    }
+    .dot {
+      width:7px; height:7px; border-radius:50%;
+      background:#4a83ff;
+      box-shadow:0 0 0 3px rgba(74,131,255,.15);
+      animation: pulse 1.1s infinite ease-in-out;
+    }
+    @keyframes pulse { 0%{transform:scale(.9);opacity:.5} 50%{transform:scale(1.25);opacity:1} 100%{transform:scale(.9);opacity:.5} }
   </style>
 </head>
 
@@ -97,6 +110,7 @@
             <div class="row" style="margin:0 0 10px;">
               <span class="pill" id="allowedPill"></span>
               <span class="pill" id="tzPill"></span>
+              <span id="busyPill" class="pill" style="display:none;">loading…</span>
             </div>
 
             <div id="calBlock" class="calWrap">
@@ -129,15 +143,17 @@
     // =========================
     // 0) CONFIG
     // =========================
-
-    // !!! SEM DAJ svoj Cloudflare Worker URL (odporucane),
-    // alebo priamo Apps Script /exec URL.
     const BACKEND_URL = "https://steep-wildflower-af8b.fitnessraumwm.workers.dev";
 
     const TZ = "Europe/Zurich";
     const SLOT_MIN = 15;
     const START_HOUR = 5;
     const END_HOUR = 23;
+
+    // backend timeouts + caches
+    const BACKEND_TIMEOUT_MS = 25_000; // ak Apps Script obcas visi
+    const RESP_CACHE_TTL_MS = 60_000;  // 60s (month/week/day summary sa meni pomaly)
+    const TOKEN_SAFETY_SKEW_SEC = 60;  // refresh 60s pred exp
 
     // =========================
     // 1) Firebase imports
@@ -292,6 +308,7 @@
 
       allowedPill: document.getElementById("allowedPill"),
       tzPill: document.getElementById("tzPill"),
+      busyPill: document.getElementById("busyPill"),
 
       langDe: document.getElementById("langDe"),
       langEn: document.getElementById("langEn"),
@@ -323,6 +340,16 @@
     }
     function clearAppMsg(){ els.appMsg.style.display="none"; els.appMsg.textContent=""; els.appMsg.className="msg"; }
 
+    function setBusy_(on, label="loading…") {
+      els.busyPill.style.display = on ? "inline-block" : "none";
+      els.busyPill.textContent = label;
+      // optional: disable switching while loading (minimal)
+      els.tabMonth.disabled = on;
+      els.tabWeek.disabled = on;
+      els.tabDay.disabled = on;
+      els.picker.disabled = on;
+    }
+
     function applyI18n() {
       document.documentElement.lang = LANG;
 
@@ -348,15 +375,12 @@
       LANG = newLang;
       localStorage.setItem(LS_LANG_KEY, LANG);
       applyI18n();
-      // refresh pills minimally
-      // (stav nechame, ale texty uz budu v spravnom jazyku)
     }
 
     // =========================
     // 5) Firebase email link flow
     // =========================
     const actionCodeSettings = {
-      // posli link na tu istu stranku (login+app shell)
       url: window.location.origin + window.location.pathname,
       handleCodeInApp: true
     };
@@ -386,7 +410,6 @@
 
       let email = localStorage.getItem(LS_EMAIL_KEY);
       if (!email) {
-        // user otvoril link na inom device/browseri
         setPillKey("askEmail");
         showMsg(t("msg.needEmail"), "");
         return true;
@@ -408,55 +431,150 @@
     }
 
     // =========================
-    // 6) Backend calls
+    // 6) Backend calls (FAST)
     // =========================
-    async function postBackend_(payload) {
+
+    // --- response cache + inflight dedupe ---
+    const _respCache = new Map();   // key -> {t, data}
+    const _inflight = new Map();    // key -> Promise
+
+    // --- abort control for calendar loads ---
+    let _calAbort = null;
+    function newCalendarAbort_() {
+      if (_calAbort) _calAbort.abort();
+      _calAbort = new AbortController();
+      return _calAbort.signal;
+    }
+
+    // --- token cache ---
+    let _tokenCache = { token: null, exp: 0, uid: null };
+
+    function parseJwtExp_(jwt) {
+      try {
+        const payload = jwt.split(".")[1];
+        const json = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
+        return Number(json.exp || 0);
+      } catch {
+        return 0;
+      }
+    }
+
+    async function getIdTokenCached_() {
       const user = auth.currentUser;
       if (!user) throw new Error("not_authenticated");
 
-      const idToken = await user.getIdToken(true);
+      const nowSec = Math.floor(Date.now() / 1000);
 
-      const r = await fetch(BACKEND_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...payload, idToken })
+      // if user changed, reset
+      if (_tokenCache.uid && _tokenCache.uid !== user.uid) {
+        _tokenCache = { token: null, exp: 0, uid: null };
+      }
+
+      // still valid?
+      if (_tokenCache.token && _tokenCache.exp && (nowSec + TOKEN_SAFETY_SKEW_SEC) < _tokenCache.exp) {
+        return _tokenCache.token;
+      }
+
+      // IMPORTANT: no forced refresh unless needed
+      const token = await user.getIdToken(false);
+      const exp = parseJwtExp_(token);
+      _tokenCache = { token, exp, uid: user.uid };
+      return token;
+    }
+
+    async function fetchWithTimeout_(url, opts, timeoutMs) {
+      const controller = new AbortController();
+      const t = setTimeout(() => controller.abort("timeout"), timeoutMs);
+
+      // merge signals (if caller passes one)
+      const signal = opts?.signal;
+      let combinedSignal = controller.signal;
+
+      if (signal) {
+        // manual combo: abort this if either aborts
+        const onAbort = () => controller.abort("aborted");
+        signal.addEventListener("abort", onAbort, { once: true });
+      }
+
+      try {
+        return await fetch(url, { ...opts, signal: combinedSignal });
+      } finally {
+        clearTimeout(t);
+      }
+    }
+
+    function stableKey_(payload) {
+      // token nedavame do key (inak by to nikdy necacheovalo)
+      return JSON.stringify(payload);
+    }
+
+    async function postBackendCached_(payload, signal) {
+      const token = await getIdTokenCached_();
+
+      const key = stableKey_(payload);
+      const now = Date.now();
+
+      const cached = _respCache.get(key);
+      if (cached && (now - cached.t) < RESP_CACHE_TTL_MS) {
+        return cached.data;
+      }
+
+      if (_inflight.has(key)) return _inflight.get(key);
+
+      const p = (async () => {
+        const r = await fetchWithTimeout_(BACKEND_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...payload, idToken: token })
+        }, BACKEND_TIMEOUT_MS);
+
+        const data = await r.json().catch(() => ({ ok:false, error:"bad_json" }));
+
+        // cache only ok responses
+        if (data && data.ok) _respCache.set(key, { t: Date.now(), data });
+        return data;
+      })().finally(() => {
+        _inflight.delete(key);
       });
-      return await r.json();
+
+      _inflight.set(key, p);
+      return p;
     }
 
+    // endpoints
     async function backendMe_() {
-      return await postBackend_({ action: "me" });
+      return await postBackendCached_({ action: "me" });
     }
 
-    async function fetchDaySlots_(dateYmd) {
-      return await postBackend_({
+    async function fetchDaySlots_(dateYmd, signal) {
+      return await postBackendCached_({
         action: "slots_day",
         date: dateYmd,
         slotMin: SLOT_MIN,
         startHour: START_HOUR,
         endHour: END_HOUR
-      });
+      }, signal);
     }
 
-    async function fetchWeekSlots_(weekStartYmd) {
-      return await postBackend_({
+    async function fetchWeekSlots_(weekStartYmd, signal) {
+      return await postBackendCached_({
         action: "slots_week",
         weekStart: weekStartYmd,
         slotMin: SLOT_MIN,
         startHour: START_HOUR,
         endHour: END_HOUR
-      });
+      }, signal);
     }
 
-    async function fetchMonthSummary_(year, month1to12) {
-      return await postBackend_({
+    async function fetchMonthSummary_(year, month1to12, signal) {
+      return await postBackendCached_({
         action: "summary_month",
         year,
         month: month1to12,
         slotMin: SLOT_MIN,
         startHour: START_HOUR,
         endHour: END_HOUR
-      });
+      }, signal);
     }
 
     // =========================
@@ -496,12 +614,14 @@
 
     async function renderMonth_(anchorYmd) {
       clearAppMsg();
+      setBusy_(true, "loading month…");
+      const signal = newCalendarAbort_();
 
       const d = anchorYmd ? new Date(anchorYmd + "T12:00:00") : new Date();
       const year = d.getFullYear();
       const month = d.getMonth() + 1;
 
-      const data = await fetchMonthSummary_(year, month);
+      const data = await fetchMonthSummary_(year, month, signal);
       if (!data.ok) throw new Error(JSON.stringify(data));
 
       // month grid: 6 rows x 7 cols
@@ -520,7 +640,7 @@
         const ymd = `${y}-${String(m).padStart(2,"0")}-${String(da).padStart(2,"0")}`;
         const inMonth = (cd.getMonth() === (month - 1));
 
-        const s = data.summary[ymd];
+        const s = data.summary?.[ymd];
         const free = s ? s.freeCount : 0;
         const total = s ? s.totalCount : 0;
 
@@ -548,22 +668,35 @@
           showView_("day");
         });
       });
+
+      setBusy_(false);
     }
 
     async function renderWeek_(anchorYmd) {
       clearAppMsg();
+      setBusy_(true, "loading week…");
+      const signal = newCalendarAbort_();
 
       const weekStartYmd = mondayOf_(anchorYmd || ymdLocal_());
-      const data = await fetchWeekSlots_(weekStartYmd);
+      const data = await fetchWeekSlots_(weekStartYmd, signal);
       if (!data.ok) throw new Error(JSON.stringify(data));
 
-      // Compact rows: 30-min labels, but we still show true free/busy based on 15-min slots starting at HH:00 and HH:30
+      // rows: 30-min labels
       const rows = [];
       for (let h = START_HOUR; h < END_HOUR; h++) {
         for (const mm of [0, 30]) rows.push({ h, mm });
       }
 
-      const head = data.days.map(d => `
+      // precompute label->free for each day to avoid .find() in loop
+      const dayMaps = (data.days || []).map(d => {
+        const map = new Map();
+        for (const s of (d.slots || [])) {
+          map.set(fmtTime_(s.from), !!s.free);
+        }
+        return { date: d.date, map };
+      });
+
+      const head = dayMaps.map(d => `
         <div style="text-align:center; color:#a9b6c7; font-size:12px;">
           ${d.date}
         </div>
@@ -572,10 +705,8 @@
       const body = rows.map(r => {
         const label = `${String(r.h).padStart(2,"0")}:${String(r.mm).padStart(2,"0")}`;
 
-        const cols = data.days.map(dayObj => {
-          const slot = dayObj.slots.find(s => fmtTime_(s.from) === label);
-          const free = slot ? slot.free : false;
-
+        const cols = dayMaps.map(dayObj => {
+          const free = dayObj.map.get(label) === true;
           return `
             <button data-ymd="${dayObj.date}" style="
               width:100%; padding:10px; border-radius:10px;
@@ -614,15 +745,19 @@
           showView_("day");
         });
       });
+
+      setBusy_(false);
     }
 
     async function renderDay_(ymd) {
       clearAppMsg();
+      setBusy_(true, "loading day…");
+      const signal = newCalendarAbort_();
 
-      const data = await fetchDaySlots_(ymd);
+      const data = await fetchDaySlots_(ymd, signal);
       if (!data.ok) throw new Error(JSON.stringify(data));
 
-      const items = data.slots.map(s => {
+      const items = (data.slots || []).map(s => {
         const label = `${fmtTime_(s.from)} – ${fmtTime_(s.to)}`;
         const bg = s.free ? "#0e1520" : "rgba(255,90,122,0.08)";
         const txt = s.free ? (LANG === "de" ? "frei" : "free") : (LANG === "de" ? "gebucht" : "booked");
@@ -648,6 +783,8 @@
           ${items}
         </div>
       `;
+
+      setBusy_(false);
     }
 
     // =========================
@@ -705,6 +842,9 @@
 
     els.logoutBtn.addEventListener("click", async () => {
       await signOut(auth);
+      _respCache.clear();
+      _inflight.clear();
+      _tokenCache = { token: null, exp: 0, uid: null };
       setPillKey("signedOut");
       showMsg(t("msg.loggedOut"), "");
       setLoggedOutUI_();
@@ -721,6 +861,7 @@
         showView_("month");
       } catch (e) {
         console.error(e);
+        setBusy_(false);
         showAppMsg((t("msg.backendFail") || "Backend error") + " " + String(e), "err");
       }
     });
@@ -729,28 +870,28 @@
       try {
         await renderMonth_(els.picker.value || ymdLocal_());
         showView_("month");
-      } catch (e) { console.error(e); showAppMsg(String(e), "err"); }
+      } catch (e) { console.error(e); setBusy_(false); showAppMsg(String(e), "err"); }
     });
 
     els.tabWeek.addEventListener("click", async () => {
       try {
         await renderWeek_(els.picker.value || ymdLocal_());
         showView_("week");
-      } catch (e) { console.error(e); showAppMsg(String(e), "err"); }
+      } catch (e) { console.error(e); setBusy_(false); showAppMsg(String(e), "err"); }
     });
 
     els.tabDay.addEventListener("click", async () => {
       try {
         await renderDay_(els.picker.value || ymdLocal_());
         showView_("day");
-      } catch (e) { console.error(e); showAppMsg(String(e), "err"); }
+      } catch (e) { console.error(e); setBusy_(false); showAppMsg(String(e), "err"); }
     });
 
     els.picker.addEventListener("change", async () => {
       try {
         await renderDay_(els.picker.value);
         showView_("day");
-      } catch (e) { console.error(e); showAppMsg(String(e), "err"); }
+      } catch (e) { console.error(e); setBusy_(false); showAppMsg(String(e), "err"); }
     });
 
     // =========================
@@ -761,7 +902,6 @@
     setLoggedOutUI_();
 
     (async () => {
-      // handle email link flow if present
       const handled = await completeSignInIfLink();
 
       onAuthStateChanged(auth, async (user) => {
@@ -780,7 +920,6 @@
         // backend gate: me
         try {
           const me = await backendMe_();
-          // me: {ok, email, allowed, role}
           setLoggedInUI_(me);
         } catch (e) {
           console.error(e);
