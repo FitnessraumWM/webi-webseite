@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="sk">
+<html lang="de">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Fitnessraum Reservations</title>
+  <title>Fitnessraum</title>
 
   <!-- OneSignal Web SDK (v16) -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
@@ -20,7 +20,6 @@
       --shadow: 0 10px 30px rgba(0,0,0,.35);
       --radius: 18px;
     }
-
     :root[data-theme="light"]{
       --bg:#f6f7fb;
       --card:#ffffff;
@@ -79,7 +78,7 @@
 
     /* hamburger menu */
     .menuWrap{position:relative}
-    .menu{position:absolute;right:0;top:44px;min-width:340px;z-index:200;background:var(--card);border:1px solid var(--line);
+    .menu{position:absolute;right:0;top:44px;min-width:360px;z-index:200;background:var(--card);border:1px solid var(--line);
       border-radius:16px;padding:12px;display:none;box-shadow:var(--shadow)}
     .menu.open{display:block}
     .menu .item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 6px;border-radius:12px}
@@ -138,13 +137,14 @@
     .list{display:flex;flex-direction:column;gap:10px}
     .resItem{border:1px solid var(--line);border-radius:16px;padding:10px;background:color-mix(in oklab, var(--bg) 72%, var(--card) 28%)}
     .resTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+
     .hero{
       border:1px solid var(--line);
       border-radius:16px;
       padding:12px;
       background: color-mix(in oklab, var(--accent) 10%, var(--card) 90%);
     }
-    .heroTitle{font-weight:700;font-size:15px}
+    .heroTitle{font-weight:800;font-size:15px}
     .heroTime{margin-top:6px;font-size:14px}
     .heroSub{margin-top:6px}
 
@@ -210,7 +210,7 @@
 
   <div class="topbar">
     <div class="brand">
-      <div style="font-weight:800;letter-spacing:.2px">Fitnessraum</div>
+      <div style="font-weight:900;letter-spacing:.2px" id="brandTitle">Fitnessraum</div>
       <span class="badge" id="statusBadge">offline</span>
     </div>
 
@@ -218,13 +218,13 @@
       <div class="menuWrap">
         <button class="btn" id="hambBtn">☰ Menu</button>
         <div class="menu" id="hambMenu">
-          <div class="item"><div class="muted">Stav</div><div class="kbd" id="mStatus">—</div></div>
-          <div class="item"><div class="muted">Email</div><div class="kbd" id="mEmail">—</div></div>
-          <div class="item"><div class="muted">Rola</div><div class="kbd" id="mRole">—</div></div>
-          <div class="item"><div class="muted">Backend</div><div class="kbd" id="mBackend">—</div></div>
+          <div class="item"><div class="muted" id="lblStatus">Status</div><div class="kbd" id="mStatus">—</div></div>
+          <div class="item"><div class="muted" id="lblEmail2">Email</div><div class="kbd" id="mEmail">—</div></div>
+          <div class="item"><div class="muted" id="lblRole">Role</div><div class="kbd" id="mRole">—</div></div>
+          <div class="item"><div class="muted" id="lblBackend">Backend</div><div class="kbd" id="mBackend">—</div></div>
 
           <div class="item">
-            <div class="muted">Push notifikácie</div>
+            <div class="muted" id="lblPush">Push</div>
             <div class="toggle">
               <div class="switch" id="pushSwitch"><div class="knob"></div></div>
               <div class="kbd" id="pushLabel">off</div>
@@ -232,15 +232,31 @@
           </div>
 
           <div class="item">
-            <div class="muted">Téma</div>
+            <div class="muted" id="lblTheme">Theme</div>
             <div class="toggle">
               <div class="switch" id="themeSwitch"><div class="knob"></div></div>
               <div class="kbd" id="themeLabel">auto</div>
             </div>
           </div>
 
+          <div class="item">
+            <div class="muted" id="lblLanguage">Language</div>
+            <div class="toggle">
+              <button class="btn small" id="langDE">DE</button>
+              <button class="btn small" id="langEN">EN</button>
+            </div>
+          </div>
+
+          <div class="item hidden" id="adminRow">
+            <div class="muted" id="adminLabel">Admin</div>
+            <div class="toggle">
+              <div class="switch" id="adminSwitch"><div class="knob"></div></div>
+              <div class="kbd" id="adminModeLabel">—</div>
+            </div>
+          </div>
+
           <div class="hr"></div>
-          <button class="btn danger" id="logoutBtn" style="width:100%">Odhlásiť</button>
+          <button class="btn danger" id="logoutBtn" style="width:100%">Abmelden</button>
         </div>
       </div>
     </div>
@@ -248,22 +264,22 @@
 
   <!-- LOGIN -->
   <div class="card" id="loginCard">
-    <h3>Prihlásenie</h3>
+    <h3 id="loginTitle">Anmeldung</h3>
     <div class="two">
       <div>
-        <label class="muted">Email</label>
+        <label class="muted" id="lblEmail">E-Mail</label>
         <input id="email" type="email" placeholder="email" autocomplete="email" />
       </div>
       <div>
-        <label class="muted">Heslo</label>
-        <input id="pass" type="password" placeholder="heslo" autocomplete="current-password" />
+        <label class="muted" id="lblPass">Passwort</label>
+        <input id="pass" type="password" placeholder="passwort" autocomplete="current-password" />
       </div>
     </div>
 
     <div class="row" style="margin-top:10px;justify-content:space-between">
       <div class="row">
-        <button class="btn accent" id="loginBtn">Prihlásiť</button>
-        <button class="btn" id="googleBtn" type="button">Prihlásiť cez Google</button>
+        <button class="btn accent" id="loginBtn">Anmelden</button>
+        <button class="btn" id="googleBtn" type="button">Mit Google anmelden</button>
       </div>
       <span class="muted" id="loginMsg"></span>
     </div>
@@ -272,14 +288,14 @@
   <!-- APP -->
   <div class="grid hidden" id="appGrid">
 
-    <!-- My reservations FIRST (mobile), right side (desktop) -->
+    <!-- My reservations FIRST (mobile) -->
     <div class="card" id="myResCard">
       <div class="row" style="justify-content:space-between;align-items:flex-start">
         <div>
-          <h3 style="margin:0">Moje rezervácie</h3>
+          <h3 style="margin:0" id="myResTitle">Meine Reservierungen</h3>
           <div class="muted" id="myResHint">—</div>
         </div>
-        <button class="btn small accent" id="quickBookBtn">Rezervovať dnes</button>
+        <button class="btn small accent" id="quickBookBtn">Heute buchen</button>
       </div>
 
       <div class="hr"></div>
@@ -294,19 +310,19 @@
     <!-- Calendar -->
     <div class="card" id="calCard">
       <div class="row" style="justify-content:space-between">
-        <h3 style="margin:0">Kalendár</h3>
+        <h3 style="margin:0" id="calTitle">Kalender</h3>
         <div class="row">
           <button class="btn small" id="prevBtn">◀</button>
-          <button class="btn small" id="todayBtn">Dnes</button>
+          <button class="btn small" id="todayBtn">Heute</button>
           <button class="btn small" id="nextBtn">▶</button>
         </div>
       </div>
 
       <div class="row" style="margin-top:10px;justify-content:space-between">
         <div class="views">
-          <button class="pill active" data-view="month" id="viewMonth">Mesiac</button>
-          <button class="pill" data-view="week" id="viewWeek">Týždeň</button>
-          <button class="pill" data-view="day" id="viewDay">Deň</button>
+          <button class="pill active" data-view="month" id="viewMonth">Monat</button>
+          <button class="pill" data-view="week" id="viewWeek">Woche</button>
+          <button class="pill" data-view="day" id="viewDay">Tag</button>
         </div>
         <div class="kbd" id="anchorLabel">—</div>
       </div>
@@ -322,7 +338,7 @@
 <div class="overlay" id="bookOverlay">
   <div class="modal">
     <div class="row" style="justify-content:space-between">
-      <h3 style="margin:0">Rezervácia</h3>
+      <h3 style="margin:0" id="modalTitle">Reservierung</h3>
       <button class="btn small" id="closeModal">✕</button>
     </div>
 
@@ -330,23 +346,23 @@
 
     <div class="two">
       <div>
-        <label class="muted">Od</label>
+        <label class="muted" id="lblFrom">Von</label>
         <input id="bookStart" disabled />
       </div>
       <div>
-        <label class="muted">Do</label>
+        <label class="muted" id="lblTo">Bis</label>
         <select id="bookEnd"></select>
       </div>
     </div>
 
     <div style="margin-top:10px">
-      <label class="muted">Poznámka (voliteľné)</label>
-      <input id="bookNote" placeholder="napr. tréning / meno / ..." />
+      <label class="muted" id="lblNote">Notiz (optional)</label>
+      <input id="bookNote" placeholder="z.B. Training / Name / ..." />
     </div>
 
     <div class="row" style="margin-top:12px;justify-content:space-between">
       <span class="muted" id="bookMsg"></span>
-      <button class="btn accent" id="bookBtn">Rezervovať</button>
+      <button class="btn accent" id="bookBtn">Buchen</button>
     </div>
   </div>
 </div>
@@ -371,6 +387,9 @@ const firebaseConfig = {
   measurementId: "G-B629775N63"
 };
 
+// OneSignal AppId (public)
+const ONESIGNAL_APP_ID = "61b4fca3-7bbd-4556-973d-0a589623e89b";
+
 /** ========= INIT ========= **/
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
@@ -384,23 +403,170 @@ let state = {
   view: "month",
   anchor: new Date(),
   modal: { startISO: null, endChoices: [] },
-  pushEnabled: false,
+  pushEnabled: (localStorage.getItem("pushEnabled")==="1"),
+  adminAll: (localStorage.getItem("adminAll")==="1"),
   inFlight: new Map(),
 };
 
 function isMobile(){ return window.matchMedia("(max-width:520px)").matches; }
 
+/** ========= i18n (DE/EN only) ========= **/
+const LANGS = ["de", "en"];
+
+const I18N = {
+  de: {
+    menu: "Menu",
+    status: "Status",
+    email: "E-Mail",
+    role: "Rolle",
+    backend: "Backend",
+    logout: "Abmelden",
+    login_title: "Anmeldung",
+    password: "Passwort",
+    login: "Anmelden",
+    login_google: "Mit Google anmelden",
+    calendar: "Kalender",
+    month: "Monat",
+    week: "Woche",
+    day: "Tag",
+    today: "Heute",
+    my_res: "Meine Reservierungen",
+    future_count: "Künftig: {n}",
+    no_future: "Keine zukünftigen Reservierungen.",
+    book_today: "Heute buchen",
+    booking: "Reservierung",
+    from: "Von",
+    to: "Bis",
+    note_opt: "Notiz (optional)",
+    note_ph: "z.B. Training / Name / ...",
+    book: "Buchen",
+    cancel: "Storno",
+    free: "frei",
+    busy: "belegt",
+    toast_login_ok: "Erfolgreich angemeldet.",
+    toast_book_ok: "Reservierung bestätigt.",
+    toast_cancel_ok: "Reservierung storniert.",
+    toast_push_on: "Push-Benachrichtigungen sind aktiviert.",
+    toast_push_off: "Push-Benachrichtigungen sind deaktiviert.",
+    err_wrong_pw: "Falsches Passwort.",
+    err_no_user: "Benutzer existiert nicht.",
+    err_login_fail: "Anmeldung fehlgeschlagen.",
+    err_book_fail: "Buchen fehlgeschlagen.",
+    err_cancel_fail: "Storno fehlgeschlagen. Bitte erneut versuchen.",
+    err_limit2: "Limit: max. 2 Reservierungen pro Tag.",
+    err_busy: "Diese Zeit ist bereits belegt.",
+    err_hours: "Außerhalb der erlaubten Zeit (05:00–23:00).",
+    err_parallel: "Belegt: In diesem Zeitraum gibt es bereits 3 parallele Reservierungen.",
+    err_auth: "Nicht berechtigt oder Sitzung abgelaufen.",
+    hero_active: "Aktive Reservierung",
+    hero_next: "Nächste Reservierung",
+    hero_left: "Noch ca. {n} Min.",
+    hero_starts_in: "Start in {txt}.",
+    hero_none_title: "Heute noch nichts – möchtest du buchen?",
+    hero_none_sub: "Wähle eine Zeit im Kalender oder nutze den Button.",
+    theme: "Theme",
+    push: "Push",
+    language: "Sprache",
+    admin_mode: "Admin Mode",
+    show_all: "Alle anzeigen",
+    show_mine: "Nur meine",
+    online: "online",
+    offline: "offline",
+    error: "error",
+  },
+  en: {
+    menu: "Menu",
+    status: "Status",
+    email: "Email",
+    role: "Role",
+    backend: "Backend",
+    logout: "Sign out",
+    login_title: "Sign in",
+    password: "Password",
+    login: "Sign in",
+    login_google: "Sign in with Google",
+    calendar: "Calendar",
+    month: "Month",
+    week: "Week",
+    day: "Day",
+    today: "Today",
+    my_res: "My reservations",
+    future_count: "Upcoming: {n}",
+    no_future: "No upcoming reservations.",
+    book_today: "Book today",
+    booking: "Booking",
+    from: "From",
+    to: "To",
+    note_opt: "Note (optional)",
+    note_ph: "e.g. training / name / ...",
+    book: "Book",
+    cancel: "Cancel",
+    free: "free",
+    busy: "busy",
+    toast_login_ok: "Signed in.",
+    toast_book_ok: "Booking confirmed.",
+    toast_cancel_ok: "Booking cancelled.",
+    toast_push_on: "Push notifications enabled.",
+    toast_push_off: "Push notifications disabled.",
+    err_wrong_pw: "Wrong password.",
+    err_no_user: "User not found.",
+    err_login_fail: "Sign-in failed.",
+    err_book_fail: "Booking failed.",
+    err_cancel_fail: "Cancel failed. Please try again.",
+    err_limit2: "Limit: max 2 bookings per day.",
+    err_busy: "This time is already taken.",
+    err_hours: "Outside allowed time (05:00–23:00).",
+    err_parallel: "Taken: there are already 3 parallel bookings in this time window.",
+    err_auth: "Not allowed or session expired.",
+    hero_active: "Active booking",
+    hero_next: "Next booking",
+    hero_left: "{n} min left",
+    hero_starts_in: "Starts in {txt}.",
+    hero_none_title: "Nothing today yet — want to book?",
+    hero_none_sub: "Pick a time in the calendar or use the button.",
+    theme: "Theme",
+    push: "Push",
+    language: "Language",
+    admin_mode: "Admin mode",
+    show_all: "Show all",
+    show_mine: "Mine only",
+    online: "online",
+    offline: "offline",
+    error: "error",
+  }
+};
+
+function getLang(){
+  const saved = (localStorage.getItem("lang") || "de").toLowerCase();
+  return LANGS.includes(saved) ? saved : "de";
+}
+function setLang(lang){
+  localStorage.setItem("lang", lang);
+  applyLang();     // immediate
+  refreshAll();    // rerender with new locale
+}
+function t(key, vars={}){
+  const lang = getLang();
+  let s = (I18N[lang] && I18N[lang][key]) ? I18N[lang][key] : (I18N.de[key] || key);
+  for (const [k,v] of Object.entries(vars)) s = s.replaceAll("{"+k+"}", String(v));
+  return s;
+}
+function locale(){
+  return getLang()==="de" ? "de-CH" : "en-US";
+}
+
+/** ========= Formatting ========= **/
 function fmtTime(d){
   const x = new Date(d);
-  return x.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+  return x.toLocaleTimeString(locale(), {hour:"2-digit", minute:"2-digit"});
 }
 function fmtDateShort(d){
   const x = new Date(d);
-  return x.toLocaleDateString([], {weekday:"short", month:"2-digit", day:"2-digit"});
+  return x.toLocaleDateString(locale(), {weekday:"short", month:"2-digit", day:"2-digit"});
 }
 function fmtDateFull(d){
   const x = new Date(d);
-  return x.toLocaleDateString([], {weekday:"long", year:"numeric", month:"2-digit", day:"2-digit"});
+  return x.toLocaleDateString(locale(), {weekday:"long", year:"numeric", month:"2-digit", day:"2-digit"});
 }
 function ymd(d){
   const x = new Date(d);
@@ -418,7 +584,7 @@ function ym(d){
 function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
 function addMonths(d,n){ const x=new Date(d); x.setMonth(x.getMonth()+n); return x; }
 
-/** ========= TOAST ========= **/
+/** ========= Toast ========= **/
 function toast(type, message, actions=[]){
   const wrap = $("toastWrap");
   const el = document.createElement("div");
@@ -440,14 +606,14 @@ function toast(type, message, actions=[]){
     };
   });
   el.querySelector("button[data-close]")?.addEventListener("click", ()=>el.remove());
-
   setTimeout(()=>{ if (el.isConnected) el.remove(); }, 4500);
 }
 
 /** ========= Status/Menu ========= **/
-function setStatus(ok, text){
-  $("statusBadge").textContent = text || (ok ? "online" : "offline");
-  $("mStatus").textContent = $("statusBadge").textContent;
+function setStatus(kind){
+  // kind: "online" | "offline" | "error"
+  $("statusBadge").textContent = t(kind);
+  $("mStatus").textContent = t(kind);
 }
 function setMenuUser(){
   $("mEmail").textContent = state.user?.email || "—";
@@ -481,21 +647,20 @@ $("themeSwitch").onclick = ()=>{
   applyTheme(next);
 };
 
-/** ========= TOKEN CACHE ========= **/
+/** ========= Token cache ========= **/
 async function getIdTokenCached(force=false){
   const now = Date.now();
   if (!force && state.idToken && now < state.idTokenExp - 15_000) return state.idToken;
   const u = auth.currentUser;
   if (!u) throw new Error("not_logged_in");
-  const t = await u.getIdToken(force);
-  state.idToken = t;
-
-  const payload = JSON.parse(atob(t.split(".")[1]));
+  const tkn = await u.getIdToken(force);
+  state.idToken = tkn;
+  const payload = JSON.parse(atob(tkn.split(".")[1]));
   state.idTokenExp = (payload.exp || 0) * 1000;
-  return t;
+  return tkn;
 }
 
-/** ========= REQUEST (dedupe + no CORS preflight) ========= **/
+/** ========= Requests (dedupe + no CORS preflight) ========= **/
 async function api(action, body={}){
   const token = await getIdTokenCached(false);
   const key = action + ":" + JSON.stringify(body);
@@ -505,7 +670,7 @@ async function api(action, body={}){
     const t0 = performance.now();
     const res = await fetch(BACKEND_URL, {
       method: "POST",
-      headers: { "Content-Type":"text/plain;charset=UTF-8" }, // ✅ avoid preflight
+      headers: { "Content-Type":"text/plain;charset=UTF-8" }, // avoid preflight
       body: JSON.stringify({ action, idToken: token, ...body })
     });
 
@@ -525,39 +690,51 @@ async function api(action, body={}){
 /** ========= OneSignal ========= **/
 function setPushUI(on){
   state.pushEnabled = !!on;
-  const sw = $("pushSwitch");
-  if (on) sw.classList.add("on"); else sw.classList.remove("on");
+  $("pushSwitch").classList.toggle("on", on);
   $("pushLabel").textContent = on ? "on" : "off";
   localStorage.setItem("pushEnabled", on ? "1" : "0");
 }
+
 function initOneSignal(){
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   window.OneSignalDeferred.push(async function(OneSignal) {
-    // appId je na webe – ak ho chces, vies ho dat aj do HTML ako const
-    await OneSignal.init({ appId: "61b4fca3-7bbd-4556-973d-0a589623e89b" });
+    await OneSignal.init({ appId: ONESIGNAL_APP_ID });
     if (state.user?.uid) {
       try { await OneSignal.login(state.user.uid); } catch(e){}
     }
   });
 }
+
 async function enablePush(){
   setPushUI(true);
   initOneSignal();
   try{
     window.OneSignalDeferred.push(async function(OneSignal){
       await OneSignal.Notifications.requestPermission();
-      toast("ok", "Push notifikácie sú zapnuté.");
+      toast("ok", t("toast_push_on"));
     });
   }catch(e){}
 }
 function disablePush(){
   setPushUI(false);
-  toast("warn", "Push notifikácie sú vypnuté.");
+  toast("warn", t("toast_push_off"));
 }
 $("pushSwitch").onclick = async ()=>{
   if (!state.user) return;
   if (state.pushEnabled) disablePush();
   else await enablePush();
+};
+
+/** ========= Admin mode ========= **/
+function setAdminAll(on){
+  state.adminAll = !!on;
+  localStorage.setItem("adminAll", on ? "1" : "0");
+  $("adminSwitch").classList.toggle("on", on);
+  $("adminModeLabel").textContent = on ? t("show_all") : t("show_mine");
+}
+$("adminSwitch").onclick = async ()=>{
+  setAdminAll(!state.adminAll);
+  await refreshMyReservations();
 };
 
 /** ========= Menu wiring ========= **/
@@ -569,6 +746,67 @@ document.addEventListener("click",(e)=>{
 });
 $("logoutBtn").onclick = async ()=>{ await auth.signOut(); };
 
+/** ========= Language buttons ========= **/
+$("langDE").onclick = ()=> setLang("de");
+$("langEN").onclick = ()=> setLang("en");
+
+/** ========= Apply language to UI (instant) ========= **/
+function applyLang(){
+  const lang = getLang();
+  document.documentElement.lang = lang;
+
+  $("hambBtn").textContent = "☰ " + t("menu");
+
+  $("lblStatus").textContent = t("status");
+  $("lblEmail2").textContent = t("email");
+  $("lblRole").textContent = t("role");
+  $("lblBackend").textContent = t("backend");
+
+  $("lblPush").textContent = t("push");
+  $("lblTheme").textContent = t("theme");
+  $("lblLanguage").textContent = t("language");
+
+  $("logoutBtn").textContent = t("logout");
+
+  $("loginTitle").textContent = t("login_title");
+  $("lblEmail").textContent = t("email");
+  $("lblPass").textContent = t("password");
+  $("loginBtn").textContent = t("login");
+  $("googleBtn").textContent = t("login_google");
+
+  $("calTitle").textContent = t("calendar");
+  $("todayBtn").textContent = t("today");
+  $("viewMonth").textContent = t("month");
+  $("viewWeek").textContent = t("week");
+  $("viewDay").textContent = t("day");
+
+  $("myResTitle").textContent = t("my_res");
+  $("quickBookBtn").textContent = t("book_today");
+
+  $("modalTitle").textContent = t("booking");
+  $("lblFrom").textContent = t("from");
+  $("lblTo").textContent = t("to");
+  $("lblNote").textContent = t("note_opt");
+  $("bookNote").placeholder = t("note_ph");
+  $("bookBtn").textContent = t("book");
+
+  $("langDE").classList.toggle("accent", lang==="de");
+  $("langEN").classList.toggle("accent", lang==="en");
+
+  // if admin row is visible, translate its label + current mode label
+  if (!$("#adminRow").classList.contains("hidden")) {
+    $("adminLabel").textContent = t("admin_mode");
+    $("adminModeLabel").textContent = state.adminAll ? t("show_all") : t("show_mine");
+  }
+
+  // status badge should reflect current state label in correct language
+  const currentStatus = $("statusBadge").textContent;
+  if (currentStatus === "offline" || currentStatus === "online" || currentStatus === "error") {
+    // already in EN, but ensure translation
+    // we keep a simple mapping by storing state via setStatus, so nothing else needed
+  }
+}
+
 /** ========= Login ========= **/
 $("loginBtn").onclick = async ()=>{
   $("loginMsg").textContent = "";
@@ -579,9 +817,9 @@ $("loginBtn").onclick = async ()=>{
   }catch(e){
     const code = e?.code || "";
     $("loginMsg").textContent =
-      code.includes("wrong-password") ? "Nesprávne heslo." :
-      code.includes("user-not-found") ? "Používateľ neexistuje." :
-      "Prihlásenie zlyhalo.";
+      code.includes("wrong-password") ? t("err_wrong_pw") :
+      code.includes("user-not-found") ? t("err_no_user") :
+      t("err_login_fail");
   }
 };
 
@@ -591,7 +829,7 @@ $("googleBtn").onclick = async ()=>{
     const provider = new firebase.auth.GoogleAuthProvider();
     await auth.signInWithPopup(provider);
   }catch(e){
-    $("loginMsg").textContent = "Google prihlásenie zlyhalo.";
+    $("loginMsg").textContent = t("err_login_fail");
   }
 };
 
@@ -652,7 +890,7 @@ function closeModal(){
 
 $("bookBtn").onclick = async ()=>{
   try{
-    $("bookMsg").textContent = "Rezervujem...";
+    $("bookMsg").textContent = "…";
     const startISO = state.modal.startISO;
     const endISO = $("bookEnd").value;
 
@@ -664,24 +902,26 @@ $("bookBtn").onclick = async ()=>{
     });
 
     closeModal();
-    toast("ok", "Rezervácia potvrdená.");
+    toast("ok", t("toast_book_ok"));
 
     await refreshCalendar();
     await refreshMyReservations();
   }catch(e){
     const msg = String(e.message || e);
     const human =
-      msg.includes("limit_2_per_day") ? "Limit: max 2 rezervácie na deň." :
-      msg.includes("slot_busy") ? "Tento čas je už obsadený." :
-      msg.includes("outside_hours") ? "Mimo povoleného času (05:00–23:00)." :
-      msg.includes("max_parallel") ? "Obsadené: v tomto čase sú už 3 paralelné rezervácie." :
-      "Rezervácia zlyhala.";
+      msg.includes("limit_2_per_day") ? t("err_limit2") :
+      msg.includes("slot_busy") ? t("err_busy") :
+      msg.includes("outside_hours") ? t("err_hours") :
+      msg.includes("max_parallel") ? t("err_parallel") :
+      msg.includes("auth") ? t("err_auth") :
+      t("err_book_fail");
+
     $("bookMsg").textContent = "";
     toast("err", human);
   }
 };
 
-/** ========= Quick primary action ========= **/
+/** ========= Primary action ========= **/
 $("quickBookBtn").onclick = async ()=>{
   state.anchor = new Date();
   setView("day");
@@ -693,7 +933,7 @@ $("quickBookBtn").onclick = async ()=>{
 async function refreshCalendar(){
   $("anchorLabel").textContent =
     state.view==="month" ? ym(state.anchor) :
-    state.view==="week" ? ("Týždeň: " + ymd(state.anchor)) :
+    state.view==="week" ? ("Week: " + ymd(state.anchor)) :
     ymd(state.anchor);
 
   if (state.view==="month") await renderMonth();
@@ -717,11 +957,12 @@ async function renderMonth(){
     const ds = ymd(d);
     const inMonth = d.getMonth() === anchor.getMonth();
     const count = busy[ds] || 0;
+
     boxes.push(`
       <div class="dayBox" data-day="${ds}" style="opacity:${inMonth?1:.55}">
         <div class="dayNum">${ds}</div>
         <div style="margin-top:8px" class="muted">
-          ${count ? `<span class="dot busy"></span>${count} rezerv.` : `<span class="dot"></span>voľné`}
+          ${count ? `<span class="dot busy"></span>${count}` : `<span class="dot"></span>${t("free")}`}
         </div>
       </div>
     `);
@@ -749,12 +990,12 @@ async function renderDay(){
     return `
       <div class="slot ${s.status}" data-idx="${idx}">
         <div class="t">${fmtTime(st)} - ${fmtTime(en)}</div>
-        <div class="s">${s.status==="free" ? "voľné" : "obsadené"}</div>
+        <div class="s">${s.status==="free" ? t("free") : t("busy")}</div>
       </div>
     `;
   }).join("");
 
-  $("calendarArea").innerHTML = html || `<div class="muted">Žiadne sloty.</div>`;
+  $("calendarArea").innerHTML = html || `<div class="muted">—</div>`;
 
   document.querySelectorAll(".slot.free").forEach(el=>{
     el.onclick = ()=>{
@@ -778,7 +1019,7 @@ async function renderWeek(){
   const data = await api("availability_week", { date: ds });
   const days = data.days || [];
 
-  // ✅ Mobile week = day picker + day slots
+  // Mobile week = day picker + day slots
   if (isMobile()){
     const selected = ymd(state.anchor);
 
@@ -804,12 +1045,12 @@ async function renderWeek(){
         return `
           <div class="slot ${s.status}" data-idx="${idx}">
             <div class="t">${fmtTime(st)} - ${fmtTime(en)}</div>
-            <div class="s">${s.status==="free" ? "voľné" : "obsadené"}</div>
+            <div class="s">${s.status==="free" ? t("free") : t("busy")}</div>
           </div>
         `;
       }).join("");
 
-      $("weekDaySlots").innerHTML = html || `<div class="muted">Žiadne sloty.</div>`;
+      $("weekDaySlots").innerHTML = html || `<div class="muted">—</div>`;
 
       document.querySelectorAll("#weekDaySlots .slot.free").forEach(el=>{
         el.onclick = ()=>{
@@ -841,7 +1082,7 @@ async function renderWeek(){
     return;
   }
 
-  // ✅ Desktop week = 7 columns
+  // Desktop week = 7 columns
   const cols = days.map((dObj)=>{
     const date = dObj.date || "";
     const slots = (dObj.slots || []);
@@ -850,7 +1091,7 @@ async function renderWeek(){
       return `
         <div class="slot ${s.status}" data-day="${date}" data-idx="${idx}">
           <div class="t">${fmtTime(st)}</div>
-          <div class="s">${s.status==="free" ? "voľné" : "obsadené"}</div>
+          <div class="s">${s.status==="free" ? t("free") : t("busy")}</div>
         </div>
       `;
     }).join("");
@@ -891,26 +1132,22 @@ function minsBetween(a,b){ return Math.max(0, Math.round((b - a) / 60000)); }
 function renderHero(resList){
   const box = $("heroBox");
   const now = new Date();
-  const today = ymd(now);
 
-  // active: now between start/end
   const active = resList.find(r => new Date(r.start) <= now && now < new Date(r.end));
-
-  // next: first future
   const next = resList.find(r => new Date(r.start) > now);
 
   if (active){
     const start = new Date(active.start);
     const end = new Date(active.end);
     const left = minsBetween(now, end);
+
     box.innerHTML = `
       <div class="hero">
-        <div class="heroTitle">Aktívna rezervácia</div>
+        <div class="heroTitle">${t("hero_active")}</div>
         <div class="heroTime">${fmtDateFull(start)} ${fmtTime(start)} – ${fmtTime(end)}</div>
-        <div class="muted heroSub">Zostáva približne ${left} min.</div>
-        <div class="row" style="margin-top:10px;justify-content:space-between">
-          <div class="muted">Ak potrebuješ, môžeš ju zrušiť.</div>
-          <button class="btn small danger" id="heroCancelBtn">Storno</button>
+        <div class="muted heroSub">${t("hero_left",{n:left})}</div>
+        <div class="row" style="margin-top:10px;justify-content:flex-end">
+          <button class="btn small danger" id="heroCancelBtn">${t("cancel")}</button>
         </div>
       </div>
     `;
@@ -924,15 +1161,15 @@ function renderHero(resList){
     const mins = minsBetween(now, start);
     const hours = Math.floor(mins/60);
     const mm = mins % 60;
-    const inTxt = mins < 60 ? `o ${mins} min` : `o ${hours} h ${String(mm).padStart(2,"0")} min`;
+    const inTxt = mins < 60 ? `${mins} min` : `${hours} h ${String(mm).padStart(2,"0")} min`;
 
     box.innerHTML = `
       <div class="hero">
-        <div class="heroTitle">Najbližšia rezervácia</div>
+        <div class="heroTitle">${t("hero_next")}</div>
         <div class="heroTime">${fmtDateFull(start)} ${fmtTime(start)} – ${fmtTime(end)}</div>
-        <div class="muted heroSub">Začne ${inTxt}.</div>
+        <div class="muted heroSub">${t("hero_starts_in",{txt:inTxt})}</div>
         <div class="row" style="margin-top:10px;justify-content:flex-end">
-          <button class="btn small danger" id="heroCancelBtn">Storno</button>
+          <button class="btn small danger" id="heroCancelBtn">${t("cancel")}</button>
         </div>
       </div>
     `;
@@ -940,13 +1177,12 @@ function renderHero(resList){
     return;
   }
 
-  // nothing
   box.innerHTML = `
     <div class="hero" style="background:color-mix(in oklab, var(--card) 92%, var(--bg) 8%)">
-      <div class="heroTitle">Dnes ešte nič – chceš rezervovať?</div>
-      <div class="muted heroSub">Vyber si čas v kalendári alebo klikni na tlačidlo.</div>
+      <div class="heroTitle">${t("hero_none_title")}</div>
+      <div class="muted heroSub">${t("hero_none_sub")}</div>
       <div class="row" style="margin-top:10px;justify-content:flex-end">
-        <button class="btn small accent" id="heroBookTodayBtn">Rezervovať dnes</button>
+        <button class="btn small accent" id="heroBookTodayBtn">${t("book_today")}</button>
       </div>
     </div>
   `;
@@ -956,31 +1192,32 @@ function renderHero(resList){
 async function cancelById(eventId){
   try{
     await api("cancel_reservation", { eventId });
-    toast("ok", "Rezervácia zrušená.");
+    toast("ok", t("toast_cancel_ok"));
     await refreshCalendar();
     await refreshMyReservations();
   }catch(e){
-    toast("err", "Storno zlyhalo. Skús to znova.");
+    toast("err", t("err_cancel_fail"));
   }
 }
 
 async function refreshMyReservations(){
-  const data = await api("my_reservations", { includePast:false });
-  const list = data.reservations || [];
+  const data = await api("my_reservations", { includePast:false, all: state.adminAll });
+  const list = (data.reservations || []).slice().sort((a,b)=>new Date(a.start)-new Date(b.start));
 
-  $("myResHint").textContent = list.length ? `Budúce: ${list.length}` : "Žiadne budúce rezervácie.";
+  $("myResHint").textContent = list.length ? t("future_count",{n:list.length}) : t("no_future");
 
   renderHero(list);
 
   $("myResList").innerHTML = list.map(r=>{
+    const owner = r.ownerEmail ? ` · ${r.ownerEmail}` : "";
     return `
       <div class="resItem">
         <div class="resTop">
           <div>
-            <div style="font-weight:700">${fmtDateFull(r.start)} ${fmtTime(r.start)} – ${fmtTime(r.end)}</div>
-            <div class="muted">${r.title}${r.ownerEmail ? " · " + r.ownerEmail : ""}</div>
+            <div style="font-weight:800">${fmtDateFull(r.start)} ${fmtTime(r.start)} – ${fmtTime(r.end)}</div>
+            <div class="muted">${(r.title||"")}${owner}</div>
           </div>
-          <button class="btn small danger" data-id="${r.id}">Storno</button>
+          <button class="btn small danger" data-id="${r.id}">${t("cancel")}</button>
         </div>
       </div>
     `;
@@ -1001,32 +1238,41 @@ auth.onAuthStateChanged(async (u)=>{
   if (!u){
     state.user = null;
     state.idToken = null;
-    setStatus(false,"offline");
+    setStatus("offline");
     $("loginCard").classList.remove("hidden");
     $("appGrid").classList.add("hidden");
+    $("adminRow").classList.add("hidden");
     return;
   }
 
   try{
-    setStatus(true,"online");
+    setStatus("online");
     $("loginCard").classList.add("hidden");
     $("appGrid").classList.remove("hidden");
 
-    setPushUI(localStorage.getItem("pushEnabled")==="1");
+    setPushUI(state.pushEnabled);
 
     const data = await api("ping", {});
     state.user = data.user;
     setMenuUser();
 
+    if (state.user?.isAdmin){
+      $("adminRow").classList.remove("hidden");
+      $("adminLabel").textContent = t("admin_mode");
+      setAdminAll(state.adminAll);
+    } else {
+      $("adminRow").classList.add("hidden");
+      setAdminAll(false);
+    }
+
     if (state.pushEnabled) await enablePush();
 
     await refreshAll();
-
-    toast("ok", "Prihlásenie úspešné.");
+    toast("ok", t("toast_login_ok"));
   }catch(e){
     console.error(e);
-    setStatus(false,"error");
-    toast("err", "Niečo sa pokazilo. Obnov stránku.");
+    setStatus("error");
+    toast("err", t("err_auth"));
   }
 });
 
@@ -1041,7 +1287,8 @@ async function refreshAll(){
 
 /** ========= Startup ========= **/
 initTheme();
-setStatus(false,"offline");
+applyLang();
+setStatus("offline");
 </script>
 
 </body>
