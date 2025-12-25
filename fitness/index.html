@@ -1296,9 +1296,12 @@ function slotCount(s){
 }
 function hourStatus(chunk){
   if(chunk.some(s => s.level === "block")) return { status:"block", count:999 };
-  const c = chunk.reduce((sum,s)=> sum + slotCount(s), 0);
-  if(c >= 3) return { status:"voll", count:c };
-  if(c >= 1) return { status:"teilweise", count:c };
+
+  // ✅ správne: zoberieme MAX obsadenosť v rámci hodiny (nie sumu)
+  const maxC = chunk.reduce((m,s)=> Math.max(m, slotCount(s)), 0);
+
+  if(maxC >= 3) return { status:"voll", count:maxC };
+  if(maxC >= 1) return { status:"teilweise", count:maxC };
   return { status:"frei", count:0 };
 }
 
@@ -1350,7 +1353,7 @@ function renderWeek(){
       let cls = "slotRow";
       let right = "";
       if(hs.status==="block"){ cls += " busy"; right = "block"; }
-      else if(hs.status==="voll"){ cls += " busy"; right = ""; }
+      else if(hs.status==="voll"){ cls += " busy"; right = "voll"; }
       else if(hs.status==="teilweise"){ cls += " part"; right = "teilweise"; }
       else { cls += " free"; right = ""; }
 
@@ -1402,7 +1405,7 @@ function renderDay(){
     let cls = "slotRow";
     let right = "";
     if(hs.status==="block"){ cls += " busy"; right = "block"; }
-    else if(hs.status==="voll"){ cls += " busy"; right = ""; }
+    else if(hs.status==="voll"){ cls += " busy"; right = "voll"; }
     else if(hs.status==="teilweise"){ cls += " part"; right = "teilweise"; }
     else { cls += " free"; right = ""; }
 
