@@ -144,7 +144,6 @@
       padding: var(--pad2);
     }
 
-    /* Right panel: sticky hero/reservations on mobile */
     .rightCol{
       display:flex;
       flex-direction:column;
@@ -218,7 +217,7 @@
       gap: 8px;
     }
 
-    /* Month view (KW + weekday header) */
+    /* Month view: KW + weekday header fixed */
     .monthGrid{
       display:grid;
       grid-template-columns: 62px repeat(7, minmax(0, 1fr));
@@ -258,20 +257,30 @@
       border-radius: 16px;
       padding: 10px;
       cursor:pointer;
-      min-height: 66px;
+      min-height: 76px;
       display:flex;
       flex-direction:column;
       justify-content:space-between;
       position:relative;
+      overflow:hidden;
     }
     [data-theme="light"] .dayCard{ background: rgba(255,255,255,0.55); }
     .dayCard:hover{ filter: brightness(1.04); }
-    .dayCard .d{ font-weight:900; font-size: 16px; }
-    .dayCard .meta{ margin-top: 8px; font-size: 12px; color: var(--muted); display:flex; align-items:center; gap:6px; }
-    .dayCard.dim{ opacity:.20; cursor:not-allowed; filter: grayscale(.3); }
-    .dayCard.past{ opacity:.35; cursor:not-allowed; filter: grayscale(.25); }
+    .dayCard .d{ font-weight:900; font-size: 18px; }
+    .dayCard .meta{
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      display:flex;
+      align-items:center;
+      gap:6px;
+      line-height:1.25;
+    }
+    /* future/past visuals (jemne “bledé”) */
+    .dayCard.dim{ opacity:.28; filter: grayscale(.25); }
+    .dayCard.past{ opacity:.38; filter: grayscale(.25); }
 
-    /* Week view (no horizontal scroll, tight cells) */
+    /* Week view */
     .weekGrid{
       display:grid;
       grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -299,6 +308,7 @@
       max-height: 520px;
       overflow:auto;
     }
+
     .slotRow{
       display:flex;
       justify-content:space-between;
@@ -306,11 +316,12 @@
       padding: 9px 10px;
       font-size: 12px;
       border-bottom: 1px solid rgba(255,255,255,0.06);
+      user-select:none;
     }
     [data-theme="light"] .slotRow{ border-bottom: 1px solid rgba(0,0,0,0.06); }
     .slotRow.free{ cursor:pointer; }
     .slotRow.free:hover{ background: rgba(52,211,153,.10); }
-    .slotRow.busy{ color: var(--muted); background: rgba(251,113,133,.06); }
+    .slotRow.busy{ color: var(--muted); background: rgba(251,113,133,.06); cursor:not-allowed; }
 
     /* Day view list */
     .dayList{
@@ -410,13 +421,13 @@
       background: rgba(0,0,0,.40);
       display:none;
       align-items:flex-start;
-      justify-content:flex-end; /* mobile: side */
+      justify-content:flex-end;
       padding: 12px;
       z-index: 50;
     }
     @media (min-width: 980px){
       .menuOverlay{
-        justify-content:center; /* desktop: center (nech to neotvara bokom) */
+        justify-content:center;
         align-items:center;
       }
     }
@@ -575,7 +586,7 @@
     }
     @media (max-width: 520px){
       .monthGrid{ gap: 6px; }
-      .dayCard{ padding: 9px; min-height: 62px; }
+      .dayCard{ padding: 9px; min-height: 70px; }
       .heroMain{ font-size: 18px; }
       .weekColHead{ font-size: 11px; }
       .slotRow{ padding: 8px 9px; }
@@ -853,10 +864,9 @@ const state = {
   user: null,
   view: "month",               // month|week|day
   anchor: new Date(),          // current view anchor
-
-  daySlots: [],                // 15-min slots with {level,count} from backend
+  daySlots: [],                // 15-min slots (from backend)
   weekDays: [],                // from availability_week
-  monthBusy: {},               // kept, but month UI no longer uses voll/frei labels
+  monthBusy: {},
 
   reservations: [],
 
@@ -874,7 +884,6 @@ const state = {
   theme: localStorage.getItem("fr_theme") || "auto",
   pushEnabled: (localStorage.getItem("fr_push") || "0") === "1",
 
-  // favorites
   favStart: localStorage.getItem("fr_fav_start") || "18:00",
   favDur: parseInt(localStorage.getItem("fr_fav_dur") || "60", 10),
 };
@@ -1029,7 +1038,7 @@ function applyLang(){
 
   renderHero();
   renderReservations();
-  renderMonth(); // weekday header names depend on lang
+  renderMonth();
   renderWeek();
 }
 
@@ -1053,7 +1062,6 @@ function escapeHtml(s){
 /* ===========================
    Small utils
 =========================== */
-function parseISO(s){ const d = new Date(s); return isNaN(d.getTime()) ? null : d; }
 function isSameDay(a,b){ return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
 function addDays(d, n){ const x = new Date(d); x.setDate(x.getDate()+n); return x; }
 
@@ -1093,7 +1101,6 @@ function scrollToCalendar(){
 /* ISO week number (KW) */
 function isoWeek(d){
   const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  // Thursday in current week decides the year.
   date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay()||7));
   const yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
   const weekNo = Math.ceil((((date - yearStart) / 86400000) + 1)/7);
@@ -1109,28 +1116,23 @@ function weekdayNames(){
 function findBestSlotForTime(daySlots, dateISO, favStartHHMM){
   if(!Array.isArray(daySlots) || daySlots.length===0) return null;
   const targetMins = timeToMinutes(favStartHHMM);
-  const targetISO = `${dateISO}T${favStartHHMM}:00`;
 
   // exact match first
   const exact = daySlots.find(s => s.start && s.start.startsWith(dateISO) && s.start.slice(11,16)===favStartHHMM);
   if(exact && exact.level !== "block" && exact.level !== "voll") return exact.start;
 
   // else: choose closest >= favorite time
-  let best = null;
   for(const s of daySlots){
     if(!s.start || !s.start.startsWith(dateISO)) continue;
     const mm = timeToMinutes(s.start.slice(11,16));
     if(mm < targetMins) continue;
     if(s.level === "block" || s.level === "voll") continue;
-    best = s.start;
-    break;
+    return s.start;
   }
-  // fallback: first non-block/non-voll
-  if(!best){
-    const f = daySlots.find(s => s.level !== "block" && s.level !== "voll");
-    best = f ? f.start : null;
-  }
-  return best;
+
+  // fallback: first allowed
+  const f = daySlots.find(s => s.level !== "block" && s.level !== "voll");
+  return f ? f.start : null;
 }
 
 /* ===========================
@@ -1270,7 +1272,6 @@ async function bootAfterLogin(){
     applyLang();
 
     fillFavoriteSelectors();
-
     await initOneSignalMaybe();
 
     await Promise.all([
@@ -1355,7 +1356,10 @@ async function refreshDay(){
 }
 
 /* ===========================
-   Month render (KW + weekday header)
+   Month render
+   - header: weekdays fixed
+   - left: KW fixed per row
+   - day meta: "Mo 25.12 · KW 52" (no ISO)
 =========================== */
 function renderMonth(){
   const cont = $("#calMonth");
@@ -1365,7 +1369,6 @@ function renderMonth(){
   const y = state.anchor.getFullYear();
   const m = state.anchor.getMonth();
   const first = new Date(y, m, 1);
-  const last = new Date(y, m+1, 0);
 
   // Monday-start grid
   const startDow = (first.getDay()+6)%7; // Mon=0
@@ -1404,21 +1407,25 @@ function renderMonth(){
       const isPast = d < today;
 
       const dd = String(d.getDate()).padStart(2,"0");
+      const mm = String(d.getMonth()+1).padStart(2,"0");
+
       const card = document.createElement("div");
       card.className = "dayCard";
       if(!inMonth) card.classList.add("dim");
-      else if(isPast) card.classList.add("past");
+      if(isPast) card.classList.add("past");
+
+      // meta: "Mo 25.12 · KW 52"
+      const meta = `${wds[i]} ${dd}.${mm} · KW ${kw}`;
 
       card.innerHTML = `
         <div class="d">${dd}</div>
-        <div class="meta">
-          <span style="font-weight:900;">${escapeHtml(wds[i])}</span>
-        </div>
+        <div class="meta">${escapeHtml(meta)}</div>
       `;
 
-      // click: only if inMonth and not past
+      // click:
+      // - days outside month: allow open (optional), but keep dim; you wanted future month also bledy, not forbidden
+      // - past: disabled
       card.onclick = ()=>{
-        if(!inMonth) return;
         if(isPast) return;
         state.anchor = new Date(d);
         setView("day");
@@ -1431,7 +1438,10 @@ function renderMonth(){
 }
 
 /* ===========================
-   Week render (hour blocks; click opens modal directly)
+   Week render
+   - hour blocks (4*15min)
+   - clickable opens booking modal directly (no switching to day)
+   - "block" not clickable
 =========================== */
 function renderWeek(){
   const cont = $("#calWeek");
@@ -1440,12 +1450,11 @@ function renderWeek(){
 
   const dayNames = weekdayNames();
 
-  state.weekDays.forEach((dayAvail, idx)=>{
+  (state.weekDays || []).forEach((dayAvail, idx)=>{
     const date = dayAvail?.date || "—";
     const col = document.createElement("div");
     col.className = "weekCol";
 
-    // show dd.mm (more visible)
     const ddmm = (()=>{
       const d = new Date(date+"T00:00:00");
       if(isNaN(d.getTime())) return date.slice(5);
@@ -1454,7 +1463,7 @@ function renderWeek(){
 
     col.innerHTML = `
       <div class="weekColHead">
-        <span>${dayNames[idx]}</span>
+        <span>${dayNames[idx] || ""}</span>
         <span style="font-weight:900; color: var(--text)">${escapeHtml(ddmm)}</span>
       </div>
       <div class="weekSlots"></div>
@@ -1464,14 +1473,11 @@ function renderWeek(){
     const slots15 = (dayAvail?.slots || []);
 
     // group into hours (4 slots)
-    const hours = [];
     for(let i=0;i<slots15.length;i+=4){
       const chunk = slots15.slice(i, i+4);
       if(chunk.length < 4) break;
 
-      const startISO = chunk[0].start;
-      const endISO   = chunk[3].end;
-
+      // Hour is "free" only if ALL 4 are free (not block/voll/teilweise)
       const hasBlock = chunk.some(s => s.level === "block");
       const hasVoll  = chunk.some(s => s.level === "voll");
       const hasPart  = chunk.some(s => s.level === "teilweise");
@@ -1481,28 +1487,27 @@ function renderWeek(){
       else if(hasVoll) level = "voll";
       else if(hasPart) level = "teilweise";
 
-      hours.push({ startISO, endISO, level });
-    }
+      const startISO = chunk[0].start;
+      const endISO   = chunk[3].end;
 
-    hours.forEach(h=>{
       const row = document.createElement("div");
-      row.className = "slotRow " + ((h.level==="block"||h.level==="voll") ? "busy" : "free");
+      row.className = "slotRow " + (level==="free" || level==="teilweise" ? "free" : "busy");
 
-      const t1 = h.startISO.slice(11,16);
-      const t2 = h.endISO.slice(11,16);
+      const t1 = startISO.slice(11,16);
+      const t2 = endISO.slice(11,16);
 
-      // right label minimal
-      const right = (h.level==="block") ? "block" : (h.level==="teilweise" ? "teilweise" : "");
+      // right label (minimal)
+      const right = (level==="block") ? "block" : (level==="teilweise" ? "teilweise" : "");
 
       row.innerHTML = `<span class="time">${t1}–${t2}</span><span>${right}</span>`;
 
-      if(h.level==="free" || h.level==="teilweise"){
+      if(level !== "block" && level !== "voll"){
         row.onclick = async ()=>{
-          // stay in week; but fetch daySlots so modal can build end options precisely
           try{
+            // fetch day slots (15-min) for precise modal end times
             const res = await api("availability_day", { date });
             state.daySlots = res.slots || [];
-            openBookingFromSlot(h.startISO);
+            openBookingFromSlot(startISO);
           }catch(e){
             toast("err", t("toast_fetch_fail"));
           }
@@ -1510,14 +1515,16 @@ function renderWeek(){
       }
 
       slotsWrap.appendChild(row);
-    });
+    }
 
     cont.appendChild(col);
   });
 }
 
 /* ===========================
-   Day render (hour blocks; clickable if free or teilweise)
+   Day render
+   - hour blocks (4*15min)
+   - free clickable; teilweise clickable; block/voll disabled
 =========================== */
 function renderDay(){
   const cont = $("#calDay");
@@ -1525,14 +1532,10 @@ function renderDay(){
   cont.innerHTML = "";
 
   const slots = state.daySlots || [];
-  const groups = [];
 
   for(let i=0;i<slots.length;i+=4){
     const chunk = slots.slice(i, i+4);
     if(chunk.length < 4) break;
-
-    const startISO = chunk[0].start;
-    const endISO   = chunk[3].end;
 
     const hasBlock = chunk.some(s => s.level === "block");
     const hasVoll  = chunk.some(s => s.level === "voll");
@@ -1543,25 +1546,24 @@ function renderDay(){
     else if(hasVoll) level = "voll";
     else if(hasPart) level = "teilweise";
 
-    groups.push({ startISO, endISO, level });
-  }
+    const startISO = chunk[0].start;
+    const endISO   = chunk[3].end;
 
-  groups.forEach(g=>{
     const row = document.createElement("div");
-    row.className = "slotRow " + ((g.level==="block" || g.level==="voll") ? "busy" : "free");
+    row.className = "slotRow " + (level==="free" || level==="teilweise" ? "free" : "busy");
 
-    const t1 = g.startISO.slice(11,16);
-    const t2 = g.endISO.slice(11,16);
+    const t1 = startISO.slice(11,16);
+    const t2 = endISO.slice(11,16);
 
-    const right = (g.level==="block") ? "block" : (g.level==="teilweise" ? "teilweise" : "");
+    const right = (level==="block") ? "block" : (level==="teilweise" ? "teilweise" : "");
     row.innerHTML = `<span class="time">${t1}–${t2}</span><span>${right}</span>`;
 
-    if(g.level==="free" || g.level==="teilweise"){
-      row.onclick = ()=> openBookingFromSlot(g.startISO);
+    if(level !== "block" && level !== "voll"){
+      row.onclick = ()=> openBookingFromSlot(startISO);
     }
 
     cont.appendChild(row);
-  });
+  }
 }
 
 /* ===========================
@@ -1583,6 +1585,8 @@ function setView(v){
 /* ===========================
    Reservations
 =========================== */
+function parseISO(s){ const d = new Date(s); return isNaN(d.getTime()) ? null : d; }
+
 async function refreshMyReservations(){
   const from = new Date().toISOString();
   const to = new Date(Date.now() + 60*24*60*60*1000).toISOString();
@@ -1674,15 +1678,9 @@ function renderHero(){
     return;
   }
 
-  if(!anyToday){
-    setText(heroMain, t("hero_none_today"));
-    setText(heroSub, t("hero_none_sub"));
-    show(btnBook, true);
-  }else{
-    setText(heroMain, t("hero_none_today"));
-    setText(heroSub, t("hero_none_sub"));
-    show(btnBook, true);
-  }
+  setText(heroMain, t("hero_none_today"));
+  setText(heroSub, t("hero_none_sub"));
+  show(btnBook, true);
 }
 
 function renderReservations(){
@@ -1754,83 +1752,97 @@ async function cancelById(eventId){
 }
 
 /* ===========================
-   Booking modal logic (15-min precision, hour start)
+   Booking modal logic
+   - start = hour block click
+   - end options = consecutive 15-min until block/voll
 =========================== */
 function openBookingFromSlot(startISO, preferredEndISO = null){
   state.selectedStartISO = startISO;
   state.selectedDayISO = startISO.slice(0,10);
 
-  const startKey = String(startISO).slice(0,16); // "YYYY-MM-DDTHH:MM"
-
   $("#bookFrom").value = startISO.slice(11,16);
   $("#bookTitle").value = "Fitnessraum Booking";
   $("#bookNote").value = "";
 
-  const daySlots = Array.isArray(state.daySlots) ? state.daySlots : [];
+  const daySlots = state.daySlots || [];
 
-  // --- FIX: najdi index cez string "YYYY-MM-DDTHH:MM" (robustne na timezone/Z) ---
-  const idx = daySlots.findIndex(s => String(s?.start || "").slice(0,16) === startKey);
+  const startMs = new Date(startISO).getTime();
+  const idx = daySlots.findIndex(s => s?.start && new Date(s.start).getTime() === startMs);
 
-  // build "to" options from consecutive 15-min slots until block/voll
   const options = [];
   if (idx >= 0){
+    // build end list from next quarters until block/voll
     for (let i = idx + 1; i < daySlots.length; i++){
-      const lev = String(daySlots[i]?.level || "");
-      if (lev === "block" || lev === "voll") break;   // stop at hard stop
+      const lev = daySlots[i]?.level;
+      if (lev === "block" || lev === "voll") break;
       if (daySlots[i]?.end) options.push(daySlots[i].end);
     }
   }
 
   const sel = $("#bookTo");
   sel.innerHTML = "";
-
   options.forEach(endISO=>{
     const opt = document.createElement("option");
     opt.value = endISO;
-    opt.textContent = String(endISO).slice(11,16);
+    opt.textContent = endISO.slice(11,16);
     sel.appendChild(opt);
   });
 
-  // info hore
   setText($("#bookingInfo"),
     `${formatDateLabel(new Date(state.selectedDayISO+"T00:00:00"))} · ${t("from")} ${startISO.slice(11,16)}`
   );
 
   if (options.length === 0){
     $("#bookConfirm").disabled = true;
-
-    // veľmi užitočné pre debug:
-    console.warn("Booking: no end options", {
-      startISO, startKey, idx,
-      firstSlots: daySlots.slice(0, 8),
-      around: idx>=0 ? daySlots.slice(Math.max(0, idx-3), Math.min(daySlots.length, idx+10)) : []
-    });
-
-    toast("err", "Pre tento start nie je mozne vybrat 'Bis'. Skus iny start (alebo je hned dalsi blok/voll).");
+    console.warn("Booking: no end options", { startISO, idx, sampleSlots: daySlots.slice(Math.max(0, idx-3), Math.min(daySlots.length, idx+10)) });
+    toast("err", "Pre tento start nie je mozne vybrat 'Bis'. Skus iny start.");
   } else {
     $("#bookConfirm").disabled = false;
 
-    // auto pick end (favDur)
     let pick = null;
-
-    if (preferredEndISO && options.some(x => String(x).slice(0,16) === String(preferredEndISO).slice(0,16))){
-      pick = options.find(x => String(x).slice(0,16) === String(preferredEndISO).slice(0,16));
+    if (preferredEndISO && options.includes(preferredEndISO)){
+      pick = preferredEndISO;
     } else {
       const wantEnd = addMinutesISO(startISO, state.favDur);
       const wantMs = new Date(wantEnd).getTime();
-
       const leq = options.filter(x => new Date(x).getTime() <= wantMs);
       pick = leq.length ? leq[leq.length - 1] : options[0];
     }
-
     sel.value = pick;
   }
 
   show($("#modalOverlay"), true);
 }
 
+async function confirmBooking(){
+  const startISO = state.selectedStartISO;
+  const endISO = $("#bookTo")?.value;
+  const title = ($("#bookTitle")?.value || "Fitnessraum Booking").trim();
+  const note = ($("#bookNote")?.value || "").trim();
+
+  if(!startISO || !endISO){
+    toast("err", "Chyba: chyba start alebo end cas.");
+    return;
+  }
+
+  $("#bookConfirm").disabled = true;
+
+  try{
+    await api("reserve_slot", { start: startISO, end: endISO, title, note });
+    toast("ok", t("toast_book_ok"));
+    show($("#modalOverlay"), false);
+    await Promise.all([ refreshCalendar(), refreshMyReservations() ]);
+  }catch(e){
+    const err = (e && (e.error || e.message)) ? (e.error || e.message) : "unknown_error";
+    console.error("reserve_slot failed:", e);
+    toast("err", `Buchung fehlgeschlagen: ${err}`);
+  }finally{
+    $("#bookConfirm").disabled = false;
+  }
+}
+
 /* ===========================
-   Heute buchen (uses favorites, then opens modal)
+   Heute buchen (favorites)
 =========================== */
 async function openBookingToday(){
   state.anchor = new Date();
@@ -1950,6 +1962,13 @@ if(window.matchMedia){
     if(state.theme === "auto") applyTheme();
   });
 }
+
+/* IMPORTANT:
+   - aby sa už NIKDY nestalo "confirmBooking is not defined",
+     exportneme funkciu globálne (aj keby niekde ostal inline onclick).
+*/
+window.confirmBooking = confirmBooking;
+window.openBookingFromSlot = openBookingFromSlot;
 
 /* initial */
 applyTheme();
