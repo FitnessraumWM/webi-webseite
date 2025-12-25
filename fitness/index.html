@@ -8,98 +8,140 @@
     :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
     body { margin:0; background:#0b0f14; color:#e9eef7; }
     .wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
-    .card { width:100%; max-width:440px; background:#121a24; border:1px solid #223042; border-radius:18px; padding:18px; box-shadow: 0 10px 30px rgba(0,0,0,.35); position:relative; }
+    .card { width:100%; max-width:980px; background:#121a24; border:1px solid #223042; border-radius:18px; padding:18px; box-shadow: 0 10px 30px rgba(0,0,0,.35); position:relative; }
     h1 { font-size:20px; margin:0 0 6px; }
-    h2 { font-size:18px; margin:0 0 6px; }
     .sub { color:#a9b6c7; font-size:13px; margin:0 0 16px; line-height:1.4; }
     label { display:block; font-size:12px; color:#a9b6c7; margin: 12px 0 6px; }
     input { width:100%; padding:12px 12px; border-radius:12px; border:1px solid #2a3b52; background:#0e1520; color:#e9eef7; outline:none; }
     input:focus { border-color:#4a83ff; box-shadow:0 0 0 4px rgba(74,131,255,.18); }
-    button { width:100%; margin-top:12px; padding:12px; border-radius:12px; border:0; background:#4a83ff; color:#08111f; font-weight:700; cursor:pointer; }
+    button { padding:12px; border-radius:12px; border:0; background:#4a83ff; color:#08111f; font-weight:700; cursor:pointer; }
     button:disabled { opacity:.55; cursor:not-allowed; }
-    .row { display:flex; gap:10px; margin-top:10px; }
-    .ghost { background:transparent; color:#cfe0ff; border:1px solid #2a3b52; }
+    .row { display:flex; gap:10px; margin-top:10px; flex-wrap:wrap; }
+    .ghost { background:transparent; color:#cfe0ff; border:1px solid #2a3b52; font-weight:700; }
     .msg { margin-top:12px; padding:10px 12px; border-radius:12px; font-size:13px; line-height:1.35; border:1px solid #2a3b52; background:#0e1520; color:#cfe0ff; }
     .err { border-color:#ff5a7a55; color:#ffd1da; }
     .ok  { border-color:#35d07f55; color:#caffdf; }
     .small { font-size:12px; color:#a9b6c7; margin-top:10px; }
     .pill { display:inline-block; padding:4px 10px; border-radius:999px; background:#0e1520; border:1px solid #2a3b52; color:#a9b6c7; font-size:12px; }
     .lang { position:absolute; top:14px; right:14px; display:flex; gap:6px; }
-    .lang button { width:auto; margin:0; padding:6px 10px; border-radius:999px; background:transparent; color:#a9b6c7; border:1px solid #2a3b52; font-weight:600; }
+    .lang button { width:auto; margin:0; padding:6px 10px; border-radius:999px; background:transparent; color:#a9b6c7; border:1px solid #2a3b52; font-weight:700; }
     .lang button.active { background:#0e1520; color:#e9eef7; border-color:#4a83ff55; }
-    .section { margin-top:14px; }
+
+    /* simple layout */
+    .grid2 { display:grid; grid-template-columns: 420px 1fr; gap:16px; align-items:start; }
+    @media (max-width: 920px) { .grid2 { grid-template-columns: 1fr; } }
+
+    /* calendar containers */
+    .calWrap { margin-top:14px; display:none; }
+    .calTop { display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; align-items:center; }
+    .calTop .spacer { flex:1; }
+    .calBox { border:1px solid #2a3b52; background:#0e1520; border-radius:14px; padding:12px; }
+
+    /* buttons in grids */
+    .cellBtn {
+      text-align:left; padding:10px; border-radius:12px;
+      border:1px solid #2a3b52; background:#0e1520;
+      color:#e9eef7; cursor:pointer; min-height:64px;
+    }
+    .cellBtn.dim { background:transparent; opacity:.55; }
+    .timeLabel { color:#a9b6c7; font-size:12px; }
+    .muted { color:#a9b6c7; font-size:12px; }
+
+    .scroll { max-height:520px; overflow:auto; padding-right:6px; }
   </style>
 </head>
+
 <body>
+  <div class="wrap">
+    <div class="card">
 
-  <!-- LOGIN VIEW -->
-  <div id="loginView">
-    <div class="wrap">
-      <div class="card">
-        <div class="lang">
-          <button id="langDe" type="button">DE</button>
-          <button id="langEn" type="button">EN</button>
-        </div>
-
-        <h1 id="t_title">Webi Fitness</h1>
-        <p id="t_sub" class="sub"></p>
-
-        <div id="statePill" class="pill"></div>
-
-        <div id="formBlock" style="display:none;">
-          <label id="t_emailLabel" for="email"></label>
-          <input id="email" type="email" autocomplete="email" />
-
-          <button id="sendBtn"></button>
-
-          <div class="row">
-            <button id="changeBtn" class="ghost" type="button"></button>
-            <button id="logoutBtn" class="ghost" type="button"></button>
-          </div>
-
-          <div id="msg" class="msg" style="display:none;"></div>
-          <div id="t_tip" class="small"></div>
-        </div>
+      <div class="lang">
+        <button id="langDe" type="button">DE</button>
+        <button id="langEn" type="button">EN</button>
       </div>
-    </div>
-  </div>
 
-  <!-- APP VIEW -->
-  <div id="appView" style="display:none;">
-    <div class="wrap">
-      <div class="card">
-        <div class="lang">
-          <button id="langDe2" type="button">DE</button>
-          <button id="langEn2" type="button">EN</button>
-        </div>
+      <h1 id="t_title">Webi Fitness</h1>
+      <p id="t_sub" class="sub"></p>
 
-        <h2 id="t_appTitle">Fitnessraum</h2>
-        <p id="t_appSub" class="sub"></p>
+      <div class="row" style="align-items:center; margin:0 0 10px;">
+        <span id="statePill" class="pill"></span>
+        <span id="userPill" class="pill" style="display:none;"></span>
+        <span id="rolePill" class="pill" style="display:none;"></span>
+      </div>
 
-        <div class="section">
-          <div class="pill">
-            <span id="t_roleLabel"></span>
-            <span id="userRole"></span>
+      <div class="grid2">
+        <!-- LEFT: LOGIN -->
+        <div class="calBox">
+          <div id="loginBlock">
+            <label id="t_emailLabel" for="email"></label>
+            <input id="email" type="email" autocomplete="email" />
+
+            <div class="row">
+              <button id="sendBtn" style="flex:1;"></button>
+              <button id="changeBtn" class="ghost" type="button"></button>
+            </div>
+
+            <div class="row">
+              <button id="logoutBtn" class="ghost" type="button"></button>
+              <button id="openCalendarBtn" class="ghost" type="button"></button>
+            </div>
+
+            <div id="msg" class="msg" style="display:none;"></div>
+            <div id="t_tip" class="small"></div>
           </div>
         </div>
 
-        <div class="section">
-          <button class="ghost" id="openCalendarBtn">📅 <span id="t_openCalendar"></span></button>
-        </div>
+        <!-- RIGHT: APP / CALENDAR -->
+        <div class="calBox">
+          <div id="appBlock" style="display:none;">
+            <div class="row" style="margin:0 0 10px;">
+              <span class="pill" id="allowedPill"></span>
+              <span class="pill" id="tzPill"></span>
+            </div>
 
-        <div class="section">
-          <button class="ghost" id="logoutBtnApp"><span id="t_logout"></span></button>
-        </div>
+            <div id="calBlock" class="calWrap">
+              <div class="calTop">
+                <button class="ghost" id="tabMonth" type="button"></button>
+                <button class="ghost" id="tabWeek" type="button"></button>
+                <button class="ghost" id="tabDay" type="button"></button>
+                <div class="spacer"></div>
+                <input id="dayPicker" type="date" />
+              </div>
 
-        <div class="section">
-          <div id="appMsg" class="msg" style="display:none;"></div>
+              <div id="monthGrid"></div>
+              <div id="weekGrid" style="display:none;"></div>
+              <div id="dayList" style="display:none;"></div>
+
+              <div class="small" id="calHint" style="margin-top:10px;"></div>
+            </div>
+
+            <div id="appMsg" class="msg" style="display:none;"></div>
+          </div>
+
+          <div id="appLocked" class="small" style="display:none;"></div>
         </div>
       </div>
+
     </div>
   </div>
 
   <script type="module">
-    // Firebase core
+    // =========================
+    // 0) CONFIG
+    // =========================
+
+    // !!! SEM DAJ svoj Cloudflare Worker URL (odporucane),
+    // alebo priamo Apps Script /exec URL.
+    const BACKEND_URL = "https://steep-wildflower-af8b.fitnessraumwm.workers.dev";
+
+    const TZ = "Europe/Zurich";
+    const SLOT_MIN = 15;
+    const START_HOUR = 5;
+    const END_HOUR = 23;
+
+    // =========================
+    // 1) Firebase imports
+    // =========================
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
     import {
       getAuth,
@@ -109,9 +151,10 @@
       signInWithEmailLink,
       signOut
     } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js";
 
-    // Firebase config
+    // =========================
+    // 2) Firebase config (tvoj)
+    // =========================
     const firebaseConfig = {
       apiKey: "AIzaSyCY2nmL9I9TjxB0rlVPMCmcl4WKna21IJE",
       authDomain: "fitnessraumwm-app.firebaseapp.com",
@@ -122,75 +165,68 @@
       measurementId: "G-B629775N63"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // Analytics (optional)
-    try { getAnalytics(app); } catch (e) {}
-
-    // ---------- Backend (Cloudflare Worker proxy) ----------
-    const BACKEND_URL = "https://steep-wildflower-af8b.fitnessraumwm.workers.dev";
-
-    // ---------- Continue URL (this page) ----------
-    const CONTINUE_URL = "https://webi.family/fitness/";
-
-    // ---------- i18n ----------
+    // =========================
+    // 3) i18n (DE/EN)
+    //    (pozor: bez "ß" – pouzivam "ss")
+    // =========================
     const LS_LANG_KEY = "webi_lang";
     const LS_EMAIL_KEY = "webi_emailForSignIn";
 
     const I18N = {
       de: {
-        statusPrefix: "Status: ",
-        sub: "Login ohne Passwort: Wir senden dir einen Bestätigungslink per E-Mail. Link öffnen → fertig.",
+        sub: "Login ohne Passwort: Wir senden dir einen Link per E-Mail. Link oeffnen → fertig.",
         emailLabel: "E-Mail",
         emailPh: "z. B. name@domain.ch",
         sendBtn: "Login-Link senden",
-        changeBtn: "E-Mail ändern",
+        changeBtn: "E-Mail aendern",
         logoutBtn: "Abmelden",
-        tip: "Tipp: Wenn du den Link auf einem anderen Gerät öffnest, fragt die App die E-Mail nochmals ab.",
+        openCalBtn: "Kalender",
+        tip: "Tipp: Wenn du den Link auf einem anderen Geraet oeffnest, fragt die App die E-Mail nochmals ab.",
         pill: {
-          checking: "prüfe Link…",
+          checking: "pruefe…",
           ready: "bereit",
           linkSent: "Link gesendet",
           foundLink: "Login-Link erkannt",
-          askEmail: "E-Mail für Abschluss eingeben",
+          askEmail: "E-Mail fuer Abschluss eingeben",
           signedIn: "angemeldet",
           signedOut: "abgemeldet",
           error: "Fehler"
         },
         msg: {
-          invalidEmail: "Bitte eine gültige E-Mail eingeben.",
-          sentOk: "Erledigt. Link wurde per E-Mail gesendet. Öffne ihn, um den Login abzuschließen.",
-          sentFail: "Link konnte nicht gesendet werden. Prüfe E-Mail und autorisierte Domain. ",
-          needEmail: "Du hast den Login-Link geöffnet, aber die E-Mail ist hier nicht gespeichert (anderes Gerät/Browser). Bitte dieselbe E-Mail eingeben.",
+          invalidEmail: "Bitte eine gueltige E-Mail eingeben.",
+          sentOk: "Erledigt. Link wurde per E-Mail gesendet. Oeffne ihn, um den Login abzuschliessen.",
+          sentFail: "Link konnte nicht gesendet werden. Pruefe E-Mail und autorisierte Domain. ",
+          needEmail: "Du hast den Login-Link geoeffnet, aber die E-Mail ist hier nicht gespeichert. Bitte dieselbe E-Mail eingeben.",
           signOk: "Login erfolgreich.",
-          signFail: "Link ungültig oder abgelaufen. Bitte einen neuen Link senden. ",
+          signFail: "Link ungueltig oder abgelaufen. Bitte einen neuen Link senden. ",
           changed: "OK. Bitte neue E-Mail eingeben und Link senden.",
           loggedOut: "Abgemeldet.",
-          backendFail: "Backend-Check fehlgeschlagen. Siehe Konsole.",
-          accessDenied: "Kein Zugriff."
+          backendFail: "Backend Fehler."
         },
         app: {
-          title: "Fitnessraum",
-          sub: "Willkommen in der Fitnessraum App.",
-          roleLabel: "Rolle: ",
-          openCalendar: "Kalender öffnen",
-          logout: "Abmelden",
-          calendarSoon: "Kalender kommt als nächstes (KROK 4A)."
+          allowed: "Zugriff: erlaubt",
+          denied: "Zugriff: nicht erlaubt",
+          tz: "Zeitzone: Europe/Zurich",
+          month: "Monat",
+          week: "Woche",
+          day: "Tag",
+          hint: "Monat: Klick auf Tag → Tages-Slots. Woche: Klick auf Feld → Tag. Tag: Klick auf frei (spaeter Reservierung)."
         }
       },
       en: {
-        statusPrefix: "Status: ",
         sub: "Passwordless login: we’ll email you a sign-in link. Open the link → you’re in.",
         emailLabel: "Email",
         emailPh: "e.g. name@domain.ch",
         sendBtn: "Send sign-in link",
         changeBtn: "Change email",
         logoutBtn: "Sign out",
+        openCalBtn: "Calendar",
         tip: "Tip: if you open the link on another device, the app will ask for your email again.",
         pill: {
-          checking: "checking link…",
+          checking: "checking…",
           ready: "ready",
           linkSent: "link sent",
           foundLink: "sign-in link detected",
@@ -203,21 +239,21 @@
           invalidEmail: "Please enter a valid email.",
           sentOk: "Done. We sent you a sign-in link by email. Open it to finish signing in.",
           sentFail: "Couldn’t send the link. Check email and authorized domain. ",
-          needEmail: "You opened a sign-in link, but the email isn’t stored here (different device/browser). Please enter the same email.",
+          needEmail: "You opened a sign-in link, but the email isn’t stored here. Please enter the same email.",
           signOk: "Signed in successfully.",
           signFail: "Link is invalid or expired. Please request a new link. ",
           changed: "OK. Enter a new email and send a fresh link.",
           loggedOut: "Signed out.",
-          backendFail: "Backend check failed. See console.",
-          accessDenied: "Access denied."
+          backendFail: "Backend error."
         },
         app: {
-          title: "Fitness Room",
-          sub: "Welcome to the Fitness Room app.",
-          roleLabel: "Role: ",
-          openCalendar: "Open calendar",
-          logout: "Sign out",
-          calendarSoon: "Calendar is next (STEP 4A)."
+          allowed: "Access: allowed",
+          denied: "Access: denied",
+          tz: "Timezone: Europe/Zurich",
+          month: "Month",
+          week: "Week",
+          day: "Day",
+          hint: "Month: click a day → day slots. Week: click a cell → day. Day: click free (later booking)."
         }
       }
     };
@@ -230,65 +266,54 @@
     }
 
     let LANG = detectInitialLang();
-
     function t(path) {
       return path.split(".").reduce((o,k)=>o?.[k], I18N[LANG]);
     }
 
-    function applyI18n() {
-      document.documentElement.lang = LANG;
-
-      // login view text
-      document.getElementById("t_sub").textContent = t("sub");
-      document.getElementById("t_emailLabel").textContent = t("emailLabel");
-      document.getElementById("email").placeholder = t("emailPh");
-      document.getElementById("sendBtn").textContent = t("sendBtn");
-      document.getElementById("changeBtn").textContent = t("changeBtn");
-      document.getElementById("logoutBtn").textContent = t("logoutBtn");
-      document.getElementById("t_tip").textContent = t("tip");
-
-      // app view text
-      document.getElementById("t_appTitle").textContent = t("app.title");
-      document.getElementById("t_appSub").textContent = t("app.sub");
-      document.getElementById("t_roleLabel").textContent = t("app.roleLabel");
-      document.getElementById("t_openCalendar").textContent = t("app.openCalendar");
-      document.getElementById("t_logout").textContent = t("app.logout");
-
-      // lang buttons
-      document.getElementById("langDe").classList.toggle("active", LANG === "de");
-      document.getElementById("langEn").classList.toggle("active", LANG === "en");
-      document.getElementById("langDe2").classList.toggle("active", LANG === "de");
-      document.getElementById("langEn2").classList.toggle("active", LANG === "en");
-    }
-
-    function setLang(newLang) {
-      LANG = newLang;
-      localStorage.setItem(LS_LANG_KEY, LANG);
-      applyI18n();
-    }
-
-    // ---------- UI refs ----------
+    // =========================
+    // 4) DOM refs + UI helpers
+    // =========================
     const els = {
       pill: document.getElementById("statePill"),
-      form: document.getElementById("formBlock"),
+      userPill: document.getElementById("userPill"),
+      rolePill: document.getElementById("rolePill"),
+      msg: document.getElementById("msg"),
+      appMsg: document.getElementById("appMsg"),
+
       email: document.getElementById("email"),
       sendBtn: document.getElementById("sendBtn"),
       changeBtn: document.getElementById("changeBtn"),
       logoutBtn: document.getElementById("logoutBtn"),
-      msg: document.getElementById("msg"),
-      loginView: document.getElementById("loginView"),
-      appView: document.getElementById("appView"),
-      appMsg: document.getElementById("appMsg"),
+      openCalendarBtn: document.getElementById("openCalendarBtn"),
+
+      loginBlock: document.getElementById("loginBlock"),
+      appBlock: document.getElementById("appBlock"),
+      appLocked: document.getElementById("appLocked"),
+
+      allowedPill: document.getElementById("allowedPill"),
+      tzPill: document.getElementById("tzPill"),
+
+      langDe: document.getElementById("langDe"),
+      langEn: document.getElementById("langEn"),
+
+      // calendar UI
+      calBlock: document.getElementById("calBlock"),
+      tabMonth: document.getElementById("tabMonth"),
+      tabWeek: document.getElementById("tabWeek"),
+      tabDay: document.getElementById("tabDay"),
+      picker: document.getElementById("dayPicker"),
+      month: document.getElementById("monthGrid"),
+      week: document.getElementById("weekGrid"),
+      day: document.getElementById("dayList"),
+      calHint: document.getElementById("calHint"),
     };
 
-    function setPillKey(key) { els.pill.textContent = t("statusPrefix") + t("pill." + key); }
-
+    function setPillKey(key) { els.pill.textContent = "Status: " + t("pill." + key); }
     function showMsg(text, kind="") {
       els.msg.style.display = "block";
       els.msg.className = "msg " + (kind === "err" ? "err" : kind === "ok" ? "ok" : "");
       els.msg.textContent = text;
     }
-
     function clearMsg(){ els.msg.style.display="none"; els.msg.textContent=""; els.msg.className="msg"; }
 
     function showAppMsg(text, kind="") {
@@ -298,22 +323,41 @@
     }
     function clearAppMsg(){ els.appMsg.style.display="none"; els.appMsg.textContent=""; els.appMsg.className="msg"; }
 
-    function showLoginView() {
-      els.appView.style.display = "none";
-      els.loginView.style.display = "block";
-      els.form.style.display = "block";
+    function applyI18n() {
+      document.documentElement.lang = LANG;
+
+      document.getElementById("t_sub").textContent = t("sub");
+      document.getElementById("t_emailLabel").textContent = t("emailLabel");
+      els.email.placeholder = t("emailPh");
+      els.sendBtn.textContent = t("sendBtn");
+      els.changeBtn.textContent = t("changeBtn");
+      els.logoutBtn.textContent = t("logoutBtn");
+      els.openCalendarBtn.textContent = t("openCalBtn");
+      document.getElementById("t_tip").textContent = t("tip");
+
+      els.tabMonth.textContent = t("app.month");
+      els.tabWeek.textContent = t("app.week");
+      els.tabDay.textContent = t("app.day");
+      els.calHint.textContent = t("app.hint");
+
+      els.langDe.classList.toggle("active", LANG === "de");
+      els.langEn.classList.toggle("active", LANG === "en");
     }
 
-    function showAppView(role) {
-      els.loginView.style.display = "none";
-      els.appView.style.display = "block";
-      document.getElementById("userRole").textContent = role || "member";
-      clearAppMsg();
+    function setLang(newLang) {
+      LANG = newLang;
+      localStorage.setItem(LS_LANG_KEY, LANG);
+      applyI18n();
+      // refresh pills minimally
+      // (stav nechame, ale texty uz budu v spravnom jazyku)
     }
 
-    // ---------- Firebase email link ----------
+    // =========================
+    // 5) Firebase email link flow
+    // =========================
     const actionCodeSettings = {
-      url: CONTINUE_URL,
+      // posli link na tu istu stranku (login+app shell)
+      url: window.location.origin + window.location.pathname,
       handleCodeInApp: true
     };
 
@@ -342,7 +386,7 @@
 
       let email = localStorage.getItem(LS_EMAIL_KEY);
       if (!email) {
-        els.form.style.display = "block";
+        // user otvoril link na inom device/browseri
         setPillKey("askEmail");
         showMsg(t("msg.needEmail"), "");
         return true;
@@ -352,6 +396,7 @@
         await signInWithEmailLink(auth, email, window.location.href);
         localStorage.removeItem(LS_EMAIL_KEY);
         window.history.replaceState({}, document.title, window.location.pathname);
+        setPillKey("signedIn");
         showMsg(t("msg.signOk"), "ok");
         return true;
       } catch (e) {
@@ -362,73 +407,288 @@
       }
     }
 
-    // ---------- Backend gate ----------
-async function backendMe_(user) {
-  const idToken = await user.getIdToken(true);
+    // =========================
+    // 6) Backend calls
+    // =========================
+    async function postBackend_(payload) {
+      const user = auth.currentUser;
+      if (!user) throw new Error("not_authenticated");
 
-  const resp = await fetch(BACKEND_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "me", idToken })
-  });
+      const idToken = await user.getIdToken(true);
 
-  return await resp.json();
-}
+      const r = await fetch(BACKEND_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...payload, idToken })
+      });
+      return await r.json();
+    }
 
-// ✅ SEM PRIDAJ (NOVÉ) ----------
-async function fetchCalendar_(range = "today", from = null, to = null) {
-  const user = auth.currentUser;
-  if (!user) throw new Error("not_authenticated");
+    async function backendMe_() {
+      return await postBackend_({ action: "me" });
+    }
 
-  const idToken = await user.getIdToken(true);
+    async function fetchDaySlots_(dateYmd) {
+      return await postBackend_({
+        action: "slots_day",
+        date: dateYmd,
+        slotMin: SLOT_MIN,
+        startHour: START_HOUR,
+        endHour: END_HOUR
+      });
+    }
 
-  const resp = await fetch(BACKEND_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      action: "calendar",
-      idToken,
-      range,
-      from,
-      to
-    })
-  });
+    async function fetchWeekSlots_(weekStartYmd) {
+      return await postBackend_({
+        action: "slots_week",
+        weekStart: weekStartYmd,
+        slotMin: SLOT_MIN,
+        startHour: START_HOUR,
+        endHour: END_HOUR
+      });
+    }
 
-  return await resp.json();
-}
+    async function fetchMonthSummary_(year, month1to12) {
+      return await postBackend_({
+        action: "summary_month",
+        year,
+        month: month1to12,
+        slotMin: SLOT_MIN,
+        startHour: START_HOUR,
+        endHour: END_HOUR
+      });
+    }
 
-// alebo (ak robíme sloty)
-async function fetchSlots_() {
-  const user = auth.currentUser;
-  const idToken = await user.getIdToken(true);
+    // =========================
+    // 7) Date/time helpers (frontend)
+    // =========================
+    function ymdLocal_(d = new Date()) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const da = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${da}`;
+    }
 
-  const r = await fetch(BACKEND_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      action: "slots",
-      idToken,
-      slotMin: 15,
-      startHour: 5,
-      endHour: 23
-    })
-  });
+    function fmtTime_(iso) {
+      const dt = new Date(iso);
+      return new Intl.DateTimeFormat(LANG === "de" ? "de-CH" : "en-GB", {
+        timeZone: TZ, hour: "2-digit", minute: "2-digit"
+      }).format(dt);
+    }
 
-  return await r.json();
-}
+    function mondayOf_(anchorYmd) {
+      const base = anchorYmd ? new Date(anchorYmd + "T12:00:00") : new Date();
+      const day = base.getDay(); // 0 Sun
+      const diff = (day === 0 ? -6 : 1 - day); // Monday
+      const monday = new Date(base);
+      monday.setDate(monday.getDate() + diff);
+      return ymdLocal_(monday);
+    }
 
-    // ---------- Bindings ----------
-    document.getElementById("langDe").addEventListener("click", () => setLang("de"));
-    document.getElementById("langEn").addEventListener("click", () => setLang("en"));
-    document.getElementById("langDe2").addEventListener("click", () => setLang("de"));
-    document.getElementById("langEn2").addEventListener("click", () => setLang("en"));
-    document.getElementById("openCalendarBtn").addEventListener("click", async () => {
-  const data = await fetchSlots_();
-  console.log("SLOTS:", data);
+    // =========================
+    // 8) Calendar UI rendering
+    // =========================
+    function showView_(v) {
+      els.month.style.display = (v === "month") ? "block" : "none";
+      els.week.style.display  = (v === "week")  ? "block" : "none";
+      els.day.style.display   = (v === "day")   ? "block" : "none";
+    }
 
-  const freeCount = (data.slots || []).filter(s => s.free).length;
-  showAppMsg(`Slots today: ${data.slots?.length ?? 0} (free: ${freeCount})`, "ok");
-});
+    async function renderMonth_(anchorYmd) {
+      clearAppMsg();
+
+      const d = anchorYmd ? new Date(anchorYmd + "T12:00:00") : new Date();
+      const year = d.getFullYear();
+      const month = d.getMonth() + 1;
+
+      const data = await fetchMonthSummary_(year, month);
+      if (!data.ok) throw new Error(JSON.stringify(data));
+
+      // month grid: 6 rows x 7 cols
+      const first = new Date(year, month - 1, 1, 12, 0, 0, 0);
+      const start = new Date(first);
+      const day = start.getDay(); // 0 Sun
+      const offset = (day === 0 ? 6 : day - 1); // Monday=0
+      start.setDate(start.getDate() - offset);
+
+      const cells = [];
+      for (let i = 0; i < 42; i++) {
+        const cd = new Date(start);
+        cd.setDate(cd.getDate() + i);
+
+        const y = cd.getFullYear(), m = cd.getMonth() + 1, da = cd.getDate();
+        const ymd = `${y}-${String(m).padStart(2,"0")}-${String(da).padStart(2,"0")}`;
+        const inMonth = (cd.getMonth() === (month - 1));
+
+        const s = data.summary[ymd];
+        const free = s ? s.freeCount : 0;
+        const total = s ? s.totalCount : 0;
+
+        cells.push(`
+          <button class="cellBtn ${inMonth ? "" : "dim"}" data-ymd="${ymd}">
+            <div class="timeLabel">${da}</div>
+            <div style="margin-top:6px; font-size:12px;">
+              ${s ? `free: <b>${free}</b> / ${total}` : ""}
+            </div>
+          </button>
+        `);
+      }
+
+      els.month.innerHTML = `
+        <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:8px;">
+          ${cells.join("")}
+        </div>
+      `;
+
+      els.month.querySelectorAll("button[data-ymd]").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const ymd = btn.getAttribute("data-ymd");
+          els.picker.value = ymd;
+          await renderDay_(ymd);
+          showView_("day");
+        });
+      });
+    }
+
+    async function renderWeek_(anchorYmd) {
+      clearAppMsg();
+
+      const weekStartYmd = mondayOf_(anchorYmd || ymdLocal_());
+      const data = await fetchWeekSlots_(weekStartYmd);
+      if (!data.ok) throw new Error(JSON.stringify(data));
+
+      // Compact rows: 30-min labels, but we still show true free/busy based on 15-min slots starting at HH:00 and HH:30
+      const rows = [];
+      for (let h = START_HOUR; h < END_HOUR; h++) {
+        for (const mm of [0, 30]) rows.push({ h, mm });
+      }
+
+      const head = data.days.map(d => `
+        <div style="text-align:center; color:#a9b6c7; font-size:12px;">
+          ${d.date}
+        </div>
+      `).join("");
+
+      const body = rows.map(r => {
+        const label = `${String(r.h).padStart(2,"0")}:${String(r.mm).padStart(2,"0")}`;
+
+        const cols = data.days.map(dayObj => {
+          const slot = dayObj.slots.find(s => fmtTime_(s.from) === label);
+          const free = slot ? slot.free : false;
+
+          return `
+            <button data-ymd="${dayObj.date}" style="
+              width:100%; padding:10px; border-radius:10px;
+              border:1px solid #2a3b52;
+              background:${free ? "#0e1520" : "rgba(255,90,122,0.08)"};
+              color:#e9eef7; cursor:pointer;">
+            </button>
+          `;
+        }).join("");
+
+        return `
+          <div style="display:grid; grid-template-columns:70px repeat(7,1fr); gap:8px; align-items:center;">
+            <div class="timeLabel">${label}</div>
+            ${cols}
+          </div>
+        `;
+      }).join("");
+
+      els.week.innerHTML = `
+        <div style="display:grid; grid-template-columns:70px repeat(7,1fr); gap:8px; margin-bottom:8px;">
+          <div></div>${head}
+        </div>
+        <div class="scroll" style="display:flex; flex-direction:column; gap:8px;">
+          ${body}
+        </div>
+        <div class="muted" style="margin-top:10px;">
+          ${LANG === "de" ? "Klick auf ein Feld oeffnet den Tag." : "Click a cell to open that day."}
+        </div>
+      `;
+
+      els.week.querySelectorAll("button[data-ymd]").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const ymd = btn.getAttribute("data-ymd");
+          els.picker.value = ymd;
+          await renderDay_(ymd);
+          showView_("day");
+        });
+      });
+    }
+
+    async function renderDay_(ymd) {
+      clearAppMsg();
+
+      const data = await fetchDaySlots_(ymd);
+      if (!data.ok) throw new Error(JSON.stringify(data));
+
+      const items = data.slots.map(s => {
+        const label = `${fmtTime_(s.from)} – ${fmtTime_(s.to)}`;
+        const bg = s.free ? "#0e1520" : "rgba(255,90,122,0.08)";
+        const txt = s.free ? (LANG === "de" ? "frei" : "free") : (LANG === "de" ? "gebucht" : "booked");
+
+        return `
+          <button style="
+            width:100%; text-align:left; padding:10px 12px; border-radius:12px;
+            border:1px solid #2a3b52; background:${bg}; color:#e9eef7;
+            cursor:${s.free ? "pointer" : "not-allowed"};
+            opacity:${s.free ? 1 : 0.75};
+          " ${s.free ? "" : "disabled"}>
+            <div style="display:flex; justify-content:space-between; gap:10px;">
+              <div>${label}</div>
+              <div class="timeLabel">${txt}</div>
+            </div>
+          </button>
+        `;
+      }).join("");
+
+      els.day.innerHTML = `
+        <div class="muted" style="margin-bottom:8px;">${ymd}</div>
+        <div class="scroll" style="display:flex; flex-direction:column; gap:8px;">
+          ${items}
+        </div>
+      `;
+    }
+
+    // =========================
+    // 9) App init (auth + gate)
+    // =========================
+    function setLoggedOutUI_() {
+      els.appBlock.style.display = "none";
+      els.appLocked.style.display = "none";
+      els.userPill.style.display = "none";
+      els.rolePill.style.display = "none";
+      els.calBlock.style.display = "none";
+      els.openCalendarBtn.disabled = true;
+    }
+
+    function setLoggedInUI_(me) {
+      els.userPill.style.display = "inline-block";
+      els.rolePill.style.display = "inline-block";
+      els.userPill.textContent = me.email || "";
+      els.rolePill.textContent = "role: " + (me.role || "none");
+
+      els.appBlock.style.display = "block";
+      els.tzPill.textContent = t("app.tz");
+      els.allowedPill.textContent = me.allowed ? t("app.allowed") : t("app.denied");
+
+      els.openCalendarBtn.disabled = !me.allowed;
+
+      if (!me.allowed) {
+        els.appLocked.style.display = "block";
+        els.appLocked.textContent = LANG === "de"
+          ? "Du bist nicht freigeschaltet. Bitte Admin kontaktieren."
+          : "You are not enabled yet. Please contact an admin.";
+      } else {
+        els.appLocked.style.display = "none";
+      }
+    }
+
+    // =========================
+    // 10) Bindings
+    // =========================
+    els.langDe.addEventListener("click", () => setLang("de"));
+    els.langEn.addEventListener("click", () => setLang("en"));
 
     els.sendBtn.addEventListener("click", async () => {
       const email = (els.email.value || "").trim();
@@ -445,71 +705,86 @@ async function fetchSlots_() {
 
     els.logoutBtn.addEventListener("click", async () => {
       await signOut(auth);
-      showLoginView();
       setPillKey("signedOut");
       showMsg(t("msg.loggedOut"), "");
+      setLoggedOutUI_();
     });
 
-    document.getElementById("logoutBtnApp").addEventListener("click", async () => {
-      await signOut(auth);
-      showLoginView();
-      setPillKey("signedOut");
-      showMsg(t("msg.loggedOut"), "");
+    els.openCalendarBtn.addEventListener("click", async () => {
+      try {
+        clearAppMsg();
+        els.calBlock.style.display = "block";
+        const today = ymdLocal_(new Date());
+        els.picker.value = today;
+
+        await renderMonth_(today);
+        showView_("month");
+      } catch (e) {
+        console.error(e);
+        showAppMsg((t("msg.backendFail") || "Backend error") + " " + String(e), "err");
+      }
     });
 
-    document.getElementById("openCalendarBtn").addEventListener("click", async () => {
-  try {
-    const data = await fetchCalendar_("today");
-    console.log("Calendar events:", data);
-    showAppMsg(`Events today: ${data.events?.length ?? 0}`, "ok");
-  } catch (e) {
-    console.error(e);
-    showAppMsg("Calendar load failed", "err");
-  }
-});
+    els.tabMonth.addEventListener("click", async () => {
+      try {
+        await renderMonth_(els.picker.value || ymdLocal_());
+        showView_("month");
+      } catch (e) { console.error(e); showAppMsg(String(e), "err"); }
+    });
 
+    els.tabWeek.addEventListener("click", async () => {
+      try {
+        await renderWeek_(els.picker.value || ymdLocal_());
+        showView_("week");
+      } catch (e) { console.error(e); showAppMsg(String(e), "err"); }
+    });
 
-    // ---------- Boot ----------
+    els.tabDay.addEventListener("click", async () => {
+      try {
+        await renderDay_(els.picker.value || ymdLocal_());
+        showView_("day");
+      } catch (e) { console.error(e); showAppMsg(String(e), "err"); }
+    });
+
+    els.picker.addEventListener("change", async () => {
+      try {
+        await renderDay_(els.picker.value);
+        showView_("day");
+      } catch (e) { console.error(e); showAppMsg(String(e), "err"); }
+    });
+
+    // =========================
+    // 11) Boot
+    // =========================
     applyI18n();
     setPillKey("checking");
+    setLoggedOutUI_();
 
     (async () => {
+      // handle email link flow if present
       const handled = await completeSignInIfLink();
 
       onAuthStateChanged(auth, async (user) => {
-        els.form.style.display = "block";
+        clearMsg();
+        clearAppMsg();
 
         if (!user) {
-          showLoginView();
           if (!handled) setPillKey("ready");
+          setLoggedOutUI_();
           return;
         }
 
-        setPillKey("checking");
-        clearMsg();
+        setPillKey("signedIn");
+        els.email.value = user.email || "";
 
+        // backend gate: me
         try {
-          const me = await backendMe_(user);
-
-          if (!me.ok) throw new Error(me.error || "backend_error");
-
-          if (!me.allowed) {
-            showMsg(t("msg.accessDenied"), "err");
-            await signOut(auth);
-            showLoginView();
-            setPillKey("signedOut");
-            return;
-          }
-
-          // ✅ allowed → show app
-          setPillKey("signedIn");
-          showMsg(`OK: ${me.email} (${me.role})`, "ok");
-          showAppView(me.role);
-
+          const me = await backendMe_();
+          // me: {ok, email, allowed, role}
+          setLoggedInUI_(me);
         } catch (e) {
-          console.error("Backend check failed:", e);
-          showLoginView();
-          showMsg(t("msg.backendFail"), "err");
+          console.error(e);
+          showMsg(t("msg.backendFail") + " " + String(e), "err");
           setPillKey("error");
         }
       });
