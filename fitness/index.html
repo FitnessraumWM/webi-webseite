@@ -398,16 +398,20 @@ async function fetchCalendar_(range = "today", from = null, to = null) {
 }
 
 // alebo (ak robíme sloty)
-async function fetchSlotsToday_() {
+async function fetchSlots_() {
   const user = auth.currentUser;
-  if (!user) throw new Error("not_authenticated");
-
   const idToken = await user.getIdToken(true);
 
   const r = await fetch(BACKEND_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "slots", idToken })
+    body: JSON.stringify({
+      action: "slots",
+      idToken,
+      slotMin: 15,
+      startHour: 5,
+      endHour: 23
+    })
   });
 
   return await r.json();
@@ -418,7 +422,14 @@ async function fetchSlotsToday_() {
     document.getElementById("langEn").addEventListener("click", () => setLang("en"));
     document.getElementById("langDe2").addEventListener("click", () => setLang("de"));
     document.getElementById("langEn2").addEventListener("click", () => setLang("en"));
-    
+    document.getElementById("openCalendarBtn").addEventListener("click", async () => {
+  const data = await fetchSlots_();
+  console.log("SLOTS:", data);
+
+  const freeCount = (data.slots || []).filter(s => s.free).length;
+  showAppMsg(`Slots today: ${data.slots?.length ?? 0} (free: ${freeCount})`, "ok");
+});
+
     els.sendBtn.addEventListener("click", async () => {
       const email = (els.email.value || "").trim();
       if (!email.includes("@")) return showMsg(t("msg.invalidEmail"), "err");
