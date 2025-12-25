@@ -1191,7 +1191,7 @@ function renderHero(resList){
 
 async function cancelById(eventId){
   try{
-    await api("cancel_reservation", { eventId });
+    await api("cancel_reservation", { eventId, all: state.adminAll });
     toast("ok", t("toast_cancel_ok"));
     await refreshCalendar();
     await refreshMyReservations();
