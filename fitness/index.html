@@ -851,20 +851,22 @@
     });
 
     els.openCalendarBtn.addEventListener("click", async () => {
-      try {
-        clearAppMsg();
-        els.calBlock.style.display = "block";
-        const today = ymdLocal_(new Date());
-        els.picker.value = today;
+  try {
+    clearAppMsg();
+    els.calBlock.style.display = "block";
+    const today = ymdLocal_(new Date());
+    els.picker.value = today;
 
-        await renderMonth_(today);
-        showView_("month");
-      } catch (e) {
-        console.error(e);
-        setBusy_(false);
-        showAppMsg((t("msg.backendFail") || "Backend error") + " " + String(e), "err");
-      }
-    });
+    // warm-up (lacne) – prebudí GAS/worker chain
+    await backendMe_();
+
+    await renderMonth_(today);
+    showView_("month");
+  } catch (e) {
+    console.error(e);
+    showAppMsg((t("msg.backendFail") || "Backend error") + " " + String(e), "err");
+  }
+});
 
     els.tabMonth.addEventListener("click", async () => {
       try {
