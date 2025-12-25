@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Webi Fitness – Login</title>
+  <style>
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+    body { margin:0; background:#0b0f14; color:#e9eef7; }
+    .wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
+    .card { width:100%; max-width:440px; background:#121a24; border:1px solid #223042; border-radius:18px; padding:18px; box-shadow: 0 10px 30px rgba(0,0,0,.35); position:relative; }
+    h1 { font-size:20px; margin:0 0 6px; }
+    .sub { color:#a9b6c7; font-size:13px; margin:0 0 16px; line-height:1.4; }
+    label { display:block; font-size:12px; color:#a9b6c7; margin: 12px 0 6px; }
+    input { width:100%; padding:12px 12px; border-radius:12px; border:1px solid #2a3b52; background:#0e1520; color:#e9eef7; outline:none; }
+    input:focus { border-color:#4a83ff; box-shadow:0 0 0 4px rgba(74,131,255,.18); }
+    button { width:100%; margin-top:12px; padding:12px; border-radius:12px; border:0; background:#4a83ff; color:#08111f; font-weight:700; cursor:pointer; }
+    button:disabled { opacity:.55; cursor:not-allowed; }
+    .row { display:flex; gap:10px; margin-top:10px; }
+    .ghost { background:transparent; color:#cfe0ff; border:1px solid #2a3b52; }
+    .msg { margin-top:12px; padding:10px 12px; border-radius:12px; font-size:13px; line-height:1.35; border:1px solid #2a3b52; background:#0e1520; color:#cfe0ff; }
+    .err { border-color:#ff5a7a55; color:#ffd1da; }
+    .ok  { border-color:#35d07f55; color:#caffdf; }
+    .small { font-size:12px; color:#a9b6c7; margin-top:10px; }
+    .pill { display:inline-block; padding:4px 10px; border-radius:999px; background:#0e1520; border:1px solid #2a3b52; color:#a9b6c7; font-size:12px; }
+    .lang { position:absolute; top:14px; right:14px; display:flex; gap:6px; }
+    .lang button { width:auto; margin:0; padding:6px 10px; border-radius:999px; background:transparent; color:#a9b6c7; border:1px solid #2a3b52; font-weight:600; }
+    .lang button.active { background:#0e1520; color:#e9eef7; border-color:#4a83ff55; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="lang">
+        <button id="langDe" type="button">DE</button>
+        <button id="langEn" type="button">EN</button>
+      </div>
+
+      <h1 id="t_title">Webi Fitness</h1>
+      <p id="t_sub" class="sub"></p>
+
+      <div id="statePill" class="pill"></div>
+
+      <div id="formBlock" style="display:none;">
+        <label id="t_emailLabel" for="email"></label>
+        <input id="email" type="email" autocomplete="email" />
+
+        <button id="sendBtn"></button>
+
+        <div class="row">
+          <button id="changeBtn" class="ghost" type="button"></button>
+          <button id="logoutBtn" class="ghost" type="button"></button>
+        </div>
+
+        <div id="msg" class="msg" style="display:none;"></div>
+        <div id="t_tip" class="small"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    // Firebase core
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+
+    // Firebase Auth
+    import {
+      getAuth,
+      onAuthStateChanged,
+      sendSignInLinkToEmail,
+      isSignInWithEmailLink,
+      signInWithEmailLink,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+    // (optional) Analytics – in try/catch below
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js";
+
+    // Firebase config (tvoj – OK)
+    const firebaseConfig = {
+      apiKey: "AIzaSyCY2nmL9I9TjxB0rlVPMCmcl4WKna21IJE",
+      authDomain: "fitnessraumwm-app.firebaseapp.com",
+      projectId: "fitnessraumwm-app",
+      storageBucket: "fitnessraumwm-app.firebasestorage.app",
+      messagingSenderId: "130435754352",
+      appId: "1:130435754352:web:a8a38eeeee7c25867e47b5",
+      measurementId: "G-B629775N63"
+    };
+
+    // Initialize Firebase (LEN RAZ)
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Analytics (optional)
+    let analytics = null;
+    try { analytics = getAnalytics(app); } catch (e) { /* ignore */ }
+
+    // ---------- i18n ----------
+    const LS_LANG_KEY = "webi_lang";
+    const LS_EMAIL_KEY = "webi_emailForSignIn";
+
+    const I18N = {
+      de: {
+        statusPrefix: "Status: ",
+        sub: "Login ohne Passwort: Wir senden dir einen Bestätigungslink per E-Mail. Link öffnen → fertig.",
+        emailLabel: "E-Mail",
+        emailPh: "z. B. name@domain.ch",
+        sendBtn: "Login-Link senden",
+        changeBtn: "E-Mail ändern",
+        logoutBtn: "Abmelden",
+        tip: "Tipp: Wenn du den Link auf einem anderen Gerät öffnest, fragt die App die E-Mail nochmals ab.",
+        pill: {
+          checking: "prüfe Link…",
+          ready: "bereit",
+          linkSent: "Link gesendet",
+          foundLink: "Login-Link erkannt",
+          askEmail: "E-Mail für Abschluss eingeben",
+          signedIn: "angemeldet",
+          signedOut: "abgemeldet",
+          error: "Fehler"
+        },
+        msg: {
+          invalidEmail: "Bitte eine gültige E-Mail eingeben.",
+          sentOk: "Erledigt. Link wurde per E-Mail gesendet. Öffne ihn, um den Login abzuschließen.",
+          sentFail: "Link konnte nicht gesendet werden. Prüfe E-Mail und autorisierte Domain. ",
+          needEmail: "Du hast den Login-Link geöffnet, aber die E-Mail ist hier nicht gespeichert (anderes Gerät/Browser). Bitte dieselbe E-Mail eingeben.",
+          signOk: "Login erfolgreich.",
+          signFail: "Link ungültig oder abgelaufen. Bitte einen neuen Link senden. ",
+          changed: "OK. Bitte neue E-Mail eingeben und Link senden.",
+          loggedOut: "Abgemeldet."
+        }
+      },
+      en: {
+        statusPrefix: "Status: ",
+        sub: "Passwordless login: we’ll email you a sign-in link. Open the link → you’re in.",
+        emailLabel: "Email",
+        emailPh: "e.g. name@domain.ch",
+        sendBtn: "Send sign-in link",
+        changeBtn: "Change email",
+        logoutBtn: "Sign out",
+        tip: "Tip: if you open the link on another device, the app will ask for your email again.",
+        pill: {
+          checking: "checking link…",
+          ready: "ready",
+          linkSent: "link sent",
+          foundLink: "sign-in link detected",
+          askEmail: "enter email to finish",
+          signedIn: "signed in",
+          signedOut: "signed out",
+          error: "error"
+        },
+        msg: {
+          invalidEmail: "Please enter a valid email.",
+          sentOk: "Done. We sent you a sign-in link by email. Open it to finish signing in.",
+          sentFail: "Couldn’t send the link. Check email and authorized domain. ",
+          needEmail: "You opened a sign-in link, but the email isn’t stored here (different device/browser). Please enter the same email.",
+          signOk: "Signed in successfully.",
+          signFail: "Link is invalid or expired. Please request a new link. ",
+          changed: "OK. Enter a new email and send a fresh link.",
+          loggedOut: "Signed out."
+        }
+      }
+    };
+
+    function detectInitialLang() {
+      const saved = localStorage.getItem(LS_LANG_KEY);
+      if (saved === "de" || saved === "en") return saved;
+      const nav = (navigator.language || "de").toLowerCase();
+      return nav.startsWith("en") ? "en" : "de";
+    }
+
+    let LANG = detectInitialLang();
+    function t(path) {
+      return path.split(".").reduce((o,k)=>o?.[k], I18N[LANG]);
+    }
+
+    function applyI18n() {
+      document.documentElement.lang = LANG;
+      document.getElementById("t_sub").textContent = t("sub");
+      document.getElementById("t_emailLabel").textContent = t("emailLabel");
+      document.getElementById("email").placeholder = t("emailPh");
+      document.getElementById("sendBtn").textContent = t("sendBtn");
+      document.getElementById("changeBtn").textContent = t("changeBtn");
+      document.getElementById("logoutBtn").textContent = t("logoutBtn");
+      document.getElementById("t_tip").textContent = t("tip");
+
+      document.getElementById("langDe").classList.toggle("active", LANG === "de");
+      document.getElementById("langEn").classList.toggle("active", LANG === "en");
+    }
+
+    function setLang(newLang) {
+      LANG = newLang;
+      localStorage.setItem(LS_LANG_KEY, LANG);
+      applyI18n();
+    }
+
+    // ---------- UI refs ----------
+    const els = {
+      pill: document.getElementById("statePill"),
+      form: document.getElementById("formBlock"),
+      email: document.getElementById("email"),
+      sendBtn: document.getElementById("sendBtn"),
+      changeBtn: document.getElementById("changeBtn"),
+      logoutBtn: document.getElementById("logoutBtn"),
+      msg: document.getElementById("msg"),
+      langDe: document.getElementById("langDe"),
+      langEn: document.getElementById("langEn"),
+    };
+
+    function setPillKey(key) { els.pill.textContent = t("statusPrefix") + t("pill." + key); }
+    function showMsg(text, kind="") {
+      els.msg.style.display = "block";
+      els.msg.className = "msg " + (kind === "err" ? "err" : kind === "ok" ? "ok" : "");
+      els.msg.textContent = text;
+    }
+    function clearMsg(){ els.msg.style.display="none"; els.msg.textContent=""; els.msg.className="msg"; }
+
+    // ✅ Fixná continue URL na webi.family (odporúčané)
+    // Daj si sem reálnu stránku, na ktorej budeš spracúvať link (môže to byť táto istá).
+    const CONTINUE_URL = "https://webi.family/fitness-login.html";
+
+    const actionCodeSettings = {
+      url: CONTINUE_URL,
+      handleCodeInApp: true
+    };
+
+    async function sendLink(email) {
+      clearMsg();
+      els.sendBtn.disabled = true;
+      try {
+        await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+        localStorage.setItem(LS_EMAIL_KEY, email);
+        showMsg(t("msg.sentOk"), "ok");
+        setPillKey("linkSent");
+      } catch (e) {
+        console.error(e);
+        showMsg(t("msg.sentFail") + "(" + (e?.code || "error") + ")", "err");
+        setPillKey("error");
+      } finally {
+        els.sendBtn.disabled = false;
+      }
+    }
+
+    async function completeSignInIfLink() {
+      if (!isSignInWithEmailLink(auth, window.location.href)) return false;
+
+      setPillKey("foundLink");
+      clearMsg();
+
+      let email = localStorage.getItem(LS_EMAIL_KEY);
+      if (!email) {
+        els.form.style.display = "block";
+        setPillKey("askEmail");
+        showMsg(t("msg.needEmail"), "");
+        return true;
+      }
+
+      try {
+        await signInWithEmailLink(auth, email, window.location.href);
+        localStorage.removeItem(LS_EMAIL_KEY);
+
+        // vyčisti URL parametre
+        window.history.replaceState({}, document.title, window.location.pathname);
+
+        setPillKey("signedIn");
+        showMsg(t("msg.signOk"), "ok");
+        return true;
+      } catch (e) {
+        console.error(e);
+        showMsg(t("msg.signFail") + "(" + (e?.code || "error") + ")", "err");
+        setPillKey("error");
+        return true;
+      }
+    }
+
+    // ---------- UI bindings ----------
+    els.langDe.addEventListener("click", () => setLang("de"));
+    els.langEn.addEventListener("click", () => setLang("en"));
+
+    els.sendBtn.addEventListener("click", async () => {
+      const email = (els.email.value || "").trim();
+      if (!email.includes("@")) return showMsg(t("msg.invalidEmail"), "err");
+      await sendLink(email);
+    });
+
+    els.changeBtn.addEventListener("click", () => {
+      localStorage.removeItem(LS_EMAIL_KEY);
+      els.email.value = "";
+      showMsg(t("msg.changed"), "");
+      setPillKey("ready");
+    });
+
+    els.logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      setPillKey("signedOut");
+      showMsg(t("msg.loggedOut"), "");
+    });
+
+    // ---------- Boot ----------
+    applyI18n();
+    setPillKey("checking");
+
+    (async () => {
+      const handled = await completeSignInIfLink();
+
+      onAuthStateChanged(auth, (user) => {
+        els.form.style.display = "block";
+        if (user) {
+          setPillKey("signedIn");
+          els.email.value = user.email || "";
+        } else if (!handled) {
+          setPillKey("ready");
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
