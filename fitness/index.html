@@ -9,72 +9,53 @@
     body { margin:0; background:#0b0f14; color:#e9eef7; }
     .wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:16px; }
     .card { width:100%; max-width:1100px; background:#121a24; border:1px solid #223042; border-radius:18px; padding:16px; box-shadow: 0 10px 30px rgba(0,0,0,.35); position:relative; }
+
     h1 { font-size:20px; margin:0 0 6px; }
     .sub { color:#a9b6c7; font-size:13px; margin:0 0 14px; line-height:1.4; }
-    label { display:block; font-size:12px; color:#a9b6c7; margin: 12px 0 6px; }
-    input, textarea, select {
-      width:100%; padding:12px 12px; border-radius:12px; border:1px solid #2a3b52;
-      background:#0e1520; color:#e9eef7; outline:none;
-    }
-    textarea { min-height:110px; resize:vertical; }
-    input:focus, textarea:focus, select:focus { border-color:#4a83ff; box-shadow:0 0 0 4px rgba(74,131,255,.18); }
-    button { padding:12px; border-radius:12px; border:0; background:#4a83ff; color:#08111f; font-weight:800; cursor:pointer; }
-    button:disabled { opacity:.55; cursor:not-allowed; }
-    .row { display:flex; gap:10px; margin-top:10px; flex-wrap:wrap; }
-    .ghost { background:transparent; color:#cfe0ff; border:1px solid #2a3b52; font-weight:800; }
-    .msg { margin-top:12px; padding:10px 12px; border-radius:12px; font-size:13px; line-height:1.35; border:1px solid #2a3b52; background:#0e1520; color:#cfe0ff; }
-    .err { border-color:#ff5a7a55; color:#ffd1da; }
-    .ok  { border-color:#35d07f55; color:#caffdf; }
-    .small { font-size:12px; color:#a9b6c7; margin-top:10px; }
+
     .pill { display:inline-block; padding:4px 10px; border-radius:999px; background:#0e1520; border:1px solid #2a3b52; color:#a9b6c7; font-size:12px; }
+    .row { display:flex; gap:10px; margin-top:10px; flex-wrap:wrap; align-items:center; }
+
     .lang { position:absolute; top:12px; right:12px; display:flex; gap:6px; }
-    .lang button { width:auto; margin:0; padding:6px 10px; border-radius:999px; background:transparent; color:#a9b6c7; border:1px solid #2a3b52; font-weight:800; }
+    .lang button { width:auto; padding:6px 10px; border-radius:999px; background:transparent; color:#a9b6c7; border:1px solid #2a3b52; font-weight:700; cursor:pointer; }
     .lang button.active { background:#0e1520; color:#e9eef7; border-color:#4a83ff55; }
 
-    /* layout */
-    .grid2 { display:grid; grid-template-columns: 420px 1fr; gap:14px; align-items:start; }
-    @media (max-width: 980px) { .grid2 { grid-template-columns: 1fr; } }
+    .grid2 { display:grid; grid-template-columns: 360px 1fr; gap:14px; align-items:start; }
+    @media (max-width: 920px) { .grid2 { grid-template-columns: 1fr; } }
 
     .box { border:1px solid #2a3b52; background:#0e1520; border-radius:14px; padding:12px; }
 
-    /* calendar */
-    .calWrap { margin-top:0; display:none; }
-    .calTop { display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; align-items:center; }
-    .calTop .spacer { flex:1; }
-    .tabs button { background:transparent; border:1px solid #2a3b52; color:#e9eef7; font-weight:800; padding:8px 10px; }
-    .tabs button.active { border-color:#4a83ff55; background:#0b1420; }
+    label { display:block; font-size:12px; color:#a9b6c7; margin: 12px 0 6px; }
+    input { width:100%; padding:12px 12px; border-radius:12px; border:1px solid #2a3b52; background:#0b121b; color:#e9eef7; outline:none; }
+    input:focus { border-color:#4a83ff; box-shadow:0 0 0 4px rgba(74,131,255,.18); }
+
+    button { padding:12px; border-radius:12px; border:0; background:#4a83ff; color:#08111f; font-weight:800; cursor:pointer; }
+    button:disabled { opacity:.55; cursor:not-allowed; }
+    .ghost { background:transparent; color:#cfe0ff; border:1px solid #2a3b52; font-weight:800; }
+
+    .msg { margin-top:12px; padding:10px 12px; border-radius:12px; font-size:13px; line-height:1.35; border:1px solid #2a3b52; background:#0b121b; color:#cfe0ff; }
+    .err { border-color:#ff5a7a55; color:#ffd1da; }
+    .ok  { border-color:#35d07f55; color:#caffdf; }
+
+    .muted { color:#a9b6c7; font-size:12px; }
+    .scroll { max-height:520px; overflow:auto; padding-right:6px; }
+
+    /* Month grid - responsive, no horizontal scroll */
+    .monthGrid { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; }
+    @media (max-width: 520px) { .monthGrid { gap:6px; } }
 
     .cellBtn {
       text-align:left; padding:10px; border-radius:12px;
-      border:1px solid #2a3b52; background:#0b1420;
-      color:#e9eef7; cursor:pointer; min-height:68px;
+      border:1px solid #2a3b52; background:#0b121b;
+      color:#e9eef7; cursor:pointer; min-height:64px;
     }
     .cellBtn.dim { background:transparent; opacity:.55; }
     .timeLabel { color:#a9b6c7; font-size:12px; }
-    .muted { color:#a9b6c7; font-size:12px; }
 
-    .scroll { max-height:520px; overflow:auto; padding-right:6px; }
+    .tabs { display:flex; gap:8px; flex-wrap:wrap; }
+    .tabs button { padding:10px 12px; border-radius:12px; }
 
-    /* week grid classic 7 columns */
-    .weekGridHead {
-      display:grid; grid-template-columns:70px repeat(7, 1fr); gap:8px; margin-bottom:8px;
-    }
-    .weekGridRow {
-      display:grid; grid-template-columns:70px repeat(7, 1fr); gap:8px; align-items:center;
-    }
-    .weekCell {
-      width:100%; height:38px; border-radius:10px;
-      border:1px solid #2a3b52;
-      background:#0b1420;
-      cursor:pointer;
-    }
-    .weekCell.busy { background:rgba(255,90,122,0.10); cursor:pointer; }
-    .weekCell.free { background:rgba(53,208,127,0.06); cursor:pointer; }
-
-    /* logged-in compact: hide login box */
-    .hidden { display:none !important; }
-
-    /* modal */
+    /* Modal */
     .modalBack {
       position:fixed; inset:0; background:rgba(0,0,0,.55);
       display:none; align-items:center; justify-content:center; padding:16px; z-index:50;
@@ -83,10 +64,15 @@
       width:100%; max-width:520px; background:#121a24; border:1px solid #223042;
       border-radius:18px; padding:14px; box-shadow:0 10px 30px rgba(0,0,0,.45);
     }
-    .modal h2 { margin:0 0 10px; font-size:20px; }
-    .modal .subt { margin:0 0 12px; color:#a9b6c7; font-size:13px; }
-    .modal .actions { display:flex; gap:10px; margin-top:12px; }
-    .modal .actions button { flex:1; }
+    textarea {
+      width:100%; min-height:90px; resize:vertical;
+      padding:12px; border-radius:12px; border:1px solid #2a3b52;
+      background:#0b121b; color:#e9eef7; outline:none;
+    }
+    select {
+      width:100%; padding:12px; border-radius:12px; border:1px solid #2a3b52;
+      background:#0b121b; color:#e9eef7; outline:none;
+    }
   </style>
 </head>
 
@@ -102,65 +88,75 @@
       <h1 id="t_title">Webi Fitness</h1>
       <p id="t_sub" class="sub"></p>
 
-      <div class="row" style="align-items:center; margin:0 0 10px;">
+      <div class="row" style="margin:0 0 12px;">
         <span id="statePill" class="pill"></span>
         <span id="userPill" class="pill" style="display:none;"></span>
         <span id="rolePill" class="pill" style="display:none;"></span>
+        <span id="backendPill" class="pill" style="display:none;"></span>
       </div>
 
       <div class="grid2">
-        <!-- LEFT: LOGIN (hidden when signed in) -->
-        <div id="loginBox" class="box">
-          <div id="loginBlock">
+        <!-- LEFT -->
+        <div class="box">
+          <div id="loginBox">
             <label id="t_emailLabel" for="email"></label>
             <input id="email" type="email" autocomplete="email" />
-
             <div class="row">
               <button id="sendBtn" style="flex:1;"></button>
               <button id="changeBtn" class="ghost" type="button"></button>
             </div>
-
-            <div class="row">
-              <button id="logoutBtn" class="ghost" type="button"></button>
-              <button id="openCalendarBtn" class="ghost" type="button"></button>
-            </div>
-
             <div id="msg" class="msg" style="display:none;"></div>
-            <div id="t_tip" class="small"></div>
+            <div class="muted" id="t_tip" style="margin-top:10px;"></div>
+          </div>
+
+          <div id="signedBox" style="display:none;">
+            <div class="row" style="margin-top:0;">
+              <button id="logoutBtn" class="ghost" type="button" style="flex:1;"></button>
+              <button id="refreshBtn" class="ghost" type="button" style="flex:1;"></button>
+            </div>
+            <div id="leftMsg" class="msg" style="display:none;"></div>
+            <div class="muted" style="margin-top:10px;">
+              <span id="leftHint"></span>
+            </div>
           </div>
         </div>
 
-        <!-- RIGHT: APP / CALENDAR -->
+        <!-- RIGHT -->
         <div class="box">
+          <div id="appLocked" class="muted" style="display:none;"></div>
+
           <div id="appBlock" style="display:none;">
             <div class="row" style="margin:0 0 10px;">
               <span class="pill" id="allowedPill"></span>
               <span class="pill" id="tzPill"></span>
-              <span class="pill" id="perfPill" style="display:none;"></span>
             </div>
 
-            <div id="calBlock" class="calWrap">
-              <div class="calTop">
-                <div class="tabs" style="display:flex; gap:8px;">
-                  <button class="ghost" id="tabMonth" type="button"></button>
-                  <button class="ghost" id="tabWeek" type="button"></button>
-                  <button class="ghost" id="tabDay" type="button"></button>
-                </div>
-                <div class="spacer"></div>
-                <input id="dayPicker" type="date" />
+            <div class="row" style="margin:0 0 10px;">
+              <div class="tabs" style="flex:1;">
+                <button class="ghost" id="tabMonth" type="button"></button>
+                <button class="ghost" id="tabWeek" type="button"></button>
+                <button class="ghost" id="tabDay" type="button"></button>
               </div>
-
-              <div id="monthGrid"></div>
-              <div id="weekGrid" style="display:none;"></div>
-              <div id="dayList" style="display:none;"></div>
-
-              <div class="small" id="calHint" style="margin-top:10px;"></div>
+              <input id="dayPicker" type="date" style="max-width:190px;" />
             </div>
+
+            <div id="monthGrid"></div>
+            <div id="weekGrid" style="display:none;"></div>
+            <div id="dayList" style="display:none;"></div>
+
+            <div class="muted" id="calHint" style="margin-top:10px;"></div>
+
+            <hr style="border:0;border-top:1px solid #223042;margin:14px 0;">
+
+            <div class="row" style="margin-top:0;">
+              <div style="font-weight:800;" id="t_myResTitle"></div>
+              <div style="flex:1;"></div>
+              <button id="myResRefreshBtn" class="ghost" type="button" style="padding:10px 12px;"></button>
+            </div>
+            <div id="myResList" class="muted" style="margin-top:10px;"></div>
 
             <div id="appMsg" class="msg" style="display:none;"></div>
           </div>
-
-          <div id="appLocked" class="small" style="display:none;"></div>
         </div>
       </div>
 
@@ -168,20 +164,20 @@
   </div>
 
   <!-- Booking modal -->
-  <div id="modalBack" class="modalBack" role="dialog" aria-modal="true">
+  <div class="modalBack" id="modalBack">
     <div class="modal">
-      <h2 id="m_title">Reservierung</h2>
-      <p class="subt" id="m_sub">Start: –</p>
+      <div style="font-size:18px; font-weight:900; margin-bottom:8px;" id="m_title"></div>
+      <div class="muted" id="m_info" style="margin-bottom:10px;"></div>
 
-      <label id="m_untilLabel" for="m_until">Bis</label>
-      <select id="m_until"></select>
+      <label id="m_toLabel"></label>
+      <select id="m_toSelect"></select>
 
-      <label id="m_noteLabel" for="m_note">Notiz (optional)</label>
-      <textarea id="m_note" placeholder="z. B. komme 10 min später…"></textarea>
+      <label id="m_noteLabel" style="margin-top:12px;"></label>
+      <textarea id="m_note" placeholder=""></textarea>
 
-      <div class="actions">
-        <button id="m_bookBtn">Buchen</button>
-        <button id="m_cancelBtn" class="ghost" type="button">Abbrechen</button>
+      <div class="row">
+        <button id="m_bookBtn" style="flex:1;"></button>
+        <button id="m_cancelBtn" class="ghost" type="button" style="flex:1;"></button>
       </div>
 
       <div id="m_msg" class="msg" style="display:none;"></div>
@@ -193,28 +189,19 @@
     // 0) CONFIG
     // =========================
     const BACKEND_URL = "https://steep-wildflower-af8b.fitnessraumwm.workers.dev";
-
     const TZ = "Europe/Zurich";
     const SLOT_MIN = 15;
     const START_HOUR = 5;
     const END_HOUR = 23;
-
-    // local caches (front)
-    let cacheMonth = new Map(); // key: "YYYY-MM" -> summary
-    let cacheDay = new Map();   // key: "YYYY-MM-DD" -> slots
-    let cacheWeek = new Map();  // key: "YYYY-MM-DD(monday)" -> days
+    const FETCH_TIMEOUT_MS = 25000; // frontend timeout
 
     // =========================
     // 1) Firebase imports
     // =========================
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
     import {
-      getAuth,
-      onAuthStateChanged,
-      sendSignInLinkToEmail,
-      isSignInWithEmailLink,
-      signInWithEmailLink,
-      signOut
+      getAuth, onAuthStateChanged, sendSignInLinkToEmail,
+      isSignInWithEmailLink, signInWithEmailLink, signOut
     } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
     // =========================
@@ -234,7 +221,7 @@
     const auth = getAuth(app);
 
     // =========================
-    // 3) i18n (DE/EN) – umlauts ok, ss instead of ß
+    // 3) i18n
     // =========================
     const LS_LANG_KEY = "webi_lang";
     const LS_EMAIL_KEY = "webi_emailForSignIn";
@@ -247,7 +234,7 @@
         sendBtn: "Login-Link senden",
         changeBtn: "E-Mail ändern",
         logoutBtn: "Abmelden",
-        openCalBtn: "Kalender",
+        refreshBtn: "Aktualisieren",
         tip: "Tipp: Wenn du den Link auf einem anderen Gerät öffnest, fragt die App die E-Mail nochmals ab.",
         pill: {
           checking: "prüfe…",
@@ -282,12 +269,19 @@
         },
         modal: {
           title: "Reservierung",
-          until: "Bis",
-          note: "Notiz (optional)",
+          toLabel: "Bis",
+          noteLabel: "Notiz (optional)",
+          notePh: "z. B. komme 10 min später…",
           book: "Buchen",
           cancel: "Abbrechen",
-          booked: "Gebucht ✅",
-          conflict: "Konflikt: Slot ist nicht mehr frei."
+          booked: "Gebucht ✅"
+        },
+        my: {
+          title: "Meine Reservierungen",
+          refresh: "Liste aktualisieren",
+          none: "Keine kommenden Reservierungen gefunden.",
+          cancel: "Stornieren",
+          cancelled: "Storniert ✅"
         }
       },
       en: {
@@ -297,7 +291,7 @@
         sendBtn: "Send sign-in link",
         changeBtn: "Change email",
         logoutBtn: "Sign out",
-        openCalBtn: "Calendar",
+        refreshBtn: "Refresh",
         tip: "Tip: if you open the link on another device, the app will ask for your email again.",
         pill: {
           checking: "checking…",
@@ -332,12 +326,19 @@
         },
         modal: {
           title: "Booking",
-          until: "Until",
-          note: "Note (optional)",
+          toLabel: "End (to)",
+          noteLabel: "Note (optional)",
+          notePh: "e.g. I’ll be 10 min late…",
           book: "Book",
           cancel: "Cancel",
-          booked: "Booked ✅",
-          conflict: "Conflict: slot is not free anymore."
+          booked: "Booked ✅"
+        },
+        my: {
+          title: "My reservations",
+          refresh: "Refresh list",
+          none: "No upcoming reservations found.",
+          cancel: "Cancel",
+          cancelled: "Cancelled ✅"
         }
       }
     };
@@ -353,33 +354,35 @@
     function t(path) { return path.split(".").reduce((o,k)=>o?.[k], I18N[LANG]); }
 
     // =========================
-    // 4) DOM
+    // 4) DOM refs
     // =========================
     const els = {
       pill: document.getElementById("statePill"),
       userPill: document.getElementById("userPill"),
       rolePill: document.getElementById("rolePill"),
-      msg: document.getElementById("msg"),
-      appMsg: document.getElementById("appMsg"),
+      backendPill: document.getElementById("backendPill"),
+
       loginBox: document.getElementById("loginBox"),
+      signedBox: document.getElementById("signedBox"),
+
+      msg: document.getElementById("msg"),
+      leftMsg: document.getElementById("leftMsg"),
+      appMsg: document.getElementById("appMsg"),
 
       email: document.getElementById("email"),
       sendBtn: document.getElementById("sendBtn"),
       changeBtn: document.getElementById("changeBtn"),
       logoutBtn: document.getElementById("logoutBtn"),
-      openCalendarBtn: document.getElementById("openCalendarBtn"),
-
-      appBlock: document.getElementById("appBlock"),
-      appLocked: document.getElementById("appLocked"),
-
-      allowedPill: document.getElementById("allowedPill"),
-      tzPill: document.getElementById("tzPill"),
-      perfPill: document.getElementById("perfPill"),
+      refreshBtn: document.getElementById("refreshBtn"),
 
       langDe: document.getElementById("langDe"),
       langEn: document.getElementById("langEn"),
 
-      calBlock: document.getElementById("calBlock"),
+      appBlock: document.getElementById("appBlock"),
+      appLocked: document.getElementById("appLocked"),
+      allowedPill: document.getElementById("allowedPill"),
+      tzPill: document.getElementById("tzPill"),
+
       tabMonth: document.getElementById("tabMonth"),
       tabWeek: document.getElementById("tabWeek"),
       tabDay: document.getElementById("tabDay"),
@@ -389,50 +392,40 @@
       day: document.getElementById("dayList"),
       calHint: document.getElementById("calHint"),
 
+      myResTitle: document.getElementById("t_myResTitle"),
+      myResRefreshBtn: document.getElementById("myResRefreshBtn"),
+      myResList: document.getElementById("myResList"),
+
+      // modal
       modalBack: document.getElementById("modalBack"),
       m_title: document.getElementById("m_title"),
-      m_sub: document.getElementById("m_sub"),
-      m_until: document.getElementById("m_until"),
+      m_info: document.getElementById("m_info"),
+      m_toLabel: document.getElementById("m_toLabel"),
+      m_toSelect: document.getElementById("m_toSelect"),
+      m_noteLabel: document.getElementById("m_noteLabel"),
       m_note: document.getElementById("m_note"),
       m_bookBtn: document.getElementById("m_bookBtn"),
       m_cancelBtn: document.getElementById("m_cancelBtn"),
       m_msg: document.getElementById("m_msg"),
-      m_untilLabel: document.getElementById("m_untilLabel"),
-      m_noteLabel: document.getElementById("m_noteLabel"),
     };
 
     function setPillKey(key) { els.pill.textContent = "Status: " + t("pill." + key); }
-    function showMsg(text, kind="") {
-      els.msg.style.display = "block";
-      els.msg.className = "msg " + (kind === "err" ? "err" : kind === "ok" ? "ok" : "");
-      els.msg.textContent = text;
+    function showMsg(el, text, kind="") {
+      el.style.display = "block";
+      el.className = "msg " + (kind === "err" ? "err" : kind === "ok" ? "ok" : "");
+      el.textContent = text;
     }
-    function clearMsg(){ els.msg.style.display="none"; els.msg.textContent=""; els.msg.className="msg"; }
-
-    function showAppMsg(text, kind="") {
-      els.appMsg.style.display = "block";
-      els.appMsg.className = "msg " + (kind === "err" ? "err" : kind === "ok" ? "ok" : "");
-      els.appMsg.textContent = text;
-    }
-    function clearAppMsg(){ els.appMsg.style.display="none"; els.appMsg.textContent=""; els.appMsg.className="msg"; }
-
-    function modalMsg(text, kind="") {
-      els.m_msg.style.display = "block";
-      els.m_msg.className = "msg " + (kind === "err" ? "err" : kind === "ok" ? "ok" : "");
-      els.m_msg.textContent = text;
-    }
-    function modalClearMsg(){ els.m_msg.style.display="none"; els.m_msg.textContent=""; els.m_msg.className="msg"; }
+    function clearMsg(el){ el.style.display="none"; el.textContent=""; el.className="msg"; }
 
     function applyI18n() {
       document.documentElement.lang = LANG;
-
       document.getElementById("t_sub").textContent = t("sub");
       document.getElementById("t_emailLabel").textContent = t("emailLabel");
       els.email.placeholder = t("emailPh");
       els.sendBtn.textContent = t("sendBtn");
       els.changeBtn.textContent = t("changeBtn");
       els.logoutBtn.textContent = t("logoutBtn");
-      els.openCalendarBtn.textContent = t("openCalBtn");
+      els.refreshBtn.textContent = t("refreshBtn");
       document.getElementById("t_tip").textContent = t("tip");
 
       els.tabMonth.textContent = t("app.month");
@@ -440,9 +433,13 @@
       els.tabDay.textContent = t("app.day");
       els.calHint.textContent = t("app.hint");
 
+      els.myResTitle.textContent = t("my.title");
+      els.myResRefreshBtn.textContent = t("my.refresh");
+
       els.m_title.textContent = t("modal.title");
-      els.m_untilLabel.textContent = t("modal.until");
-      els.m_noteLabel.textContent = t("modal.note");
+      els.m_toLabel.textContent = t("modal.toLabel");
+      els.m_noteLabel.textContent = t("modal.noteLabel");
+      els.m_note.placeholder = t("modal.notePh");
       els.m_bookBtn.textContent = t("modal.book");
       els.m_cancelBtn.textContent = t("modal.cancel");
 
@@ -465,16 +462,16 @@
     };
 
     async function sendLink(email) {
-      clearMsg();
+      clearMsg(els.msg);
       els.sendBtn.disabled = true;
       try {
         await sendSignInLinkToEmail(auth, email, actionCodeSettings);
         localStorage.setItem(LS_EMAIL_KEY, email);
-        showMsg(t("msg.sentOk"), "ok");
+        showMsg(els.msg, t("msg.sentOk"), "ok");
         setPillKey("linkSent");
       } catch (e) {
         console.error(e);
-        showMsg(t("msg.sentFail") + "(" + (e?.code || "error") + ")", "err");
+        showMsg(els.msg, t("msg.sentFail") + "(" + (e?.code || "error") + ")", "err");
         setPillKey("error");
       } finally {
         els.sendBtn.disabled = false;
@@ -483,14 +480,13 @@
 
     async function completeSignInIfLink() {
       if (!isSignInWithEmailLink(auth, window.location.href)) return false;
-
       setPillKey("foundLink");
-      clearMsg();
+      clearMsg(els.msg);
 
       let email = localStorage.getItem(LS_EMAIL_KEY);
       if (!email) {
         setPillKey("askEmail");
-        showMsg(t("msg.needEmail"), "");
+        showMsg(els.msg, t("msg.needEmail"), "");
         return true;
       }
 
@@ -499,39 +495,27 @@
         localStorage.removeItem(LS_EMAIL_KEY);
         window.history.replaceState({}, document.title, window.location.pathname);
         setPillKey("signedIn");
-        showMsg(t("msg.signOk"), "ok");
+        showMsg(els.msg, t("msg.signOk"), "ok");
         return true;
       } catch (e) {
         console.error(e);
-        showMsg(t("msg.signFail") + "(" + (e?.code || "error") + ")", "err");
+        showMsg(els.msg, t("msg.signFail") + "(" + (e?.code || "error") + ")", "err");
         setPillKey("error");
         return true;
       }
     }
 
     // =========================
-    // 6) Backend calls (with timeout + token reuse)
+    // 6) Backend calls (timeout)
     // =========================
-    const BACKEND_TIMEOUT_MS = 20000;
-
-    let lastToken = null;
-    let lastTokenTs = 0;
-    async function getIdTokenCached_() {
+    async function postBackend_(payload) {
       const user = auth.currentUser;
       if (!user) throw new Error("not_authenticated");
-      const now = Date.now();
-      if (lastToken && (now - lastTokenTs) < 45_000) return lastToken; // reuse a bit
-      const tkn = await user.getIdToken(true);
-      lastToken = tkn;
-      lastTokenTs = now;
-      return tkn;
-    }
 
-    async function postBackend_(payload) {
-      const idToken = await getIdTokenCached_();
+      const idToken = await user.getIdToken(true);
 
-      const ac = new AbortController();
-      const to = setTimeout(() => ac.abort("timeout"), BACKEND_TIMEOUT_MS);
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
       const t0 = performance.now();
       try {
@@ -539,59 +523,64 @@
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...payload, idToken }),
-          signal: ac.signal
+          signal: controller.signal
         });
-        const txt = await r.text();
-        let json = {};
-        try { json = JSON.parse(txt); } catch { json = { ok:false, error:"bad_json", raw: txt }; }
-
+        const data = await r.json();
         const ms = Math.round(performance.now() - t0);
-        els.perfPill.style.display = "inline-block";
-        els.perfPill.textContent = `Backend: ${ms} ms`;
-        return json;
+        els.backendPill.style.display = "inline-block";
+        els.backendPill.textContent = "Backend: " + ms + " ms";
+        return data;
       } catch (e) {
-        if (String(e).includes("timeout") || e?.name === "AbortError") throw new Error("timeout");
+        if (String(e.name).includes("Abort")) throw new Error("timeout");
         throw e;
       } finally {
-        clearTimeout(to);
+        clearTimeout(timer);
       }
     }
 
     const backendMe_ = () => postBackend_({ action: "me" });
 
-    async function fetchDaySlots_(dateYmd) {
-      const key = dateYmd;
-      if (cacheDay.has(key)) return cacheDay.get(key);
-      const data = await postBackend_({ action: "slots_day", date: dateYmd, slotMin: SLOT_MIN, startHour: START_HOUR, endHour: END_HOUR });
-      if (data?.ok) cacheDay.set(key, data);
-      return data;
-    }
+    const fetchDaySlots_ = (dateYmd) => postBackend_({
+      action: "slots_day",
+      date: dateYmd,
+      slotMin: SLOT_MIN,
+      startHour: START_HOUR,
+      endHour: END_HOUR
+    });
 
-    async function fetchWeekSlots_(weekStartYmd) {
-      const key = weekStartYmd;
-      if (cacheWeek.has(key)) return cacheWeek.get(key);
-      const data = await postBackend_({ action: "slots_week", weekStart: weekStartYmd, slotMin: SLOT_MIN, startHour: START_HOUR, endHour: END_HOUR });
-      if (data?.ok) cacheWeek.set(key, data);
-      return data;
-    }
+    const fetchWeekSlots_ = (weekStartYmd) => postBackend_({
+      action: "slots_week",
+      weekStart: weekStartYmd,
+      slotMin: SLOT_MIN,
+      startHour: START_HOUR,
+      endHour: END_HOUR
+    });
 
-    async function fetchMonthSummary_(year, month1to12) {
-      const key = `${year}-${String(month1to12).padStart(2,"0")}`;
-      if (cacheMonth.has(key)) return cacheMonth.get(key);
-      const data = await postBackend_({ action: "summary_month", year, month: month1to12, slotMin: SLOT_MIN, startHour: START_HOUR, endHour: END_HOUR });
-      if (data?.ok) cacheMonth.set(key, data);
-      return data;
-    }
+    const fetchMonthSummary_ = (year, month1to12) => postBackend_({
+      action: "summary_month",
+      year,
+      month: month1to12,
+      slotMin: SLOT_MIN,
+      startHour: START_HOUR,
+      endHour: END_HOUR
+    });
 
-    async function reserveSlot_(fromIso, toIso, note) {
-      return await postBackend_({ action: "reserve_slot", from: fromIso, to: toIso, note: note || "" });
-    }
+    const reserveSlot_ = (fromIso, toIso, note) => postBackend_({
+      action: "reserve_slot",
+      from: fromIso,
+      to: toIso,
+      note: note || ""
+    });
 
-    function invalidateCachesForDate_(ymd) {
-      cacheDay.delete(ymd);
-      cacheWeek.clear();
-      cacheMonth.clear();
-    }
+    const myReservations_ = (days=60) => postBackend_({
+      action: "my_reservations",
+      days
+    });
+
+    const cancelReservation_ = (eventId) => postBackend_({
+      action: "cancel_reservation",
+      eventId
+    });
 
     // =========================
     // 7) Date/time helpers
@@ -612,30 +601,24 @@
 
     function mondayOf_(anchorYmd) {
       const base = anchorYmd ? new Date(anchorYmd + "T12:00:00") : new Date();
-      const day = base.getDay(); // 0 Sun
-      const diff = (day === 0 ? -6 : 1 - day); // Monday
+      const day = base.getDay();
+      const diff = (day === 0 ? -6 : 1 - day);
       const monday = new Date(base);
       monday.setDate(monday.getDate() + diff);
       return ymdLocal_(monday);
     }
 
     // =========================
-    // 8) Calendar views
+    // 8) Views + rendering
     // =========================
-    function setActiveTab_(v) {
-      els.tabMonth.classList.toggle("active", v === "month");
-      els.tabWeek.classList.toggle("active", v === "week");
-      els.tabDay.classList.toggle("active", v === "day");
-    }
     function showView_(v) {
       els.month.style.display = (v === "month") ? "block" : "none";
       els.week.style.display  = (v === "week")  ? "block" : "none";
       els.day.style.display   = (v === "day")   ? "block" : "none";
-      setActiveTab_(v);
     }
 
     async function renderMonth_(anchorYmd) {
-      clearAppMsg();
+      clearMsg(els.appMsg);
       const d = anchorYmd ? new Date(anchorYmd + "T12:00:00") : new Date();
       const year = d.getFullYear();
       const month = d.getMonth() + 1;
@@ -672,11 +655,7 @@
         `);
       }
 
-      els.month.innerHTML = `
-        <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:8px;">
-          ${cells.join("")}
-        </div>
-      `;
+      els.month.innerHTML = `<div class="monthGrid">${cells.join("")}</div>`;
 
       els.month.querySelectorAll("button[data-ymd]").forEach(btn => {
         btn.addEventListener("click", async () => {
@@ -689,7 +668,7 @@
     }
 
     async function renderWeek_(anchorYmd) {
-      clearAppMsg();
+      clearMsg(els.appMsg);
       const weekStartYmd = mondayOf_(anchorYmd || ymdLocal_());
       const data = await fetchWeekSlots_(weekStartYmd);
       if (!data.ok) throw new Error(JSON.stringify(data));
@@ -700,7 +679,9 @@
       }
 
       const head = data.days.map(d => `
-        <div style="text-align:center; color:#a9b6c7; font-size:12px;">${d.date}</div>
+        <div style="text-align:center; color:#a9b6c7; font-size:12px;">
+          ${d.date}
+        </div>
       `).join("");
 
       const body = rows.map(r => {
@@ -708,14 +689,20 @@
 
         const cols = data.days.map(dayObj => {
           const slot = dayObj.slots.find(s => fmtTime_(s.from) === label);
-          const free = !!slot?.free;
+          const free = slot ? slot.free : false;
 
-          const cls = free ? "weekCell free" : "weekCell busy";
-          return `<button class="${cls}" data-ymd="${dayObj.date}"></button>`;
+          return `
+            <button data-ymd="${dayObj.date}" style="
+              width:100%; padding:10px; border-radius:10px;
+              border:1px solid #2a3b52;
+              background:${free ? "#0b121b" : "rgba(255,90,122,0.08)"};
+              color:#e9eef7; cursor:pointer;">
+            </button>
+          `;
         }).join("");
 
         return `
-          <div class="weekGridRow">
+          <div style="display:grid; grid-template-columns:70px repeat(7,1fr); gap:8px; align-items:center;">
             <div class="timeLabel">${label}</div>
             ${cols}
           </div>
@@ -723,7 +710,7 @@
       }).join("");
 
       els.week.innerHTML = `
-        <div class="weekGridHead">
+        <div style="display:grid; grid-template-columns:70px repeat(7,1fr); gap:8px; margin-bottom:8px;">
           <div></div>${head}
         </div>
         <div class="scroll" style="display:flex; flex-direction:column; gap:8px;">
@@ -744,18 +731,21 @@
       });
     }
 
-    let lastDaySlots = null; // keep for booking dropdown
+    let currentDaySlots = []; // for booking modal (needs contiguous free slots)
+    let currentDayYmd = "";
+
     async function renderDay_(ymd) {
-      clearAppMsg();
+      clearMsg(els.appMsg);
       const data = await fetchDaySlots_(ymd);
       if (!data.ok) throw new Error(JSON.stringify(data));
 
-      lastDaySlots = data.slots || [];
+      currentDaySlots = data.slots || [];
+      currentDayYmd = ymd;
 
-      const items = (data.slots || []).map((s, idx) => {
+      const items = currentDaySlots.map((s, idx) => {
         const label = `${fmtTime_(s.from)} – ${fmtTime_(s.to)}`;
+        const bg = s.free ? "#0b121b" : "rgba(255,90,122,0.08)";
         const txt = s.free ? (LANG === "de" ? "frei" : "free") : (LANG === "de" ? "gebucht" : "booked");
-        const bg = s.free ? "rgba(53,208,127,0.06)" : "rgba(255,90,122,0.10)";
 
         return `
           <button data-idx="${idx}" style="
@@ -780,107 +770,179 @@
       `;
 
       els.day.querySelectorAll("button[data-idx]").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const idx = Number(btn.getAttribute("data-idx"));
-          openBookingModal_(ymd, idx);
-        });
+        btn.addEventListener("click", () => openBookingModal_(Number(btn.getAttribute("data-idx"))));
       });
     }
 
     // =========================
-    // 9) Booking modal (start slot + bis dropdown of consecutive free)
+    // 9) Booking modal (start slot -> choose end "bis")
     // =========================
-    let bookingCtx = null;
+    let modalStartIdx = -1;
 
-    function openBookingModal_(ymd, startIdx) {
-      modalClearMsg();
-      els.m_note.value = "";
+    function modalShow_(show) {
+      els.modalBack.style.display = show ? "flex" : "none";
+      if (!show) {
+        modalStartIdx = -1;
+        els.m_toSelect.innerHTML = "";
+        els.m_note.value = "";
+        clearMsg(els.m_msg);
+      }
+    }
 
-      const slots = lastDaySlots || [];
-      const startSlot = slots[startIdx];
-      if (!startSlot || !startSlot.free) return;
+    function openBookingModal_(startIdx) {
+      const s0 = currentDaySlots[startIdx];
+      if (!s0?.free) return;
 
-      // build "bis" options: allow only consecutive free slots
+      modalStartIdx = startIdx;
+      const startLabel = fmtTime_(s0.from);
+      els.m_info.textContent = (LANG === "de")
+        ? `Start: ${startLabel}\nWähle Ende (bis) und buche.`
+        : `Start: ${startLabel}\nChoose end (to) and book.`;
+
+      // build dropdown with contiguous free end times
       const options = [];
-      let endIdx = startIdx;
-      while (endIdx < slots.length && slots[endIdx]?.free) {
-        options.push({
-          label: fmtTime_(slots[endIdx].to),
-          toIso: slots[endIdx].to,
-          endIdx
-        });
-        endIdx++;
+      for (let i = startIdx; i < currentDaySlots.length; i++) {
+        const s = currentDaySlots[i];
+        if (!s.free) break;
+        const endLabel = fmtTime_(s.to);
+        options.push({ endIso: s.to, label: endLabel });
       }
 
-      els.m_until.innerHTML = options.map(o => `<option value="${o.toIso}">${o.label}</option>`).join("");
+      // need at least 1 slot; end is first slot end
+      els.m_toSelect.innerHTML = options.map((o, idx) =>
+        `<option value="${o.endIso}">${o.label}</option>`
+      ).join("");
 
-      els.m_sub.textContent = (LANG === "de")
-        ? `Start: ${fmtTime_(startSlot.from)}. Wähle Ende (bis) und buche.`
-        : `Start: ${fmtTime_(startSlot.from)}. Choose end (until) and book.`;
-
-      bookingCtx = { ymd, fromIso: startSlot.from, startIdx };
-      els.modalBack.style.display = "flex";
+      modalShow_(true);
     }
 
-    function closeModal_() {
-      els.modalBack.style.display = "none";
-      bookingCtx = null;
-      modalClearMsg();
-    }
-
-    els.m_cancelBtn.addEventListener("click", closeModal_);
-    els.modalBack.addEventListener("click", (e) => {
-      if (e.target === els.modalBack) closeModal_();
-    });
+    els.m_cancelBtn.addEventListener("click", () => modalShow_(false));
+    els.modalBack.addEventListener("click", (e) => { if (e.target === els.modalBack) modalShow_(false); });
 
     els.m_bookBtn.addEventListener("click", async () => {
-      if (!bookingCtx) return;
-      els.m_bookBtn.disabled = true;
-      modalClearMsg();
-
       try {
-        const toIso = els.m_until.value;
+        clearMsg(els.m_msg);
+
+        const s0 = currentDaySlots[modalStartIdx];
+        const fromIso = s0.from;
+        const toIso = els.m_toSelect.value;
         const note = els.m_note.value || "";
 
-        const res = await reserveSlot_(bookingCtx.fromIso, toIso, note);
+        els.m_bookBtn.disabled = true;
+        const res = await reserveSlot_(fromIso, toIso, note);
+
         if (!res.ok) {
-          if (res.error === "conflict") return modalMsg(t("modal.conflict"), "err");
-          return modalMsg("Error: " + (res.error || "unknown"), "err");
+          showMsg(els.m_msg, "Error: " + (res.error || "unknown"), "err");
+          return;
         }
 
-        modalMsg(t("modal.booked"), "ok");
+        showMsg(els.m_msg, t("modal.booked"), "ok");
 
-        // refresh day + month automatically so booking appears immediately
-        const ymd = bookingCtx.ymd;
-        invalidateCachesForDate_(ymd);
+        // refresh day + month summary + my reservations
+        await renderDay_(currentDayYmd);
+        await renderMonth_(currentDayYmd);
+        await renderMyReservations_();
 
-        // close automatically after success
-        setTimeout(async () => {
-          closeModal_();
-          try {
-            await renderDay_(ymd);
-            // month redraw only if month view is active later; but we update cache anyway
-          } catch {}
-        }, 700);
-
+        // auto-close modal after short delay
+        setTimeout(() => modalShow_(false), 700);
       } catch (e) {
-        modalMsg(String(e), "err");
+        console.error(e);
+        const msg = (String(e).includes("timeout")) ? t("msg.timeout") : (t("msg.backendFail") + " " + String(e));
+        showMsg(els.m_msg, msg, "err");
       } finally {
         els.m_bookBtn.disabled = false;
       }
     });
 
     // =========================
-    // 10) UI state
+    // 10) My reservations list + cancel
+    // =========================
+    function fmtDateTime_(iso) {
+      const dt = new Date(iso);
+      const d = new Intl.DateTimeFormat(LANG === "de" ? "de-CH" : "en-GB", {
+        timeZone: TZ, year:"numeric", month:"2-digit", day:"2-digit"
+      }).format(dt);
+      const t2 = new Intl.DateTimeFormat(LANG === "de" ? "de-CH" : "en-GB", {
+        timeZone: TZ, hour:"2-digit", minute:"2-digit"
+      }).format(dt);
+      return `${d} ${t2}`;
+    }
+
+    async function renderMyReservations_() {
+      try {
+        const data = await myReservations_(60);
+        if (!data.ok) throw new Error(JSON.stringify(data));
+        const list = data.reservations || [];
+
+        if (!list.length) {
+          els.myResList.innerHTML = `<div class="muted">${t("my.none")}</div>`;
+          return;
+        }
+
+        els.myResList.innerHTML = `
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            ${list.map(r => `
+              <div style="border:1px solid #2a3b52; border-radius:12px; padding:10px; background:#0b121b;">
+                <div style="display:flex; gap:10px; align-items:center;">
+                  <div style="flex:1;">
+                    <div style="font-weight:800;">${fmtDateTime_(r.start)} – ${fmtDateTime_(r.end)}</div>
+                    <div class="muted" style="margin-top:4px;">${r.email || ""}${r.note ? " • " + r.note : ""}</div>
+                  </div>
+                  <button class="ghost" data-cancel="${r.eventId}" style="padding:10px 12px;">
+                    ${t("my.cancel")}
+                  </button>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        `;
+
+        els.myResList.querySelectorAll("button[data-cancel]").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            const eventId = btn.getAttribute("data-cancel");
+            btn.disabled = true;
+            try {
+              const res = await cancelReservation_(eventId);
+              if (!res.ok) throw new Error(res.error || "cancel_failed");
+              await renderMyReservations_();
+              // also refresh current day + month to reflect freed slots
+              if (currentDayYmd) {
+                await renderDay_(currentDayYmd);
+                await renderMonth_(currentDayYmd);
+              }
+              showMsg(els.appMsg, t("my.cancelled"), "ok");
+              setTimeout(() => clearMsg(els.appMsg), 900);
+            } catch (e) {
+              console.error(e);
+              showMsg(els.appMsg, "Error: " + String(e), "err");
+            } finally {
+              btn.disabled = false;
+            }
+          });
+        });
+
+      } catch (e) {
+        console.error(e);
+        els.myResList.innerHTML = `<div class="muted">Error: ${String(e)}</div>`;
+      }
+    }
+
+    // =========================
+    // 11) UI state
     // =========================
     function setLoggedOutUI_() {
-      els.appBlock.style.display = "none";
-      els.appLocked.style.display = "none";
       els.userPill.style.display = "none";
       els.rolePill.style.display = "none";
-      els.calBlock.style.display = "none";
-      els.openCalendarBtn.disabled = true;
-      els.loginBox.classList.remove("hidden");
+      els.backendPill.style.display = "none";
+
+      els.loginBox.style.display = "block";
+      els.signedBox.style.display = "none";
+
+      els.appBlock.style.display = "none";
+      els.appLocked.style.display = "none";
+
+      // show subtext when logged out
+      document.getElementById("t_sub").style.display = "block";
     }
 
     function setLoggedInUI_(me) {
@@ -889,94 +951,118 @@
       els.userPill.textContent = me.email || "";
       els.rolePill.textContent = "role: " + (me.role || "none");
 
+      els.loginBox.style.display = "none";
+      els.signedBox.style.display = "block";
+
       els.appBlock.style.display = "block";
       els.tzPill.textContent = t("app.tz");
       els.allowedPill.textContent = me.allowed ? t("app.allowed") : t("app.denied");
 
-      els.openCalendarBtn.disabled = !me.allowed;
+      // hide subtext when logged in
+      document.getElementById("t_sub").style.display = "none";
 
       if (!me.allowed) {
         els.appLocked.style.display = "block";
-        els.appLocked.textContent = LANG === "de"
+        els.appLocked.textContent = (LANG === "de")
           ? "Du bist nicht freigeschaltet. Bitte Admin kontaktieren."
           : "You are not enabled yet. Please contact an admin.";
-        els.loginBox.classList.remove("hidden");
       } else {
         els.appLocked.style.display = "none";
-        // hide whole login box when signed in + allowed
-        els.loginBox.classList.add("hidden");
       }
     }
 
     // =========================
-    // 11) Bindings
+    // 12) Bindings
     // =========================
     els.langDe.addEventListener("click", () => setLang("de"));
     els.langEn.addEventListener("click", () => setLang("en"));
 
     els.sendBtn.addEventListener("click", async () => {
       const email = (els.email.value || "").trim();
-      if (!email.includes("@")) return showMsg(t("msg.invalidEmail"), "err");
+      if (!email.includes("@")) return showMsg(els.msg, t("msg.invalidEmail"), "err");
       await sendLink(email);
     });
 
     els.changeBtn.addEventListener("click", () => {
       localStorage.removeItem(LS_EMAIL_KEY);
       els.email.value = "";
-      showMsg(t("msg.changed"), "");
+      showMsg(els.msg, t("msg.changed"), "");
       setPillKey("ready");
     });
 
     els.logoutBtn.addEventListener("click", async () => {
       await signOut(auth);
-      lastToken = null; lastTokenTs = 0;
       setPillKey("signedOut");
-      showMsg(t("msg.loggedOut"), "");
+      showMsg(els.leftMsg, t("msg.loggedOut"), "");
       setLoggedOutUI_();
     });
 
-    // Click Kalender: first cheap "me" then open calendar (fast fail if backend down)
-    els.openCalendarBtn.addEventListener("click", async () => {
+    els.refreshBtn.addEventListener("click", async () => {
       try {
-        clearAppMsg();
-        els.calBlock.style.display = "block";
+        clearMsg(els.leftMsg);
+        const me = await backendMe_();
+        setLoggedInUI_(me);
 
-        const me = await backendMe_(); // cheap call
-        if (!me?.ok) throw new Error("me_failed");
-
-        const today = ymdLocal_(new Date());
-        els.picker.value = today;
-
-        await renderMonth_(today);
-        showView_("month");
+        if (me.allowed) {
+          const ymd = els.picker.value || ymdLocal_(new Date());
+          await renderMonth_(ymd);
+          showView_("month");
+          await renderMyReservations_();
+        }
       } catch (e) {
         console.error(e);
-        showAppMsg((String(e).includes("timeout") ? t("msg.timeout") : t("msg.backendFail")) + " " + String(e), "err");
+        showMsg(els.leftMsg, "Error: " + String(e), "err");
       }
     });
 
+    els.myResRefreshBtn.addEventListener("click", renderMyReservations_);
+
     els.tabMonth.addEventListener("click", async () => {
-      try { await renderMonth_(els.picker.value || ymdLocal_()); showView_("month"); }
-      catch (e) { console.error(e); showAppMsg(String(e), "err"); }
+      try {
+        await renderMonth_(els.picker.value || ymdLocal_());
+        showView_("month");
+      } catch (e) {
+        console.error(e);
+        const msg = (String(e).includes("timeout")) ? t("msg.timeout") : String(e);
+        showMsg(els.appMsg, msg, "err");
+      }
     });
 
     els.tabWeek.addEventListener("click", async () => {
-      try { await renderWeek_(els.picker.value || ymdLocal_()); showView_("week"); }
-      catch (e) { console.error(e); showAppMsg(String(e), "err"); }
+      try {
+        await renderWeek_(els.picker.value || ymdLocal_());
+        showView_("week");
+      } catch (e) {
+        console.error(e);
+        const msg = (String(e).includes("timeout")) ? t("msg.timeout") : String(e);
+        showMsg(els.appMsg, msg, "err");
+      }
     });
 
     els.tabDay.addEventListener("click", async () => {
-      try { await renderDay_(els.picker.value || ymdLocal_()); showView_("day"); }
-      catch (e) { console.error(e); showAppMsg(String(e), "err"); }
+      try {
+        await renderDay_(els.picker.value || ymdLocal_());
+        showView_("day");
+      } catch (e) {
+        console.error(e);
+        const msg = (String(e).includes("timeout")) ? t("msg.timeout") : String(e);
+        showMsg(els.appMsg, msg, "err");
+      }
     });
 
     els.picker.addEventListener("change", async () => {
-      try { await renderDay_(els.picker.value); showView_("day"); }
-      catch (e) { console.error(e); showAppMsg(String(e), "err"); }
+      try {
+        await renderDay_(els.picker.value);
+        showView_("day");
+      } catch (e) {
+        console.error(e);
+        const msg = (String(e).includes("timeout")) ? t("msg.timeout") : String(e);
+        showMsg(els.appMsg, msg, "err");
+      }
     });
 
     // =========================
-    // 12) Boot
+    // 13) Boot
     // =========================
     applyI18n();
     setPillKey("checking");
@@ -986,8 +1072,9 @@
       const handled = await completeSignInIfLink();
 
       onAuthStateChanged(auth, async (user) => {
-        clearMsg();
-        clearAppMsg();
+        clearMsg(els.msg);
+        clearMsg(els.leftMsg);
+        clearMsg(els.appMsg);
 
         if (!user) {
           if (!handled) setPillKey("ready");
@@ -1001,16 +1088,21 @@
         try {
           const me = await backendMe_();
           setLoggedInUI_(me);
-          if (me?.allowed) {
-  els.calBlock.style.display = "block";
-  const today = ymdLocal_(new Date());
-  els.picker.value = today;
-  await renderMonth_(today);
-  showView_("month");
-}
+
+          if (me.allowed) {
+            // AUTO OPEN CALENDAR (fixes "Kalender button" issue)
+            const today = ymdLocal_(new Date());
+            els.picker.value = today;
+
+            await renderMonth_(today);
+            showView_("month");
+
+            await renderMyReservations_();
+          }
         } catch (e) {
           console.error(e);
-          showMsg((String(e).includes("timeout") ? t("msg.timeout") : t("msg.backendFail")) + " " + String(e), "err");
+          const msg = (String(e).includes("timeout")) ? t("msg.timeout") : (t("msg.backendFail") + " " + String(e));
+          showMsg(els.msg, msg, "err");
           setPillKey("error");
         }
       });
