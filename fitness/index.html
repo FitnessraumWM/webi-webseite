@@ -18,7 +18,7 @@
     button:disabled { opacity:.55; cursor:not-allowed; }
     .row { display:flex; gap:10px; margin-top:10px; flex-wrap:wrap; }
     .ghost { background:transparent; color:#cfe0ff; border:1px solid #2a3b52; font-weight:700; }
-    .msg { margin-top:12px; padding:10px 12px; border-radius:12px; font-size:13px; line-height:1.35; border:1px solid #2a3b52; background:#0e1520; color:#cfe0ff; }
+    .msg { margin-top:12px; padding:10px 12px; border-radius:12px; font-size:13px; line-height:1.35; border:1px solid #2a3b52; background:#0e1520; color:#cfe0ff; white-space:pre-line; }
     .err { border-color:#ff5a7a55; color:#ffd1da; }
     .ok  { border-color:#35d07f55; color:#caffdf; }
     .small { font-size:12px; color:#a9b6c7; margin-top:10px; }
@@ -49,18 +49,24 @@
 
     .scroll { max-height:520px; overflow:auto; padding-right:6px; }
 
-    .loadingLine {
-      display:flex; align-items:center; gap:8px;
-      color:#a9b6c7; font-size:12px;
-      margin: 6px 0 0;
+    /* modal */
+    .modalBack {
+      position:fixed; inset:0; background:rgba(0,0,0,.55);
+      display:none; align-items:center; justify-content:center; padding:16px;
+      z-index:9999;
     }
-    .dot {
-      width:7px; height:7px; border-radius:50%;
-      background:#4a83ff;
-      box-shadow:0 0 0 3px rgba(74,131,255,.15);
-      animation: pulse 1.1s infinite ease-in-out;
+    .modal {
+      width:100%; max-width:520px; background:#121a24; border:1px solid #223042;
+      border-radius:16px; padding:14px; box-shadow:0 10px 30px rgba(0,0,0,.35);
     }
-    @keyframes pulse { 0%{transform:scale(.9);opacity:.5} 50%{transform:scale(1.25);opacity:1} 100%{transform:scale(.9);opacity:.5} }
+    .modal h3 { margin:0 0 6px; font-size:16px; }
+    .modal p { margin:0 0 10px; color:#a9b6c7; font-size:13px; line-height:1.35; white-space:pre-line; }
+    .modal textarea {
+      width:100%; min-height:80px; resize:vertical;
+      padding:10px 12px; border-radius:12px; border:1px solid #2a3b52;
+      background:#0e1520; color:#e9eef7; outline:none;
+    }
+    .modal textarea:focus { border-color:#4a83ff; box-shadow:0 0 0 4px rgba(74,131,255,.18); }
   </style>
 </head>
 
@@ -110,7 +116,6 @@
             <div class="row" style="margin:0 0 10px;">
               <span class="pill" id="allowedPill"></span>
               <span class="pill" id="tzPill"></span>
-              <span id="busyPill" class="pill" style="display:none;">loading…</span>
             </div>
 
             <div id="calBlock" class="calWrap">
@@ -139,6 +144,26 @@
     </div>
   </div>
 
+  <!-- Modal for booking -->
+  <div id="modalBack" class="modalBack">
+    <div class="modal">
+      <h3 id="mTitle">Reservierung</h3>
+      <p id="mText"></p>
+
+      <label id="mNoteLabel" style="margin-top:10px; display:block; font-size:12px; color:#a9b6c7;">
+        Notiz (optional)
+      </label>
+      <textarea id="mNote" placeholder="z. B. komme 10 min spaeter..."></textarea>
+
+      <div class="row">
+        <button id="mConfirm" style="flex:1;">Buchen</button>
+        <button id="mCancel" class="ghost" type="button">Abbrechen</button>
+      </div>
+
+      <div id="mMsg" class="msg" style="display:none; margin-top:10px;"></div>
+    </div>
+  </div>
+
   <script type="module">
     // =========================
     // 0) CONFIG
@@ -150,10 +175,8 @@
     const START_HOUR = 5;
     const END_HOUR = 23;
 
-    // backend timeouts + caches
-    const BACKEND_TIMEOUT_MS = 60_000; // ak Apps Script obcas visi
-    const RESP_CACHE_TTL_MS = 60_000;  // 60s (month/week/day summary sa meni pomaly)
-    const TOKEN_SAFETY_SKEW_SEC = 60;  // refresh 60s pred exp
+    // Safety net (frontend abort)
+    const BACKEND_TIMEOUT_MS = 60_000;
 
     // =========================
     // 1) Firebase imports
@@ -169,7 +192,7 @@
     } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
     // =========================
-    // 2) Firebase config (tvoj)
+    // 2) Firebase config
     // =========================
     const firebaseConfig = {
       apiKey: "AIzaSyCY2nmL9I9TjxB0rlVPMCmcl4WKna21IJE",
@@ -186,41 +209,45 @@
 
     // =========================
     // 3) i18n (DE/EN)
-    //    (pozor: bez "ß" – pouzivam "ss")
+    //    - DE: umlauts ok (ä/ö/ü)
+    //    - ß -> ss (user preference)
     // =========================
     const LS_LANG_KEY = "webi_lang";
     const LS_EMAIL_KEY = "webi_emailForSignIn";
 
     const I18N = {
       de: {
-        sub: "Login ohne Passwort: Wir senden dir einen Link per E-Mail. Link oeffnen → fertig.",
+        sub: "Login ohne Passwort: Wir senden dir einen Link per E-Mail. Link öffnen → fertig.",
         emailLabel: "E-Mail",
         emailPh: "z. B. name@domain.ch",
         sendBtn: "Login-Link senden",
-        changeBtn: "E-Mail aendern",
+        changeBtn: "E-Mail ändern",
         logoutBtn: "Abmelden",
         openCalBtn: "Kalender",
-        tip: "Tipp: Wenn du den Link auf einem anderen Geraet oeffnest, fragt die App die E-Mail nochmals ab.",
+        tip: "Tipp: Wenn du den Link auf einem anderen Gerät öffnest, fragt die App die E-Mail nochmals ab.",
         pill: {
-          checking: "pruefe…",
+          checking: "prüfe…",
           ready: "bereit",
           linkSent: "Link gesendet",
           foundLink: "Login-Link erkannt",
-          askEmail: "E-Mail fuer Abschluss eingeben",
+          askEmail: "E-Mail für Abschluss eingeben",
           signedIn: "angemeldet",
           signedOut: "abgemeldet",
           error: "Fehler"
         },
         msg: {
-          invalidEmail: "Bitte eine gueltige E-Mail eingeben.",
-          sentOk: "Erledigt. Link wurde per E-Mail gesendet. Oeffne ihn, um den Login abzuschliessen.",
-          sentFail: "Link konnte nicht gesendet werden. Pruefe E-Mail und autorisierte Domain. ",
-          needEmail: "Du hast den Login-Link geoeffnet, aber die E-Mail ist hier nicht gespeichert. Bitte dieselbe E-Mail eingeben.",
+          invalidEmail: "Bitte eine gültige E-Mail eingeben.",
+          sentOk: "Erledigt. Link wurde per E-Mail gesendet. Öffne ihn, um den Login abzuschliessen.",
+          sentFail: "Link konnte nicht gesendet werden. Prüfe E-Mail und autorisierte Domain. ",
+          needEmail: "Du hast den Login-Link geöffnet, aber die E-Mail ist hier nicht gespeichert. Bitte dieselbe E-Mail eingeben.",
           signOk: "Login erfolgreich.",
-          signFail: "Link ungueltig oder abgelaufen. Bitte einen neuen Link senden. ",
+          signFail: "Link ungültig oder abgelaufen. Bitte einen neuen Link senden. ",
           changed: "OK. Bitte neue E-Mail eingeben und Link senden.",
           loggedOut: "Abgemeldet.",
-          backendFail: "Backend Fehler."
+          backendFail: "Backend Fehler.",
+          bookingWait: "Bitte warten…",
+          bookingOk: "Gebucht ✅",
+          bookingFail: "Reservierung fehlgeschlagen."
         },
         app: {
           allowed: "Zugriff: erlaubt",
@@ -229,7 +256,19 @@
           month: "Monat",
           week: "Woche",
           day: "Tag",
-          hint: "Monat: Klick auf Tag → Tages-Slots. Woche: Klick auf Feld → Tag. Tag: Klick auf frei (spaeter Reservierung)."
+          hint: "Monat: Klick auf Tag → Tages-Slots. Woche: Klick auf Feld → Tag. Tag: Klick auf frei → Reservierung."
+        },
+        modal: {
+          title: "Reservierung",
+          noteLabel: "Notiz (optional)",
+          confirm: "Buchen",
+          cancel: "Abbrechen",
+          text: (from,to)=>`Willst du diesen Slot buchen?\n${from} – ${to}`,
+          errMap: {
+            limit_parallel_3: "Maximal 3 parallele Reservierungen in diesem Zeitraum.",
+            limit_user_2_per_day: "Maximal 2 Reservierungen pro Tag für deinen Account.",
+            access_denied: "Zugriff nicht erlaubt.",
+          }
         }
       },
       en: {
@@ -260,7 +299,10 @@
           signFail: "Link is invalid or expired. Please request a new link. ",
           changed: "OK. Enter a new email and send a fresh link.",
           loggedOut: "Signed out.",
-          backendFail: "Backend error."
+          backendFail: "Backend error.",
+          bookingWait: "Please wait…",
+          bookingOk: "Booked ✅",
+          bookingFail: "Booking failed."
         },
         app: {
           allowed: "Access: allowed",
@@ -269,7 +311,19 @@
           month: "Month",
           week: "Week",
           day: "Day",
-          hint: "Month: click a day → day slots. Week: click a cell → day. Day: click free (later booking)."
+          hint: "Month: click a day → day slots. Week: click a cell → day. Day: click free → book."
+        },
+        modal: {
+          title: "Reservation",
+          noteLabel: "Note (optional)",
+          confirm: "Book",
+          cancel: "Cancel",
+          text: (from,to)=>`Book this slot?\n${from} – ${to}`,
+          errMap: {
+            limit_parallel_3: "Max 3 parallel bookings in that time window.",
+            limit_user_2_per_day: "Max 2 bookings per day for your account.",
+            access_denied: "Access denied.",
+          }
         }
       }
     };
@@ -308,7 +362,6 @@
 
       allowedPill: document.getElementById("allowedPill"),
       tzPill: document.getElementById("tzPill"),
-      busyPill: document.getElementById("busyPill"),
 
       langDe: document.getElementById("langDe"),
       langEn: document.getElementById("langEn"),
@@ -323,6 +376,16 @@
       week: document.getElementById("weekGrid"),
       day: document.getElementById("dayList"),
       calHint: document.getElementById("calHint"),
+
+      // modal
+      modalBack: document.getElementById("modalBack"),
+      mTitle: document.getElementById("mTitle"),
+      mText: document.getElementById("mText"),
+      mNoteLabel: document.getElementById("mNoteLabel"),
+      mNote: document.getElementById("mNote"),
+      mConfirm: document.getElementById("mConfirm"),
+      mCancel: document.getElementById("mCancel"),
+      mMsg: document.getElementById("mMsg"),
     };
 
     function setPillKey(key) { els.pill.textContent = "Status: " + t("pill." + key); }
@@ -339,16 +402,6 @@
       els.appMsg.textContent = text;
     }
     function clearAppMsg(){ els.appMsg.style.display="none"; els.appMsg.textContent=""; els.appMsg.className="msg"; }
-
-    function setBusy_(on, label="loading…") {
-      els.busyPill.style.display = on ? "inline-block" : "none";
-      els.busyPill.textContent = label;
-      // optional: disable switching while loading (minimal)
-      els.tabMonth.disabled = on;
-      els.tabWeek.disabled = on;
-      els.tabDay.disabled = on;
-      els.picker.disabled = on;
-    }
 
     function applyI18n() {
       document.documentElement.lang = LANG;
@@ -367,6 +420,13 @@
       els.tabDay.textContent = t("app.day");
       els.calHint.textContent = t("app.hint");
 
+      // modal i18n
+      els.mTitle.textContent = t("modal.title");
+      els.mNoteLabel.textContent = t("modal.noteLabel");
+      els.mConfirm.textContent = t("modal.confirm");
+      els.mCancel.textContent = t("modal.cancel");
+      els.mNote.placeholder = (LANG === "de") ? "z. B. komme 10 min spaeter..." : "e.g. I’ll be 10 min late...";
+
       els.langDe.classList.toggle("active", LANG === "de");
       els.langEn.classList.toggle("active", LANG === "en");
     }
@@ -376,6 +436,34 @@
       localStorage.setItem(LS_LANG_KEY, LANG);
       applyI18n();
     }
+
+    // =========================
+    // Modal helpers
+    // =========================
+    function modalMsg_(text, kind="") {
+      els.mMsg.style.display = "block";
+      els.mMsg.className = "msg " + (kind === "err" ? "err" : kind === "ok" ? "ok" : "");
+      els.mMsg.textContent = text;
+    }
+
+    function openModal_(title, text) {
+      els.mTitle.textContent = title;
+      els.mText.textContent = text;
+      els.mNote.value = "";
+      els.mMsg.style.display = "none";
+      els.mMsg.textContent = "";
+      els.mMsg.className = "msg";
+      els.modalBack.style.display = "flex";
+    }
+
+    function closeModal_() {
+      els.modalBack.style.display = "none";
+    }
+
+    els.mCancel.addEventListener("click", closeModal_);
+    els.modalBack.addEventListener("click", (e) => {
+      if (e.target === els.modalBack) closeModal_();
+    });
 
     // =========================
     // 5) Firebase email link flow
@@ -408,7 +496,7 @@
       setPillKey("foundLink");
       clearMsg();
 
-      let email = localStorage.getItem(LS_EMAIL_KEY);
+      const email = localStorage.getItem(LS_EMAIL_KEY);
       if (!email) {
         setPillKey("askEmail");
         showMsg(t("msg.needEmail"), "");
@@ -431,150 +519,72 @@
     }
 
     // =========================
-    // 6) Backend calls (FAST)
+    // 6) Backend calls (with timeout)
     // =========================
-
-    // --- response cache + inflight dedupe ---
-    const _respCache = new Map();   // key -> {t, data}
-    const _inflight = new Map();    // key -> Promise
-
-    // --- abort control for calendar loads ---
-    let _calAbort = null;
-    function newCalendarAbort_() {
-      if (_calAbort) _calAbort.abort();
-      _calAbort = new AbortController();
-      return _calAbort.signal;
-    }
-
-    // --- token cache ---
-    let _tokenCache = { token: null, exp: 0, uid: null };
-
-    function parseJwtExp_(jwt) {
-      try {
-        const payload = jwt.split(".")[1];
-        const json = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
-        return Number(json.exp || 0);
-      } catch {
-        return 0;
-      }
-    }
-
-    async function getIdTokenCached_() {
+    async function postBackend_(payload) {
       const user = auth.currentUser;
       if (!user) throw new Error("not_authenticated");
 
-      const nowSec = Math.floor(Date.now() / 1000);
+      const idToken = await user.getIdToken(true);
 
-      // if user changed, reset
-      if (_tokenCache.uid && _tokenCache.uid !== user.uid) {
-        _tokenCache = { token: null, exp: 0, uid: null };
-      }
-
-      // still valid?
-      if (_tokenCache.token && _tokenCache.exp && (nowSec + TOKEN_SAFETY_SKEW_SEC) < _tokenCache.exp) {
-        return _tokenCache.token;
-      }
-
-      // IMPORTANT: no forced refresh unless needed
-      const token = await user.getIdToken(false);
-      const exp = parseJwtExp_(token);
-      _tokenCache = { token, exp, uid: user.uid };
-      return token;
-    }
-
-    async function fetchWithTimeout_(url, opts, timeoutMs) {
-      const controller = new AbortController();
-      const t = setTimeout(() => controller.abort("timeout"), timeoutMs);
-
-      // merge signals (if caller passes one)
-      const signal = opts?.signal;
-      let combinedSignal = controller.signal;
-
-      if (signal) {
-        // manual combo: abort this if either aborts
-        const onAbort = () => controller.abort("aborted");
-        signal.addEventListener("abort", onAbort, { once: true });
-      }
+      const ctrl = new AbortController();
+      const tId = setTimeout(() => ctrl.abort(), BACKEND_TIMEOUT_MS);
 
       try {
-        return await fetch(url, { ...opts, signal: combinedSignal });
-      } finally {
-        clearTimeout(t);
-      }
-    }
-
-    function stableKey_(payload) {
-      // token nedavame do key (inak by to nikdy necacheovalo)
-      return JSON.stringify(payload);
-    }
-
-    async function postBackendCached_(payload, signal) {
-      const token = await getIdTokenCached_();
-
-      const key = stableKey_(payload);
-      const now = Date.now();
-
-      const cached = _respCache.get(key);
-      if (cached && (now - cached.t) < RESP_CACHE_TTL_MS) {
-        return cached.data;
-      }
-
-      if (_inflight.has(key)) return _inflight.get(key);
-
-      const p = (async () => {
-        const r = await fetchWithTimeout_(BACKEND_URL, {
+        const r = await fetch(BACKEND_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...payload, idToken: token })
-        }, BACKEND_TIMEOUT_MS);
-
-        const data = await r.json().catch(() => ({ ok:false, error:"bad_json" }));
-
-        // cache only ok responses
-        if (data && data.ok) _respCache.set(key, { t: Date.now(), data });
-        return data;
-      })().finally(() => {
-        _inflight.delete(key);
-      });
-
-      _inflight.set(key, p);
-      return p;
+          body: JSON.stringify({ ...payload, idToken }),
+          signal: ctrl.signal
+        });
+        return await r.json();
+      } finally {
+        clearTimeout(tId);
+      }
     }
 
-    // endpoints
     async function backendMe_() {
-      return await postBackendCached_({ action: "me" });
+      return await postBackend_({ action: "me" });
     }
 
-    async function fetchDaySlots_(dateYmd, signal) {
-      return await postBackendCached_({
+    async function fetchDaySlots_(dateYmd) {
+      return await postBackend_({
         action: "slots_day",
         date: dateYmd,
         slotMin: SLOT_MIN,
         startHour: START_HOUR,
         endHour: END_HOUR
-      }, signal);
+      });
     }
 
-    async function fetchWeekSlots_(weekStartYmd, signal) {
-      return await postBackendCached_({
+    async function fetchWeekSlots_(weekStartYmd) {
+      return await postBackend_({
         action: "slots_week",
         weekStart: weekStartYmd,
         slotMin: SLOT_MIN,
         startHour: START_HOUR,
         endHour: END_HOUR
-      }, signal);
+      });
     }
 
-    async function fetchMonthSummary_(year, month1to12, signal) {
-      return await postBackendCached_({
+    async function fetchMonthSummary_(year, month1to12) {
+      return await postBackend_({
         action: "summary_month",
         year,
         month: month1to12,
         slotMin: SLOT_MIN,
         startHour: START_HOUR,
         endHour: END_HOUR
-      }, signal);
+      });
+    }
+
+    async function reserveSlot_(fromIso, toIso, note) {
+      return await postBackend_({
+        action: "reserve_slot",
+        from: fromIso,
+        to: toIso,
+        note: note || ""
+      });
     }
 
     // =========================
@@ -614,17 +624,14 @@
 
     async function renderMonth_(anchorYmd) {
       clearAppMsg();
-      setBusy_(true, "loading month…");
-      const signal = newCalendarAbort_();
 
       const d = anchorYmd ? new Date(anchorYmd + "T12:00:00") : new Date();
       const year = d.getFullYear();
       const month = d.getMonth() + 1;
 
-      const data = await fetchMonthSummary_(year, month, signal);
+      const data = await fetchMonthSummary_(year, month);
       if (!data.ok) throw new Error(JSON.stringify(data));
 
-      // month grid: 6 rows x 7 cols
       const first = new Date(year, month - 1, 1, 12, 0, 0, 0);
       const start = new Date(first);
       const day = start.getDay(); // 0 Sun
@@ -668,35 +675,21 @@
           showView_("day");
         });
       });
-
-      setBusy_(false);
     }
 
     async function renderWeek_(anchorYmd) {
       clearAppMsg();
-      setBusy_(true, "loading week…");
-      const signal = newCalendarAbort_();
 
       const weekStartYmd = mondayOf_(anchorYmd || ymdLocal_());
-      const data = await fetchWeekSlots_(weekStartYmd, signal);
+      const data = await fetchWeekSlots_(weekStartYmd);
       if (!data.ok) throw new Error(JSON.stringify(data));
 
-      // rows: 30-min labels
       const rows = [];
       for (let h = START_HOUR; h < END_HOUR; h++) {
         for (const mm of [0, 30]) rows.push({ h, mm });
       }
 
-      // precompute label->free for each day to avoid .find() in loop
-      const dayMaps = (data.days || []).map(d => {
-        const map = new Map();
-        for (const s of (d.slots || [])) {
-          map.set(fmtTime_(s.from), !!s.free);
-        }
-        return { date: d.date, map };
-      });
-
-      const head = dayMaps.map(d => `
+      const head = data.days.map(d => `
         <div style="text-align:center; color:#a9b6c7; font-size:12px;">
           ${d.date}
         </div>
@@ -705,8 +698,10 @@
       const body = rows.map(r => {
         const label = `${String(r.h).padStart(2,"0")}:${String(r.mm).padStart(2,"0")}`;
 
-        const cols = dayMaps.map(dayObj => {
-          const free = dayObj.map.get(label) === true;
+        const cols = data.days.map(dayObj => {
+          const slot = dayObj.slots.find(s => fmtTime_(s.from) === label);
+          const free = slot ? slot.free : false;
+
           return `
             <button data-ymd="${dayObj.date}" style="
               width:100%; padding:10px; border-radius:10px;
@@ -733,7 +728,7 @@
           ${body}
         </div>
         <div class="muted" style="margin-top:10px;">
-          ${LANG === "de" ? "Klick auf ein Feld oeffnet den Tag." : "Click a cell to open that day."}
+          ${LANG === "de" ? "Klick auf ein Feld öffnet den Tag." : "Click a cell to open that day."}
         </div>
       `;
 
@@ -745,30 +740,31 @@
           showView_("day");
         });
       });
-
-      setBusy_(false);
     }
 
     async function renderDay_(ymd) {
       clearAppMsg();
-      setBusy_(true, "loading day…");
-      const signal = newCalendarAbort_();
 
-      const data = await fetchDaySlots_(ymd, signal);
+      const data = await fetchDaySlots_(ymd);
       if (!data.ok) throw new Error(JSON.stringify(data));
 
-      const items = (data.slots || []).map(s => {
+      const items = data.slots.map(s => {
         const label = `${fmtTime_(s.from)} – ${fmtTime_(s.to)}`;
         const bg = s.free ? "#0e1520" : "rgba(255,90,122,0.08)";
         const txt = s.free ? (LANG === "de" ? "frei" : "free") : (LANG === "de" ? "gebucht" : "booked");
 
         return `
-          <button style="
-            width:100%; text-align:left; padding:10px 12px; border-radius:12px;
-            border:1px solid #2a3b52; background:${bg}; color:#e9eef7;
-            cursor:${s.free ? "pointer" : "not-allowed"};
-            opacity:${s.free ? 1 : 0.75};
-          " ${s.free ? "" : "disabled"}>
+          <button
+            data-from="${s.from}"
+            data-to="${s.to}"
+            style="
+              width:100%; text-align:left; padding:10px 12px; border-radius:12px;
+              border:1px solid #2a3b52; background:${bg}; color:#e9eef7;
+              cursor:${s.free ? "pointer" : "not-allowed"};
+              opacity:${s.free ? 1 : 0.75};
+            "
+            ${s.free ? "" : "disabled"}
+          >
             <div style="display:flex; justify-content:space-between; gap:10px;">
               <div>${label}</div>
               <div class="timeLabel">${txt}</div>
@@ -784,7 +780,49 @@
         </div>
       `;
 
-      setBusy_(false);
+      // Click to book only free slots
+      els.day.querySelectorAll('button[data-from][data-to]:not([disabled])').forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const fromIso = btn.getAttribute("data-from");
+          const toIso = btn.getAttribute("data-to");
+
+          const txtFrom = fmtTime_(fromIso);
+          const txtTo = fmtTime_(toIso);
+
+          openModal_(t("modal.title"), t("modal.text")(txtFrom, txtTo));
+          els.mConfirm.disabled = false;
+          els.mConfirm.textContent = t("modal.confirm");
+
+          els.mConfirm.onclick = async () => {
+            try {
+              els.mConfirm.disabled = true;
+              modalMsg_(t("msg.bookingWait"), "");
+
+              const note = els.mNote.value || "";
+              const res = await reserveSlot_(fromIso, toIso, note);
+
+              if (!res?.ok) {
+                const code = String(res?.error || res?.detail || "error");
+                const mapped = t("modal.errMap")?.[code];
+                modalMsg_((mapped || (t("msg.bookingFail") + " (" + code + ")")), "err");
+                els.mConfirm.disabled = false;
+                return;
+              }
+
+              modalMsg_(t("msg.bookingOk"), "ok");
+
+              // refresh day view
+              await renderDay_(ymd);
+
+              setTimeout(() => closeModal_(), 600);
+            } catch (e) {
+              const msg = (e?.name === "AbortError") ? (t("msg.backendFail") + " timeout") : String(e);
+              modalMsg_(msg, "err");
+              els.mConfirm.disabled = false;
+            }
+          };
+        });
+      });
     }
 
     // =========================
@@ -813,7 +851,7 @@
 
       if (!me.allowed) {
         els.appLocked.style.display = "block";
-        els.appLocked.textContent = LANG === "de"
+        els.appLocked.textContent = (LANG === "de")
           ? "Du bist nicht freigeschaltet. Bitte Admin kontaktieren."
           : "You are not enabled yet. Please contact an admin.";
       } else {
@@ -842,58 +880,56 @@
 
     els.logoutBtn.addEventListener("click", async () => {
       await signOut(auth);
-      _respCache.clear();
-      _inflight.clear();
-      _tokenCache = { token: null, exp: 0, uid: null };
       setPillKey("signedOut");
       showMsg(t("msg.loggedOut"), "");
       setLoggedOutUI_();
     });
 
     els.openCalendarBtn.addEventListener("click", async () => {
-  try {
-    clearAppMsg();
-    els.calBlock.style.display = "block";
-    const today = ymdLocal_(new Date());
-    els.picker.value = today;
+      try {
+        clearAppMsg();
+        els.calBlock.style.display = "block";
+        const today = ymdLocal_(new Date());
+        els.picker.value = today;
 
-    // warm-up (lacne) – prebudí GAS/worker chain
-    await backendMe_();
+        // warm-up: cheap call first (helps GAS cold start)
+        await backendMe_();
 
-    await renderMonth_(today);
-    showView_("month");
-  } catch (e) {
-    console.error(e);
-    showAppMsg((t("msg.backendFail") || "Backend error") + " " + String(e), "err");
-  }
-});
+        await renderMonth_(today);
+        showView_("month");
+      } catch (e) {
+        console.error(e);
+        const msg = (e?.name === "AbortError") ? (t("msg.backendFail") + " timeout") : String(e);
+        showAppMsg((t("msg.backendFail") || "Backend error") + " " + msg, "err");
+      }
+    });
 
     els.tabMonth.addEventListener("click", async () => {
       try {
         await renderMonth_(els.picker.value || ymdLocal_());
         showView_("month");
-      } catch (e) { console.error(e); setBusy_(false); showAppMsg(String(e), "err"); }
+      } catch (e) { console.error(e); showAppMsg(String(e), "err"); }
     });
 
     els.tabWeek.addEventListener("click", async () => {
       try {
         await renderWeek_(els.picker.value || ymdLocal_());
         showView_("week");
-      } catch (e) { console.error(e); setBusy_(false); showAppMsg(String(e), "err"); }
+      } catch (e) { console.error(e); showAppMsg(String(e), "err"); }
     });
 
     els.tabDay.addEventListener("click", async () => {
       try {
         await renderDay_(els.picker.value || ymdLocal_());
         showView_("day");
-      } catch (e) { console.error(e); setBusy_(false); showAppMsg(String(e), "err"); }
+      } catch (e) { console.error(e); showAppMsg(String(e), "err"); }
     });
 
     els.picker.addEventListener("change", async () => {
       try {
         await renderDay_(els.picker.value);
         showView_("day");
-      } catch (e) { console.error(e); setBusy_(false); showAppMsg(String(e), "err"); }
+      } catch (e) { console.error(e); showAppMsg(String(e), "err"); }
     });
 
     // =========================
@@ -919,13 +955,13 @@
         setPillKey("signedIn");
         els.email.value = user.email || "";
 
-        // backend gate: me
         try {
           const me = await backendMe_();
           setLoggedInUI_(me);
         } catch (e) {
           console.error(e);
-          showMsg(t("msg.backendFail") + " " + String(e), "err");
+          const msg = (e?.name === "AbortError") ? (t("msg.backendFail") + " timeout") : String(e);
+          showMsg(t("msg.backendFail") + " " + msg, "err");
           setPillKey("error");
         }
       });
