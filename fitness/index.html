@@ -286,22 +286,28 @@ async function getIdTokenCached(force=false){
 }
 
 /** ========= REQUEST (with dedupe) ========= **/
-async function api(action, body={}){
+async function api(action, body = {}) {
   const token = await getIdTokenCached(false);
   const key = action + ":" + JSON.stringify(body);
 
   if (state.inFlight.has(key)) return state.inFlight.get(key);
 
-  const p = (async ()=>{
+  const p = (async () => {
     const t0 = performance.now();
+
+    // ✅ posielame ako text/plain -> bez CORS preflight
     const res = await fetch(BACKEND_URL, {
       method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({ action, idToken: token, ...body })
+      headers: { "Content-Type": "text/plain;charset=UTF-8" },
+      body: JSON.stringify({ action, idToken: token, ...body }),
     });
-    const data = await res.json().catch(()=>({ok:false,error:"bad_json"}));
+
+    const text = await res.text();
+    const data = JSON.parse(text || "{}");
+
     const ms = Math.round(performance.now() - t0);
     $("mBackend").textContent = ms + " ms";
+
     if (!data.ok) throw new Error(data.error || "backend_error");
     return data;
   })();
@@ -310,6 +316,7 @@ async function api(action, body={}){
   try { return await p; }
   finally { state.inFlight.delete(key); }
 }
+
 
 /** ========= OneSignal (optional UI) ========= **/
 function initOneSignal(){
