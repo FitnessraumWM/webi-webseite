@@ -1760,36 +1760,34 @@ function openBookingFromSlot(startISO, preferredEndISO = null){
   state.selectedStartISO = startISO;
   state.selectedDayISO = startISO.slice(0,10);
 
+  const startKey = String(startISO).slice(0,16); // "YYYY-MM-DDTHH:MM"
+
   $("#bookFrom").value = startISO.slice(11,16);
   $("#bookTitle").value = "Fitnessraum Booking";
   $("#bookNote").value = "";
 
-  const daySlots = state.daySlots || [];
+  const daySlots = Array.isArray(state.daySlots) ? state.daySlots : [];
 
-  // --- robustné nájdenie indexu podľa času, nie podľa stringu ---
-  const startMs = new Date(startISO).getTime();
-  const idx = daySlots.findIndex(s => {
-    if (!s?.start) return false;
-    const ms = new Date(s.start).getTime();
-    return ms === startMs;
-  });
+  // --- FIX: najdi index cez string "YYYY-MM-DDTHH:MM" (robustne na timezone/Z) ---
+  const idx = daySlots.findIndex(s => String(s?.start || "").slice(0,16) === startKey);
 
-  // build "to" options from consecutive slots until block/voll
+  // build "to" options from consecutive 15-min slots until block/voll
   const options = [];
   if (idx >= 0){
     for (let i = idx + 1; i < daySlots.length; i++){
-      const lev = daySlots[i]?.level;
-      if (lev === "block" || lev === "voll") break;
+      const lev = String(daySlots[i]?.level || "");
+      if (lev === "block" || lev === "voll") break;   // stop at hard stop
       if (daySlots[i]?.end) options.push(daySlots[i].end);
     }
   }
 
   const sel = $("#bookTo");
   sel.innerHTML = "";
+
   options.forEach(endISO=>{
     const opt = document.createElement("option");
     opt.value = endISO;
-    opt.textContent = endISO.slice(11,16);
+    opt.textContent = String(endISO).slice(11,16);
     sel.appendChild(opt);
   });
 
@@ -1798,61 +1796,37 @@ function openBookingFromSlot(startISO, preferredEndISO = null){
     `${formatDateLabel(new Date(state.selectedDayISO+"T00:00:00"))} · ${t("from")} ${startISO.slice(11,16)}`
   );
 
-  // ak nemáme "to" možnosti, povedz prečo a nedovoľ potvrdiť
   if (options.length === 0){
     $("#bookConfirm").disabled = true;
 
-    // diagnostika do konzoly (aby sme videli, čo prišlo z backendu)
+    // veľmi užitočné pre debug:
     console.warn("Booking: no end options", {
-      startISO,
-      idx,
-      sampleSlots: daySlots.slice(Math.max(0, idx-3), Math.min(daySlots.length, idx+10))
+      startISO, startKey, idx,
+      firstSlots: daySlots.slice(0, 8),
+      around: idx>=0 ? daySlots.slice(Math.max(0, idx-3), Math.min(daySlots.length, idx+10)) : []
     });
 
-    toast("err", "Pre tento start nie je mozne vybrat 'Bis' (sloty sa nezhoduju s backendom alebo je hned dalsi blok/voll). Skus iny start.");
+    toast("err", "Pre tento start nie je mozne vybrat 'Bis'. Skus iny start (alebo je hned dalsi blok/voll).");
   } else {
     $("#bookConfirm").disabled = false;
 
     // auto pick end (favDur)
     let pick = null;
-    if (preferredEndISO && options.includes(preferredEndISO)){
-      pick = preferredEndISO;
+
+    if (preferredEndISO && options.some(x => String(x).slice(0,16) === String(preferredEndISO).slice(0,16))){
+      pick = options.find(x => String(x).slice(0,16) === String(preferredEndISO).slice(0,16));
     } else {
       const wantEnd = addMinutesISO(startISO, state.favDur);
       const wantMs = new Date(wantEnd).getTime();
+
       const leq = options.filter(x => new Date(x).getTime() <= wantMs);
       pick = leq.length ? leq[leq.length - 1] : options[0];
     }
+
     sel.value = pick;
   }
 
   show($("#modalOverlay"), true);
-}
-async function confirmBooking(){
-  const startISO = state.selectedStartISO;
-  const endISO = $("#bookTo")?.value;
-  const title = ($("#bookTitle")?.value || "Fitnessraum Booking").trim();
-  const note = ($("#bookNote")?.value || "").trim();
-
-  if(!startISO || !endISO){
-    toast("err", "Chyba: chyba start alebo end cas.");
-    return;
-  }
-
-  $("#bookConfirm").disabled = true;
-
-  try{
-    await api("reserve_slot", { start: startISO, end: endISO, title, note });
-    toast("ok", t("toast_book_ok"));
-    show($("#modalOverlay"), false);
-    await Promise.all([ refreshCalendar(), refreshMyReservations() ]);
-  }catch(e){
-    const err = (e && (e.error || e.message)) ? (e.error || e.message) : "unknown_error";
-    console.error("reserve_slot failed:", e);
-    toast("err", `Buchung fehlgeschlagen: ${err}`);
-  }finally{
-    $("#bookConfirm").disabled = false;
-  }
 }
 
 /* ===========================
