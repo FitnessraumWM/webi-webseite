@@ -43,10 +43,7 @@
     .muted { color:#a9b6c7; font-size:12px; }
     .scroll { max-height:520px; overflow:auto; padding-right:6px; }
 
-    /* Month grid */
-    .monthGrid {
-      display:grid; grid-template-columns:repeat(7,1fr); gap:8px;
-    }
+    .monthGrid { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; }
     .cellBtn {
       text-align:left; padding:10px; border-radius:12px;
       border:1px solid #2a3b52; background:#0e1520;
@@ -55,13 +52,11 @@
     .cellBtn.dim { background:transparent; opacity:.55; }
     .timeLabel { color:#a9b6c7; font-size:12px; }
 
-    /* Tabs + picker */
     .calTop { display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; align-items:center; }
     .calTop .spacer { flex:1; }
     .tabBtn { padding:10px 12px; border-radius:12px; }
     .tabBtn.active { border-color:#4a83ff88; box-shadow:0 0 0 4px rgba(74,131,255,.12); }
 
-    /* Day list buttons */
     .slotBtn {
       width:100%; text-align:left; padding:10px 12px; border-radius:12px;
       border:1px solid #2a3b52; background:#0e1520; color:#e9eef7;
@@ -69,7 +64,6 @@
     .slotBtn.free { cursor:pointer; }
     .slotBtn.busy { cursor:not-allowed; opacity:.75; background:rgba(255,90,122,0.08); }
 
-    /* Modal */
     .modalBackdrop {
       position:fixed; inset:0; background:rgba(0,0,0,.55);
       display:none; align-items:center; justify-content:center; padding:16px; z-index:9999;
@@ -84,29 +78,21 @@
     .modal .sub { margin:0 0 12px; }
     .modalActions { display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
     .modalActions button { flex:1; }
-    .modalActions .ghost { flex:1; }
 
-    /* Mobile tuning (7 columns, smaller cells) */
     @media (max-width: 480px) {
       .wrap { padding:10px; }
       .card { padding:12px; }
       h1 { font-size:18px; }
       .sub { font-size:12px; }
-
       .calBox { padding:10px; }
 
       .monthGrid { gap:6px; }
-      .cellBtn {
-        padding:8px; min-height:54px; border-radius:12px;
-      }
+      .cellBtn { padding:8px; min-height:54px; }
       .timeLabel { font-size:11px; }
       .pill { font-size:11px; padding:3px 8px; }
-
-      input, textarea, select { padding:10px 10px; border-radius:12px; }
+      input, textarea, select { padding:10px 10px; }
       button { padding:10px; }
-
       .tabBtn { padding:9px 10px; }
-
       .scroll { max-height:60vh; }
     }
   </style>
@@ -115,13 +101,12 @@
 <body>
   <div class="wrap">
     <div class="card">
-
       <div class="lang">
         <button id="langDe" type="button">DE</button>
         <button id="langEn" type="button">EN</button>
       </div>
 
-      <h1 id="t_title">Webi Fitness</h1>
+      <h1>Webi Fitness</h1>
       <p id="t_sub" class="sub"></p>
 
       <div class="row" style="align-items:center; margin:0 0 10px;">
@@ -131,40 +116,32 @@
       </div>
 
       <div class="grid2">
-        <!-- LEFT -->
         <div class="calBox">
-          <!-- When logged out -->
           <div id="loginBlock">
             <label id="t_emailLabel" for="email"></label>
             <input id="email" type="email" autocomplete="email" />
-
             <div class="row">
               <button id="sendBtn" style="flex:1;"></button>
               <button id="changeBtn" class="ghost" type="button"></button>
             </div>
-
             <div id="msg" class="msg" style="display:none;"></div>
             <div id="t_tip" class="small"></div>
           </div>
 
-          <!-- When logged in (compact) -->
           <div id="profileBlock" style="display:none;">
             <div class="row" style="margin-top:0; align-items:center;">
               <span class="pill" id="profileEmail"></span>
               <span class="pill" id="profileRole"></span>
             </div>
-
             <div class="row">
               <button id="openCalendarBtn" class="ghost" type="button" style="flex:1;"></button>
               <button id="logoutBtn" class="ghost" type="button" style="flex:1;"></button>
             </div>
-
             <div id="appMsgLeft" class="msg" style="display:none;"></div>
             <div class="small" id="profileHint"></div>
           </div>
         </div>
 
-        <!-- RIGHT: APP / CALENDAR -->
         <div class="calBox">
           <div id="appBlock" style="display:none;">
             <div class="row" style="margin:0 0 10px;">
@@ -194,11 +171,9 @@
           <div id="appLocked" class="small" style="display:none;"></div>
         </div>
       </div>
-
     </div>
   </div>
 
-  <!-- Reservation Modal -->
   <div id="modalBackdrop" class="modalBackdrop" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
       <h2 id="mTitle">Reservierung</h2>
@@ -222,19 +197,13 @@
   </div>
 
   <script type="module">
-    // =========================
-    // 0) CONFIG
-    // =========================
     const BACKEND_URL = "https://steep-wildflower-af8b.fitnessraumwm.workers.dev";
-
     const TZ = "Europe/Zurich";
     const SLOT_MIN = 15;
     const START_HOUR = 5;
     const END_HOUR = 23;
+    const BACKEND_TIMEOUT_MS = 60000;
 
-    // =========================
-    // 1) Firebase imports
-    // =========================
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
     import {
       getAuth,
@@ -245,9 +214,6 @@
       signOut
     } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
-    // =========================
-    // 2) Firebase config
-    // =========================
     const firebaseConfig = {
       apiKey: "AIzaSyCY2nmL9I9TjxB0rlVPMCmcl4WKna21IJE",
       authDomain: "fitnessraumwm-app.firebaseapp.com",
@@ -261,9 +227,6 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // =========================
-    // 3) i18n (DE/EN) – with umlauts, ss instead of ß
-    // =========================
     const LS_LANG_KEY = "webi_lang";
     const LS_EMAIL_KEY = "webi_emailForSignIn";
 
@@ -376,19 +339,14 @@
       const nav = (navigator.language || "de").toLowerCase();
       return nav.startsWith("en") ? "en" : "de";
     }
-
     let LANG = detectInitialLang();
     function t(path) { return path.split(".").reduce((o,k)=>o?.[k], I18N[LANG]); }
 
-    // =========================
-    // 4) DOM refs + UI helpers
-    // =========================
     const els = {
       pill: document.getElementById("statePill"),
       userPill: document.getElementById("userPill"),
       rolePill: document.getElementById("rolePill"),
 
-      // left blocks
       loginBlock: document.getElementById("loginBlock"),
       profileBlock: document.getElementById("profileBlock"),
       profileEmail: document.getElementById("profileEmail"),
@@ -396,28 +354,23 @@
       profileHint: document.getElementById("profileHint"),
       appMsgLeft: document.getElementById("appMsgLeft"),
 
-      // login controls
       msg: document.getElementById("msg"),
       email: document.getElementById("email"),
       sendBtn: document.getElementById("sendBtn"),
       changeBtn: document.getElementById("changeBtn"),
 
-      // common controls
       logoutBtn: document.getElementById("logoutBtn"),
       openCalendarBtn: document.getElementById("openCalendarBtn"),
 
-      // app
       appBlock: document.getElementById("appBlock"),
       appLocked: document.getElementById("appLocked"),
       appMsg: document.getElementById("appMsg"),
       allowedPill: document.getElementById("allowedPill"),
       tzPill: document.getElementById("tzPill"),
 
-      // language
       langDe: document.getElementById("langDe"),
       langEn: document.getElementById("langEn"),
 
-      // calendar
       calBlock: document.getElementById("calBlock"),
       tabMonth: document.getElementById("tabMonth"),
       tabWeek: document.getElementById("tabWeek"),
@@ -428,7 +381,6 @@
       day: document.getElementById("dayList"),
       calHint: document.getElementById("calHint"),
 
-      // modal
       modalBackdrop: document.getElementById("modalBackdrop"),
       mTitle: document.getElementById("mTitle"),
       mSub: document.getElementById("mSub"),
@@ -493,7 +445,6 @@
       els.tabDay.textContent = t("app.day");
       els.calHint.textContent = t("app.hint");
 
-      // modal texts
       els.mTitle.textContent = t("booking.title");
       els.mSub.textContent = t("booking.chooseUntil");
       els.mUntilLabel.textContent = t("booking.untilLabel");
@@ -510,19 +461,8 @@
       LANG = newLang;
       localStorage.setItem(LS_LANG_KEY, LANG);
       applyI18n();
-      // rerender if calendar open
-      if (els.calBlock.style.display === "block" && _currentView) {
-        // best effort refresh current view (fast)
-        const ymd = els.picker.value || ymdLocal_(new Date());
-        if (_currentView === "month") renderMonth_(ymd).catch(()=>{});
-        if (_currentView === "week") renderWeek_(ymd).catch(()=>{});
-        if (_currentView === "day") renderDay_(ymd, { nocache: true }).catch(()=>{});
-      }
     }
 
-    // =========================
-    // 5) Firebase email link flow
-    // =========================
     const actionCodeSettings = {
       url: window.location.origin + window.location.pathname,
       handleCodeInApp: true
@@ -547,7 +487,6 @@
 
     async function completeSignInIfLink() {
       if (!isSignInWithEmailLink(auth, window.location.href)) return false;
-
       setPillKey("foundLink");
       clearMsg();
 
@@ -573,15 +512,9 @@
       }
     }
 
-    // =========================
-    // 6) Backend calls (with timeout + no-store)
-    // =========================
-    const BACKEND_TIMEOUT_MS = 60000;
-
     async function postBackend_(payload) {
       const user = auth.currentUser;
       if (!user) throw new Error("not_authenticated");
-
       const idToken = await user.getIdToken(true);
 
       const ctrl = new AbortController();
@@ -605,58 +538,25 @@
       }
     }
 
-    async function backendMe_() {
-      return await postBackend_({ action: "me" });
-    }
+    const backendMe_ = () => postBackend_({ action: "me" });
 
-    async function fetchDaySlots_(dateYmd, nocache=false) {
-      return await postBackend_({
-        action: "slots_day",
-        date: dateYmd,
-        slotMin: SLOT_MIN,
-        startHour: START_HOUR,
-        endHour: END_HOUR,
-        nocache: !!nocache
-      });
-    }
+    const fetchDaySlots_ = (dateYmd, nocache=false) => postBackend_({
+      action: "slots_day", date: dateYmd, slotMin: SLOT_MIN, startHour: START_HOUR, endHour: END_HOUR, nocache: !!nocache
+    });
 
-    async function fetchWeekSlots_(weekStartYmd, nocache=false) {
-      return await postBackend_({
-        action: "slots_week",
-        weekStart: weekStartYmd,
-        slotMin: SLOT_MIN,
-        startHour: START_HOUR,
-        endHour: END_HOUR,
-        nocache: !!nocache
-      });
-    }
+    const fetchWeekSlots_ = (weekStartYmd, nocache=false) => postBackend_({
+      action: "slots_week", weekStart: weekStartYmd, slotMin: SLOT_MIN, startHour: START_HOUR, endHour: END_HOUR, nocache: !!nocache
+    });
 
-    async function fetchMonthSummary_(year, month1to12, nocache=false) {
-      return await postBackend_({
-        action: "summary_month",
-        year,
-        month: month1to12,
-        slotMin: SLOT_MIN,
-        startHour: START_HOUR,
-        endHour: END_HOUR,
-        nocache: !!nocache
-      });
-    }
+    const fetchMonthSummary_ = (year, month1to12, nocache=false) => postBackend_({
+      action: "summary_month", year, month: month1to12, slotMin: SLOT_MIN, startHour: START_HOUR, endHour: END_HOUR, nocache: !!nocache
+    });
 
-    // booking action (needs to exist in Code.gs)
-    async function reserveRange_(dateYmd, fromIso, toIso, note) {
-      return await postBackend_({
-        action: "reserve",
-        date: dateYmd,
-        from: fromIso,
-        to: toIso,
-        note: note || ""
-      });
-    }
+    // IMPORTANT: reserve_slot (matches your Code.gs)
+    const reserveSlot_ = (fromIso, toIso, note) => postBackend_({
+      action: "reserve_slot", from: fromIso, to: toIso, note: note || ""
+    });
 
-    // =========================
-    // 7) Date/time helpers
-    // =========================
     function ymdLocal_(d = new Date()) {
       const y = d.getFullYear();
       const m = String(d.getMonth() + 1).padStart(2, "0");
@@ -673,16 +573,13 @@
 
     function mondayOf_(anchorYmd) {
       const base = anchorYmd ? new Date(anchorYmd + "T12:00:00") : new Date();
-      const day = base.getDay(); // 0 Sun
-      const diff = (day === 0 ? -6 : 1 - day); // Monday
+      const day = base.getDay();
+      const diff = (day === 0 ? -6 : 1 - day);
       const monday = new Date(base);
       monday.setDate(monday.getDate() + diff);
       return ymdLocal_(monday);
     }
 
-    // =========================
-    // 8) Calendar UI rendering
-    // =========================
     let _currentView = null;
     let _currentDayYmd = null;
 
@@ -703,7 +600,6 @@
 
     async function renderMonth_(anchorYmd) {
       clearAppMsg();
-
       const d = anchorYmd ? new Date(anchorYmd + "T12:00:00") : new Date();
       const year = d.getFullYear();
       const month = d.getMonth() + 1;
@@ -714,7 +610,7 @@
       const first = new Date(year, month - 1, 1, 12, 0, 0, 0);
       const start = new Date(first);
       const day = start.getDay();
-      const offset = (day === 0 ? 6 : day - 1); // Monday=0
+      const offset = (day === 0 ? 6 : day - 1);
       start.setDate(start.getDate() - offset);
 
       const cells = [];
@@ -851,44 +747,9 @@
       });
     }
 
-    // =========================
-    // 9) Booking modal (Start + dropdown "Bis")
-    // =========================
     let _modalState = { ymd:null, startIso:null };
 
-    function openBookingModal_(ymd, startIso) {
-      _modalState = { ymd, startIso };
-
-      modalClearMsg();
-      els.mNote.value = "";
-
-      const startLabel = fmtTime_(startIso);
-      els.mStart.textContent = (LANG === "de" ? "Start: " : "Start: ") + startLabel;
-
-      // build "until" options from start+15min up to END_HOUR
-      const start = new Date(startIso);
-      const opts = [];
-
-      // compute day end in TZ is tricky; we rely on slot generation already obeying END_HOUR
-      // So we just allow up to start + 6h as a safety, and validate on server.
-      // Better: use current day slots list to compute max continuous free.
-      // We'll do: read visible free slots and offer only continuous free.
-      const freeFromStart = computeContinuousFreeUntil_(startIso);
-      for (const o of freeFromStart) opts.push(o);
-
-      els.mUntil.innerHTML = opts.map(o => `<option value="${o.iso}">${o.label}</option>`).join("");
-      els.modalBackdrop.style.display = "flex";
-      els.modalBackdrop.setAttribute("aria-hidden", "false");
-    }
-
-    function closeBookingModal_() {
-      els.modalBackdrop.style.display = "none";
-      els.modalBackdrop.setAttribute("aria-hidden", "true");
-      _modalState = { ymd:null, startIso:null };
-    }
-
     function computeContinuousFreeUntil_(startIso) {
-      // We look at the current rendered day list and take consecutive free slots starting at startIso.
       const buttons = Array.from(els.day.querySelectorAll("button.slotBtn"));
       const map = buttons.map(b => ({
         from: b.getAttribute("data-from"),
@@ -900,15 +761,32 @@
       if (startIdx < 0) return [];
 
       const res = [];
-      let cursorIdx = startIdx;
-
-      // We allow booking at least 1 slot, then extend while consecutive free
-      while (cursorIdx < map.length && map[cursorIdx].free) {
-        const untilIso = map[cursorIdx].to;
-        res.push({ iso: untilIso, label: fmtTime_(untilIso) });
-        cursorIdx++;
+      let i = startIdx;
+      while (i < map.length && map[i].free) {
+        res.push({ iso: map[i].to, label: fmtTime_(map[i].to) });
+        i++;
       }
       return res;
+    }
+
+    function openBookingModal_(ymd, startIso) {
+      _modalState = { ymd, startIso };
+      modalClearMsg();
+      els.mNote.value = "";
+
+      els.mStart.textContent = (LANG === "de" ? "Start: " : "Start: ") + fmtTime_(startIso);
+
+      const opts = computeContinuousFreeUntil_(startIso);
+      els.mUntil.innerHTML = opts.map(o => `<option value="${o.iso}">${o.label}</option>`).join("");
+
+      els.modalBackdrop.style.display = "flex";
+      els.modalBackdrop.setAttribute("aria-hidden", "false");
+    }
+
+    function closeBookingModal_() {
+      els.modalBackdrop.style.display = "none";
+      els.modalBackdrop.setAttribute("aria-hidden", "true");
+      _modalState = { ymd:null, startIso:null };
     }
 
     els.mCancelBtn.addEventListener("click", closeBookingModal_);
@@ -919,26 +797,22 @@
       els.mBookBtn.disabled = true;
 
       try {
-        const ymd = _modalState.ymd;
         const fromIso = _modalState.startIso;
         const toIso = els.mUntil.value;
         const note = els.mNote.value || "";
+        if (!fromIso || !toIso) throw new Error("missing_from_to");
 
-        if (!ymd || !fromIso || !toIso) throw new Error("missing_range");
-
-        const r = await reserveRange_(ymd, fromIso, toIso, note);
+        const r = await reserveSlot_(fromIso, toIso, note);
         if (!r.ok) throw new Error(r.error || JSON.stringify(r));
 
         modalMsg(t("booking.booked"), "ok");
 
-        // Refresh day immediately + retry refresh after 1200ms (Calendar eventual consistency)
-        await renderDay_(ymd, { nocache: true });
-        setTimeout(() => { renderDay_(ymd, { nocache: true }).catch(()=>{}); }, 1200);
+        // refresh day immediately + retry
+        await renderDay_(_currentDayYmd, { nocache: true });
+        setTimeout(() => { renderDay_(_currentDayYmd, { nocache: true }).catch(()=>{}); }, 1200);
 
-        // Also refresh month numbers in background (best effort)
-        setTimeout(() => {
-          if (_currentView === "month") renderMonth_(ymd).catch(()=>{});
-        }, 300);
+        // refresh month in background
+        setTimeout(() => { renderMonth_(els.picker.value).catch(()=>{}); }, 300);
 
       } catch (e) {
         console.error(e);
@@ -948,13 +822,9 @@
       }
     });
 
-    // =========================
-    // 10) App init (auth + gate)
-    // =========================
     function setLoggedOutUI_() {
       els.loginBlock.style.display = "block";
       els.profileBlock.style.display = "none";
-
       els.appBlock.style.display = "none";
       els.appLocked.style.display = "none";
       els.userPill.style.display = "none";
@@ -964,7 +834,6 @@
     }
 
     function setLoggedInUI_(me) {
-      // hide login table, show compact profile
       els.loginBlock.style.display = "none";
       els.profileBlock.style.display = "block";
 
@@ -993,9 +862,6 @@
       }
     }
 
-    // =========================
-    // 11) Bindings
-    // =========================
     els.langDe.addEventListener("click", () => setLang("de"));
     els.langEn.addEventListener("click", () => setLang("en"));
 
@@ -1024,10 +890,8 @@
         clearAppMsg();
         clearLeftMsg();
 
-        // cheap call first (you wanted this): me
         const me = await backendMe_();
         if (!me.ok) throw new Error(JSON.stringify(me));
-
         if (!me.allowed) {
           showLeftMsg((LANG === "de" ? "Zugriff nicht erlaubt." : "Access denied."), "err");
           return;
@@ -1041,41 +905,30 @@
         showView_("month");
       } catch (e) {
         console.error(e);
-        showLeftMsg((t("msg.backendFail") || "Backend error") + " " + String(e), "err");
+        showLeftMsg(t("msg.backendFail") + " " + String(e), "err");
       }
     });
 
     els.tabMonth.addEventListener("click", async () => {
-      try {
-        await renderMonth_(els.picker.value || ymdLocal_(new Date()));
-        showView_("month");
-      } catch (e) { console.error(e); showAppMsg(String(e), "err"); }
+      try { await renderMonth_(els.picker.value || ymdLocal_()); showView_("month"); }
+      catch (e) { console.error(e); showAppMsg(String(e), "err"); }
     });
 
     els.tabWeek.addEventListener("click", async () => {
-      try {
-        await renderWeek_(els.picker.value || ymdLocal_(new Date()));
-        showView_("week");
-      } catch (e) { console.error(e); showAppMsg(String(e), "err"); }
+      try { await renderWeek_(els.picker.value || ymdLocal_()); showView_("week"); }
+      catch (e) { console.error(e); showAppMsg(String(e), "err"); }
     });
 
     els.tabDay.addEventListener("click", async () => {
-      try {
-        await renderDay_(els.picker.value || ymdLocal_(new Date()), { nocache: true });
-        showView_("day");
-      } catch (e) { console.error(e); showAppMsg(String(e), "err"); }
+      try { await renderDay_(els.picker.value || ymdLocal_(), { nocache:true }); showView_("day"); }
+      catch (e) { console.error(e); showAppMsg(String(e), "err"); }
     });
 
     els.picker.addEventListener("change", async () => {
-      try {
-        await renderDay_(els.picker.value, { nocache: true });
-        showView_("day");
-      } catch (e) { console.error(e); showAppMsg(String(e), "err"); }
+      try { await renderDay_(els.picker.value, { nocache:true }); showView_("day"); }
+      catch (e) { console.error(e); showAppMsg(String(e), "err"); }
     });
 
-    // =========================
-    // 12) Boot
-    // =========================
     applyI18n();
     setPillKey("checking");
     setLoggedOutUI_();
