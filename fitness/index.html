@@ -1764,15 +1764,23 @@ function openBookingFromSlot(startISO, preferredEndISO = null){
   $("#bookTitle").value = "Fitnessraum Booking";
   $("#bookNote").value = "";
 
-  // build "to" options from consecutive slots until block/voll (count>=3)
   const daySlots = state.daySlots || [];
-  const idx = daySlots.findIndex(s => s.start === startISO);
 
+  // --- robustné nájdenie indexu podľa času, nie podľa stringu ---
+  const startMs = new Date(startISO).getTime();
+  const idx = daySlots.findIndex(s => {
+    if (!s?.start) return false;
+    const ms = new Date(s.start).getTime();
+    return ms === startMs;
+  });
+
+  // build "to" options from consecutive slots until block/voll
   const options = [];
-  if(idx >= 0){
-    for(let i=idx+1; i<daySlots.length; i++){
-      if(daySlots[i].level === "block" || daySlots[i].level === "voll") break;
-      options.push(daySlots[i].end);
+  if (idx >= 0){
+    for (let i = idx + 1; i < daySlots.length; i++){
+      const lev = daySlots[i]?.level;
+      if (lev === "block" || lev === "voll") break;
+      if (daySlots[i]?.end) options.push(daySlots[i].end);
     }
   }
 
@@ -1785,12 +1793,31 @@ function openBookingFromSlot(startISO, preferredEndISO = null){
     sel.appendChild(opt);
   });
 
-  // auto pick end
-  if(options.length > 0){
+  // info hore
+  setText($("#bookingInfo"),
+    `${formatDateLabel(new Date(state.selectedDayISO+"T00:00:00"))} · ${t("from")} ${startISO.slice(11,16)}`
+  );
+
+  // ak nemáme "to" možnosti, povedz prečo a nedovoľ potvrdiť
+  if (options.length === 0){
+    $("#bookConfirm").disabled = true;
+
+    // diagnostika do konzoly (aby sme videli, čo prišlo z backendu)
+    console.warn("Booking: no end options", {
+      startISO,
+      idx,
+      sampleSlots: daySlots.slice(Math.max(0, idx-3), Math.min(daySlots.length, idx+10))
+    });
+
+    toast("err", "Pre tento start nie je mozne vybrat 'Bis' (sloty sa nezhoduju s backendom alebo je hned dalsi blok/voll). Skus iny start.");
+  } else {
+    $("#bookConfirm").disabled = false;
+
+    // auto pick end (favDur)
     let pick = null;
-    if(preferredEndISO && options.includes(preferredEndISO)){
+    if (preferredEndISO && options.includes(preferredEndISO)){
       pick = preferredEndISO;
-    }else{
+    } else {
       const wantEnd = addMinutesISO(startISO, state.favDur);
       const wantMs = new Date(wantEnd).getTime();
       const leq = options.filter(x => new Date(x).getTime() <= wantMs);
@@ -1799,27 +1826,30 @@ function openBookingFromSlot(startISO, preferredEndISO = null){
     sel.value = pick;
   }
 
-  setText($("#bookingInfo"), `${formatDateLabel(new Date(state.selectedDayISO+"T00:00:00"))} · ${t("from")} ${startISO.slice(11,16)}`);
-
-  $("#bookConfirm").disabled = options.length === 0;
   show($("#modalOverlay"), true);
 }
-
 async function confirmBooking(){
   const startISO = state.selectedStartISO;
-  const endISO = $("#bookTo").value;
-  const title = ($("#bookTitle").value || "Fitnessraum Booking").trim();
-  const note = ($("#bookNote").value || "").trim();
-  if(!startISO || !endISO) return;
+  const endISO = $("#bookTo")?.value;
+  const title = ($("#bookTitle")?.value || "Fitnessraum Booking").trim();
+  const note = ($("#bookNote")?.value || "").trim();
+
+  if(!startISO || !endISO){
+    toast("err", "Chyba: chyba start alebo end cas.");
+    return;
+  }
 
   $("#bookConfirm").disabled = true;
+
   try{
     await api("reserve_slot", { start: startISO, end: endISO, title, note });
     toast("ok", t("toast_book_ok"));
     show($("#modalOverlay"), false);
     await Promise.all([ refreshCalendar(), refreshMyReservations() ]);
   }catch(e){
-    toast("err", t("toast_book_fail"));
+    const err = (e && (e.error || e.message)) ? (e.error || e.message) : "unknown_error";
+    console.error("reserve_slot failed:", e);
+    toast("err", `Buchung fehlgeschlagen: ${err}`);
   }finally{
     $("#bookConfirm").disabled = false;
   }
