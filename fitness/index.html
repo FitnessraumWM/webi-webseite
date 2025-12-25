@@ -32,7 +32,6 @@
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
     }
 
-    /* light mode */
     [data-theme="light"]{
       --bg: #f4f6fb;
       --card: rgba(0,0,0,0.04);
@@ -54,34 +53,16 @@
       color: var(--text);
     }
 
-    .wrap{
-      max-width: 1220px;
-      margin: 0 auto;
-      padding: 14px;
-    }
+    .wrap{ max-width: 1220px; margin: 0 auto; padding: 14px; }
 
     .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 10px;
+      display:flex; align-items:center; justify-content:space-between; gap: 10px;
       padding: 10px 2px 16px;
     }
-    .brand{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      font-weight: 700;
-      letter-spacing: .2px;
-    }
+    .brand{ display:flex; align-items:center; gap: 10px; font-weight: 700; letter-spacing: .2px; }
     .pill{
-      font-size: 12px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: var(--chip);
-      border: 1px solid var(--line);
-      color: var(--muted);
-      font-weight: 600;
+      font-size: 12px; padding: 4px 10px; border-radius: 999px;
+      background: var(--chip); border: 1px solid var(--line); color: var(--muted); font-weight: 600;
     }
     .btn{
       border: 1px solid var(--line);
@@ -93,32 +74,13 @@
       font-weight: 650;
     }
     .btn:hover{ filter: brightness(1.06); }
-    .btn.primary{
-      background: rgba(52,211,153,.18);
-      border-color: rgba(52,211,153,.35);
-    }
-    .btn.danger{
-      background: rgba(251,113,133,.14);
-      border-color: rgba(251,113,133,.35);
-    }
-    .btn.ghost{
-      background: transparent;
-      border-color: var(--line);
-    }
-    .btn.small{
-      padding: 8px 10px;
-      font-size: 13px;
-    }
-    .btn:disabled{
-      opacity:.55;
-      cursor:not-allowed;
-    }
+    .btn.primary{ background: rgba(52,211,153,.18); border-color: rgba(52,211,153,.35); }
+    .btn.danger{ background: rgba(251,113,133,.14); border-color: rgba(251,113,133,.35); }
+    .btn.ghost{ background: transparent; border-color: var(--line); }
+    .btn.small{ padding: 8px 10px; font-size: 13px; }
+    .btn:disabled{ opacity:.55; cursor:not-allowed; }
 
-    .grid{
-      display:grid;
-      grid-template-columns: 1.15fr .85fr;
-      gap: 14px;
-    }
+    .grid{ display:grid; grid-template-columns: 1.15fr .85fr; gap: 14px; }
 
     .card{
       background: var(--card);
@@ -127,7 +89,6 @@
       box-shadow: var(--shadow);
       overflow:hidden;
     }
-
     .cardHead{
       padding: var(--pad2);
       display:flex;
@@ -136,38 +97,14 @@
       gap: 10px;
       border-bottom: 1px solid var(--line);
     }
-    .cardTitle{
-      font-weight: 750;
-      letter-spacing: .2px;
-    }
-    .cardBody{
-      padding: var(--pad2);
-    }
+    .cardTitle{ font-weight: 750; letter-spacing: .2px; }
+    .cardBody{ padding: var(--pad2); }
 
-    .rightCol{
-      display:flex;
-      flex-direction:column;
-      gap: 12px;
-    }
-    .stickyMobile{
-      position: sticky;
-      top: 10px;
-      z-index: 2;
-    }
+    .rightCol{ display:flex; flex-direction:column; gap: 12px; }
+    .stickyMobile{ position: sticky; top: 10px; z-index: 2; }
 
-    /* Login */
-    .loginGrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr auto;
-      gap: 10px;
-      align-items:end;
-    }
-    .field label{
-      display:block;
-      font-size: 12px;
-      color: var(--muted);
-      margin: 0 0 6px;
-    }
+    .loginGrid{ display:grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items:end; }
+    .field label{ display:block; font-size: 12px; color: var(--muted); margin: 0 0 6px; }
     .field input, .field textarea, .field select{
       width:100%;
       box-sizing:border-box;
@@ -180,17 +117,9 @@
     }
     [data-theme="light"] .field input,
     [data-theme="light"] .field textarea,
-    [data-theme="light"] .field select{
-      background: rgba(255,255,255,0.65);
-    }
+    [data-theme="light"] .field select{ background: rgba(255,255,255,0.65); }
 
-    /* Calendar controls */
-    .calControls{
-      display:flex;
-      gap: 8px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
+    .calControls{ display:flex; gap: 8px; align-items:center; flex-wrap:wrap; }
     .seg{
       display:inline-flex;
       border: 1px solid var(--line);
@@ -206,18 +135,11 @@
       cursor:pointer;
       font-weight: 700;
     }
-    .seg button.active{
-      color: var(--text);
-      background: rgba(52,211,153,.16);
-    }
+    .seg button.active{ color: var(--text); background: rgba(52,211,153,.16); }
 
-    .calNav{
-      display:flex;
-      align-items:center;
-      gap: 8px;
-    }
+    .calNav{ display:flex; align-items:center; gap: 8px; }
 
-    /* Month view: KW + weekday header fixed */
+    /* Month */
     .monthGrid{
       display:grid;
       grid-template-columns: 62px repeat(7, minmax(0, 1fr));
@@ -257,28 +179,20 @@
       border-radius: 16px;
       padding: 10px;
       cursor:pointer;
-      min-height: 76px;
+      min-height: 72px;
       display:flex;
       flex-direction:column;
       justify-content:space-between;
       position:relative;
-      overflow:hidden;
     }
     [data-theme="light"] .dayCard{ background: rgba(255,255,255,0.55); }
     .dayCard:hover{ filter: brightness(1.04); }
-    .dayCard .d{ font-weight:900; font-size: 18px; }
-    .dayCard .meta{
-      margin-top: 8px;
-      font-size: 12px;
-      color: var(--muted);
-      display:flex;
-      align-items:center;
-      gap:6px;
-      line-height:1.25;
-    }
-    /* future/past visuals (jemne “bledé”) */
-    .dayCard.dim{ opacity:.28; filter: grayscale(.25); }
-    .dayCard.past{ opacity:.38; filter: grayscale(.25); }
+    .dayCard .d{ font-weight:900; font-size: 16px; }
+    .dayCard .meta{ margin-top: 8px; font-size: 12px; color: var(--muted); display:flex; flex-direction:column; gap:3px; }
+    .dayCard.dim{ opacity:.20; cursor:default; filter: grayscale(.3); }
+    /* past + future month (bledy) */
+    .dayCard.past{ opacity:.35; cursor:default; filter: grayscale(.25); }
+    .dayCard.futureOther{ opacity:.60; }
 
     /* Week view */
     .weekGrid{
@@ -304,11 +218,7 @@
       justify-content:space-between;
       gap: 6px;
     }
-    .weekSlots{
-      max-height: 520px;
-      overflow:auto;
-    }
-
+    .weekSlots{ max-height: 520px; overflow:auto; }
     .slotRow{
       display:flex;
       justify-content:space-between;
@@ -316,14 +226,15 @@
       padding: 9px 10px;
       font-size: 12px;
       border-bottom: 1px solid rgba(255,255,255,0.06);
-      user-select:none;
     }
     [data-theme="light"] .slotRow{ border-bottom: 1px solid rgba(0,0,0,0.06); }
     .slotRow.free{ cursor:pointer; }
     .slotRow.free:hover{ background: rgba(52,211,153,.10); }
-    .slotRow.busy{ color: var(--muted); background: rgba(251,113,133,.06); cursor:not-allowed; }
+    .slotRow.busy{ color: var(--muted); background: rgba(251,113,133,.06); }
+    .slotRow.part{ cursor:pointer; background: rgba(245,158,11,.08); }
+    .slotRow.part:hover{ background: rgba(245,158,11,.12); }
 
-    /* Day view list */
+    /* Day list */
     .dayList{
       display:flex;
       flex-direction:column;
@@ -336,24 +247,14 @@
     .dayList .slotRow{ font-size: 13px; }
     .dayList .slotRow .time{ font-weight: 900; }
 
-    /* Reservations */
+    /* Right panel */
     .hero{
       padding: var(--pad2);
       border-bottom: 1px solid var(--line);
       background: linear-gradient(135deg, rgba(52,211,153,.12), rgba(99,102,241,.08));
     }
-    .heroTitle{
-      font-size: 14px;
-      color: var(--muted);
-      font-weight: 900;
-      letter-spacing: .2px;
-    }
-    .heroMain{
-      margin-top: 6px;
-      font-size: 20px;
-      font-weight: 900;
-      letter-spacing: .2px;
-    }
+    .heroTitle{ font-size: 14px; color: var(--muted); font-weight: 900; letter-spacing: .2px; }
+    .heroMain{ margin-top: 6px; font-size: 20px; font-weight: 900; letter-spacing: .2px; }
     .heroSub{
       margin-top: 6px;
       color: var(--muted);
@@ -363,19 +264,9 @@
       flex-wrap:wrap;
       align-items:center;
     }
-    .heroActions{
-      margin-top: 12px;
-      display:flex;
-      gap: 8px;
-      flex-wrap:wrap;
-    }
+    .heroActions{ margin-top: 12px; display:flex; gap: 8px; flex-wrap:wrap; }
 
-    .resList{
-      display:flex;
-      flex-direction:column;
-      gap: 10px;
-      padding: var(--pad2);
-    }
+    .resList{ display:flex; flex-direction:column; gap: 10px; padding: var(--pad2); }
     .resItem{
       border: 1px solid var(--line);
       border-radius: 16px;
@@ -383,21 +274,9 @@
       background: rgba(0,0,0,0.10);
     }
     [data-theme="light"] .resItem{ background: rgba(255,255,255,0.55); }
-    .resTop{
-      display:flex;
-      justify-content:space-between;
-      gap: 10px;
-      align-items:flex-start;
-    }
-    .resWhen{
-      font-weight: 900;
-      letter-spacing: .2px;
-    }
-    .resMeta{
-      margin-top: 4px;
-      color: var(--muted);
-      font-size: 12px;
-    }
+    .resTop{ display:flex; justify-content:space-between; gap: 10px; align-items:flex-start; }
+    .resWhen{ font-weight: 900; letter-spacing: .2px; }
+    .resMeta{ margin-top: 4px; color: var(--muted); font-size: 12px; }
     .badge{
       font-size: 11px;
       padding: 5px 9px;
@@ -426,10 +305,7 @@
       z-index: 50;
     }
     @media (min-width: 980px){
-      .menuOverlay{
-        justify-content:center;
-        align-items:center;
-      }
+      .menuOverlay{ justify-content:center; align-items:center; }
     }
     .menuPanel{
       width:min(420px, calc(100vw - 24px));
@@ -448,21 +324,10 @@
       align-items:center;
     }
     .menuPanel .row:last-child{ border-bottom:0; }
-    .kv{
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing:.2px;
-    }
-    .vv{
-      font-weight: 900;
-      font-size: 13px;
-    }
-    .tog{
-      display:inline-flex;
-      align-items:center;
-      gap: 10px;
-    }
+    .kv{ color: var(--muted); font-size: 12px; font-weight: 900; letter-spacing:.2px; }
+    .vv{ font-weight: 900; font-size: 13px; }
+
+    .tog{ display:inline-flex; align-items:center; gap: 10px; }
     .switch{
       width: 46px;
       height: 26px;
@@ -475,13 +340,11 @@
     }
     .switch::after{
       content:"";
-      width: 20px;
-      height: 20px;
+      width: 20px; height: 20px;
       border-radius: 50%;
       background: rgba(255,255,255,0.85);
       position:absolute;
-      top: 2px;
-      left: 2px;
+      top: 2px; left: 2px;
       transition: all .18s ease;
     }
     .switch.on{
@@ -490,9 +353,7 @@
     }
     .switch.on::after{ left: 24px; background: rgba(255,255,255,0.95); }
 
-    .langPills{
-      display:flex; gap: 8px;
-    }
+    .langPills{ display:flex; gap: 8px; }
     .langPills button{
       border:1px solid var(--line);
       background: var(--chip);
@@ -534,17 +395,8 @@
       gap: 10px;
     }
     .modalBody{ padding: 16px; }
-    .row2{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .help{
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 8px;
-      line-height:1.35;
-    }
+    .row2{ display:grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .help{ color: var(--muted); font-size: 12px; margin-top: 8px; line-height:1.35; }
 
     /* Toast */
     .toastWrap{
@@ -574,9 +426,15 @@
     .toast.ok{ border-color: rgba(52,211,153,.35); }
     .toast.err{ border-color: rgba(251,113,133,.35); }
     .toast .msg{ font-weight: 900; }
-    .toast .x{ cursor:pointer; border:1px solid var(--line); background: transparent; color: var(--muted); border-radius: 999px; padding: 6px 10px; }
+    .toast .x{
+      cursor:pointer;
+      border:1px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 6px 10px;
+    }
 
-    /* responsive */
     @media (max-width: 980px){
       .grid{ grid-template-columns: 1fr; }
       .rightCol{ order: -1; }
@@ -605,7 +463,7 @@
       <button id="menuBtn" class="btn">☰ <span data-i18n="menu">Menu</span></button>
     </div>
 
-    <!-- LOGIN CARD -->
+    <!-- LOGIN -->
     <div id="loginCard" class="card" style="margin-bottom:14px;">
       <div class="cardHead">
         <div class="cardTitle" data-i18n="login_title">Anmelden</div>
@@ -614,11 +472,11 @@
       <div class="cardBody">
         <div class="loginGrid">
           <div class="field">
-            <label data-i18n="email">E-Mail</label>
+            <label for="email" data-i18n="email">E-Mail</label>
             <input id="email" type="email" autocomplete="email" placeholder="email">
           </div>
           <div class="field">
-            <label data-i18n="password">Passwort</label>
+            <label for="pass" data-i18n="password">Passwort</label>
             <input id="pass" type="password" autocomplete="current-password" placeholder="passwort">
           </div>
           <div>
@@ -631,7 +489,7 @@
       </div>
     </div>
 
-    <!-- MAIN APP -->
+    <!-- APP -->
     <div id="app" class="grid" style="display:none;">
       <!-- CALENDAR -->
       <div id="calendarCard" class="card">
@@ -666,7 +524,7 @@
         </div>
       </div>
 
-      <!-- RIGHT: RESERVATIONS -->
+      <!-- RIGHT -->
       <div class="rightCol">
         <div class="card stickyMobile">
           <div class="hero">
@@ -800,11 +658,11 @@
 
         <div class="row2">
           <div class="field">
-            <label data-i18n="from">Von</label>
+            <label for="bookFrom" data-i18n="from">Von</label>
             <input id="bookFrom" readonly>
           </div>
           <div class="field">
-            <label data-i18n="to">Bis</label>
+            <label for="bookTo" data-i18n="to">Bis</label>
             <select id="bookTo"></select>
           </div>
         </div>
@@ -812,15 +670,15 @@
         <div style="height:10px"></div>
 
         <div class="field">
-          <label data-i18n="title">Titel</label>
+          <label for="bookTitle" data-i18n="title">Titel</label>
           <input id="bookTitle" placeholder="Fitnessraum Booking">
         </div>
 
         <div style="height:10px"></div>
 
         <div class="field">
-          <label data-i18n="note_optional">Notiz (optional)</label>
-          <textarea id="bookNote" rows="2" placeholder=""></textarea>
+          <label for="bookNote" data-i18n="note_optional">Notiz (optional)</label>
+          <textarea id="bookNote" rows="2"></textarea>
         </div>
 
         <div class="help" data-i18n="booking_help">
@@ -829,6 +687,7 @@
 
         <div style="height:12px"></div>
 
+        <!-- !!! žiadny inline onclick !!! -->
         <button id="bookConfirm" class="btn primary" style="width:100%" data-i18n="book_confirm">Buchen</button>
       </div>
     </div>
@@ -843,7 +702,6 @@
 =========================== */
 const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyqMOFEywa32j-ALJ9OzWpfZI2vftY9hw9Do4Oc9DZGNuApSr55V2ywUxozqn5lfvRX/exec";
 
-// Firebase config (public)
 const firebaseConfig = {
   apiKey: "AIzaSyCY2nmL9I9TjxB0rlVPMCmcl4WKna21IJE",
   authDomain: "fitnessraumwm-app.firebaseapp.com",
@@ -854,7 +712,6 @@ const firebaseConfig = {
   measurementId: "G-B629775N63"
 };
 
-// OneSignal App ID (public)
 const ONESIGNAL_APP_ID = "61b4fca3-7bbd-4556-973d-0a589623e89b";
 
 /* ===========================
@@ -862,10 +719,11 @@ const ONESIGNAL_APP_ID = "61b4fca3-7bbd-4556-973d-0a589623e89b";
 =========================== */
 const state = {
   user: null,
-  view: "month",               // month|week|day
-  anchor: new Date(),          // current view anchor
-  daySlots: [],                // 15-min slots (from backend)
-  weekDays: [],                // from availability_week
+  view: "month",
+  anchor: new Date(),
+
+  daySlots: [],
+  weekDays: [],
   monthBusy: {},
 
   reservations: [],
@@ -1060,8 +918,9 @@ function escapeHtml(s){
 }
 
 /* ===========================
-   Small utils
+   Utils
 =========================== */
+function parseISO(s){ const d = new Date(s); return isNaN(d.getTime()) ? null : d; }
 function isSameDay(a,b){ return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
 function addDays(d, n){ const x = new Date(d); x.setDate(x.getDate()+n); return x; }
 
@@ -1077,7 +936,7 @@ function fmtDayLabel(d){
   return `${y}-${m}-${dd}`;
 }
 function formatDateLabel(d){
-  return d.toLocaleDateString("de-CH", { day:"2-digit", month:"2-digit", year:"numeric" }); // 26.12.2025
+  return d.toLocaleDateString("de-CH", { day:"2-digit", month:"2-digit", year:"numeric" });
 }
 function minutesToTime(mins){
   const hh = String(Math.floor(mins/60)).padStart(2,"0");
@@ -1112,26 +971,24 @@ function weekdayNames(){
     : ["Mo","Di","Mi","Do","Fr","Sa","So"];
 }
 
-/* Find best start slot for favorite time (15-min resolution) */
+/* favorite start */
 function findBestSlotForTime(daySlots, dateISO, favStartHHMM){
   if(!Array.isArray(daySlots) || daySlots.length===0) return null;
   const targetMins = timeToMinutes(favStartHHMM);
 
-  // exact match first
-  const exact = daySlots.find(s => s.start && s.start.startsWith(dateISO) && s.start.slice(11,16)===favStartHHMM);
-  if(exact && exact.level !== "block" && exact.level !== "voll") return exact.start;
+  // exact
+  const exact = daySlots.find(s => s.start && s.start.startsWith(dateISO) && s.start.slice(11,16)===favStartHHMM && s.level!=="block" && (s.count||0)<3);
+  if(exact) return exact.start;
 
-  // else: choose closest >= favorite time
   for(const s of daySlots){
     if(!s.start || !s.start.startsWith(dateISO)) continue;
     const mm = timeToMinutes(s.start.slice(11,16));
     if(mm < targetMins) continue;
-    if(s.level === "block" || s.level === "voll") continue;
+    if(s.level === "block") continue;
+    if((s.count||0) >= 3) continue;
     return s.start;
   }
-
-  // fallback: first allowed
-  const f = daySlots.find(s => s.level !== "block" && s.level !== "voll");
+  const f = daySlots.find(s => s.level !== "block" && (s.count||0)<3);
   return f ? f.start : null;
 }
 
@@ -1254,7 +1111,7 @@ function fillFavoriteSelectors(){
 }
 
 /* ===========================
-   Boot after login
+   Boot
 =========================== */
 async function bootAfterLogin(){
   try{
@@ -1265,13 +1122,12 @@ async function bootAfterLogin(){
     setText($("#menuRole"), state.user.role || (state.user.isAdmin ? "admin" : "user"));
     show($("#menuRoleBadge"), !!state.user.isAdmin);
     $("#menuRoleBadge") && ($("#menuRoleBadge").textContent = "admin");
-
     show($("#adminModeRow"), !!state.user.isAdmin);
 
     applyTheme();
     applyLang();
-
     fillFavoriteSelectors();
+
     await initOneSignalMaybe();
 
     await Promise.all([
@@ -1286,7 +1142,7 @@ async function bootAfterLogin(){
 }
 
 /* ===========================
-   OneSignal (optional)
+   OneSignal
 =========================== */
 async function initOneSignalMaybe(){
   setText($("#pushText"), state.pushEnabled ? "on" : "off");
@@ -1314,16 +1170,13 @@ async function setPushEnabled(v){
   try{
     const OneSignal = window.OneSignal;
     if(!OneSignal) return;
-    if(state.pushEnabled){
-      await OneSignal.login(state.user.uid);
-    }else{
-      await OneSignal.logout();
-    }
+    if(state.pushEnabled) await OneSignal.login(state.user.uid);
+    else await OneSignal.logout();
   }catch(_){}
 }
 
 /* ===========================
-   Calendar data loaders
+   Loaders
 =========================== */
 async function refreshCalendar(){
   if(state.view === "month") return refreshMonth();
@@ -1357,9 +1210,6 @@ async function refreshDay(){
 
 /* ===========================
    Month render
-   - header: weekdays fixed
-   - left: KW fixed per row
-   - day meta: "Mo 25.12 · KW 52" (no ISO)
 =========================== */
 function renderMonth(){
   const cont = $("#calMonth");
@@ -1370,12 +1220,11 @@ function renderMonth(){
   const m = state.anchor.getMonth();
   const first = new Date(y, m, 1);
 
-  // Monday-start grid
   const startDow = (first.getDay()+6)%7; // Mon=0
   const gridStart = addDays(first, -startDow);
 
-  // header row: KW + weekdays
   const wds = weekdayNames();
+
   const kwHead = document.createElement("div");
   kwHead.className = "monthHeadCell";
   kwHead.textContent = "KW";
@@ -1388,10 +1237,8 @@ function renderMonth(){
     cont.appendChild(h);
   }
 
-  const today = new Date();
-  today.setHours(0,0,0,0);
+  const today = new Date(); today.setHours(0,0,0,0);
 
-  // 6 weeks
   for(let week=0; week<6; week++){
     const rowStart = addDays(gridStart, week*7);
     const kw = isoWeek(rowStart);
@@ -1405,27 +1252,25 @@ function renderMonth(){
       const d = addDays(rowStart, i);
       const inMonth = d.getMonth()===m;
       const isPast = d < today;
-
       const dd = String(d.getDate()).padStart(2,"0");
-      const mm = String(d.getMonth()+1).padStart(2,"0");
+      const ddmm = d.toLocaleDateString("de-CH", { day:"2-digit", month:"2-digit" });
 
       const card = document.createElement("div");
       card.className = "dayCard";
       if(!inMonth) card.classList.add("dim");
-      if(isPast) card.classList.add("past");
+      else if(isPast) card.classList.add("past");
 
-      // meta: "Mo 25.12 · KW 52"
-      const meta = `${wds[i]} ${dd}.${mm} · KW ${kw}`;
-
+      // "Mo 25.12 · KW 52" (KW je aj vľavo fixne)
       card.innerHTML = `
         <div class="d">${dd}</div>
-        <div class="meta">${escapeHtml(meta)}</div>
+        <div class="meta">
+          <div><strong>${escapeHtml(wds[i])}</strong> ${escapeHtml(ddmm)}</div>
+          <div>KW ${escapeHtml(String(kw))}</div>
+        </div>
       `;
 
-      // click:
-      // - days outside month: allow open (optional), but keep dim; you wanted future month also bledy, not forbidden
-      // - past: disabled
       card.onclick = ()=>{
+        if(!inMonth) return;
         if(isPast) return;
         state.anchor = new Date(d);
         setView("day");
@@ -1438,10 +1283,27 @@ function renderMonth(){
 }
 
 /* ===========================
-   Week render
-   - hour blocks (4*15min)
-   - clickable opens booking modal directly (no switching to day)
-   - "block" not clickable
+   Hour status helper (frei/teilweise/voll/block)
+   - uses slot.count if present (0..3)
+=========================== */
+function slotCount(s){
+  if(!s) return 0;
+  if(typeof s.count === "number") return s.count;
+  // fallback from level (ak backend count neposiela)
+  if(s.level === "voll") return 3;
+  if(s.level === "teilweise") return 1;
+  return 0;
+}
+function hourStatus(chunk){
+  if(chunk.some(s => s.level === "block")) return { status:"block", count:999 };
+  const c = chunk.reduce((sum,s)=> sum + slotCount(s), 0);
+  if(c >= 3) return { status:"voll", count:c };
+  if(c >= 1) return { status:"teilweise", count:c };
+  return { status:"frei", count:0 };
+}
+
+/* ===========================
+   Week render (click opens booking modal)
 =========================== */
 function renderWeek(){
   const cont = $("#calWeek");
@@ -1450,20 +1312,20 @@ function renderWeek(){
 
   const dayNames = weekdayNames();
 
-  (state.weekDays || []).forEach((dayAvail, idx)=>{
+  state.weekDays.forEach((dayAvail, idx)=>{
     const date = dayAvail?.date || "—";
     const col = document.createElement("div");
     col.className = "weekCol";
 
     const ddmm = (()=>{
       const d = new Date(date+"T00:00:00");
-      if(isNaN(d.getTime())) return date.slice(5);
+      if(isNaN(d.getTime())) return date;
       return d.toLocaleDateString("de-CH", { day:"2-digit", month:"2-digit" });
     })();
 
     col.innerHTML = `
       <div class="weekColHead">
-        <span>${dayNames[idx] || ""}</span>
+        <span>${dayNames[idx]}</span>
         <span style="font-weight:900; color: var(--text)">${escapeHtml(ddmm)}</span>
       </div>
       <div class="weekSlots"></div>
@@ -1472,39 +1334,32 @@ function renderWeek(){
     const slotsWrap = col.querySelector(".weekSlots");
     const slots15 = (dayAvail?.slots || []);
 
-    // group into hours (4 slots)
     for(let i=0;i<slots15.length;i+=4){
       const chunk = slots15.slice(i, i+4);
       if(chunk.length < 4) break;
 
-      // Hour is "free" only if ALL 4 are free (not block/voll/teilweise)
-      const hasBlock = chunk.some(s => s.level === "block");
-      const hasVoll  = chunk.some(s => s.level === "voll");
-      const hasPart  = chunk.some(s => s.level === "teilweise");
-
-      let level = "free";
-      if(hasBlock) level = "block";
-      else if(hasVoll) level = "voll";
-      else if(hasPart) level = "teilweise";
-
       const startISO = chunk[0].start;
       const endISO   = chunk[3].end;
 
-      const row = document.createElement("div");
-      row.className = "slotRow " + (level==="free" || level==="teilweise" ? "free" : "busy");
+      const hs = hourStatus(chunk);
 
+      const row = document.createElement("div");
       const t1 = startISO.slice(11,16);
       const t2 = endISO.slice(11,16);
 
-      // right label (minimal)
-      const right = (level==="block") ? "block" : (level==="teilweise" ? "teilweise" : "");
+      let cls = "slotRow";
+      let right = "";
+      if(hs.status==="block"){ cls += " busy"; right = "block"; }
+      else if(hs.status==="voll"){ cls += " busy"; right = ""; }
+      else if(hs.status==="teilweise"){ cls += " part"; right = "teilweise"; }
+      else { cls += " free"; right = ""; }
 
+      row.className = cls;
       row.innerHTML = `<span class="time">${t1}–${t2}</span><span>${right}</span>`;
 
-      if(level !== "block" && level !== "voll"){
+      if(hs.status !== "block" && hs.status !== "voll"){
         row.onclick = async ()=>{
           try{
-            // fetch day slots (15-min) for precise modal end times
             const res = await api("availability_day", { date });
             state.daySlots = res.slots || [];
             openBookingFromSlot(startISO);
@@ -1522,9 +1377,7 @@ function renderWeek(){
 }
 
 /* ===========================
-   Day render
-   - hour blocks (4*15min)
-   - free clickable; teilweise clickable; block/voll disabled
+   Day render (hour blocks)
 =========================== */
 function renderDay(){
   const cont = $("#calDay");
@@ -1537,28 +1390,26 @@ function renderDay(){
     const chunk = slots.slice(i, i+4);
     if(chunk.length < 4) break;
 
-    const hasBlock = chunk.some(s => s.level === "block");
-    const hasVoll  = chunk.some(s => s.level === "voll");
-    const hasPart  = chunk.some(s => s.level === "teilweise");
-
-    let level = "free";
-    if(hasBlock) level = "block";
-    else if(hasVoll) level = "voll";
-    else if(hasPart) level = "teilweise";
-
     const startISO = chunk[0].start;
     const endISO   = chunk[3].end;
 
-    const row = document.createElement("div");
-    row.className = "slotRow " + (level==="free" || level==="teilweise" ? "free" : "busy");
+    const hs = hourStatus(chunk);
 
+    const row = document.createElement("div");
     const t1 = startISO.slice(11,16);
     const t2 = endISO.slice(11,16);
 
-    const right = (level==="block") ? "block" : (level==="teilweise" ? "teilweise" : "");
+    let cls = "slotRow";
+    let right = "";
+    if(hs.status==="block"){ cls += " busy"; right = "block"; }
+    else if(hs.status==="voll"){ cls += " busy"; right = ""; }
+    else if(hs.status==="teilweise"){ cls += " part"; right = "teilweise"; }
+    else { cls += " free"; right = ""; }
+
+    row.className = cls;
     row.innerHTML = `<span class="time">${t1}–${t2}</span><span>${right}</span>`;
 
-    if(level !== "block" && level !== "voll"){
+    if(hs.status !== "block" && hs.status !== "voll"){
       row.onclick = ()=> openBookingFromSlot(startISO);
     }
 
@@ -1585,8 +1436,6 @@ function setView(v){
 /* ===========================
    Reservations
 =========================== */
-function parseISO(s){ const d = new Date(s); return isNaN(d.getTime()) ? null : d; }
-
 async function refreshMyReservations(){
   const from = new Date().toISOString();
   const to = new Date(Date.now() + 60*24*60*60*1000).toISOString();
@@ -1735,7 +1584,7 @@ function renderReservations(){
 }
 
 /* ===========================
-   Cancel (double click safe)
+   Cancel
 =========================== */
 async function cancelById(eventId){
   if(state.loadingCancel) return;
@@ -1752,9 +1601,7 @@ async function cancelById(eventId){
 }
 
 /* ===========================
-   Booking modal logic
-   - start = hour block click
-   - end options = consecutive 15-min until block/voll
+   Booking modal (ROBUST)
 =========================== */
 function openBookingFromSlot(startISO, preferredEndISO = null){
   state.selectedStartISO = startISO;
@@ -1766,28 +1613,26 @@ function openBookingFromSlot(startISO, preferredEndISO = null){
 
   const daySlots = state.daySlots || [];
 
-  // ✅ robustný matching: najprv presný string, potom fallback na YYYY-MM-DDTHH:MM
+  // ✅ robustný matching: presne, potom YYYY-MM-DDTHH:MM
   let idx = daySlots.findIndex(s => s?.start === startISO);
   if (idx < 0){
-    const key = startISO.slice(0,16); // YYYY-MM-DDTHH:MM
+    const key = startISO.slice(0,16);
     idx = daySlots.findIndex(s => (s?.start || "").slice(0,16) === key);
   }
 
   const options = [];
-
   if (idx >= 0){
-    // build end list from next quarters until block/voll
     for (let i = idx + 1; i < daySlots.length; i++){
       const lev = daySlots[i]?.level;
-      if (lev === "block" || lev === "voll") break;
-
+      const cnt = slotCount(daySlots[i]);
+      if (lev === "block") break;
+      if (cnt >= 3) break; // voll
       if (daySlots[i]?.end) options.push(daySlots[i].end);
     }
   } else {
-    // 🔍 debug: ukáž čo prišlo z backendu (pomôže hneď vidieť format)
     console.warn("openBookingFromSlot: start not found in daySlots", {
       startISO,
-      startKey: startISO.slice(0,16),
+      key: startISO.slice(0,16),
       sampleFirst: daySlots[0]?.start,
       sampleLast: daySlots[daySlots.length-1]?.start,
       count: daySlots.length
@@ -1809,9 +1654,7 @@ function openBookingFromSlot(startISO, preferredEndISO = null){
 
   if (options.length === 0){
     $("#bookConfirm").disabled = true;
-
-    // 👇 toto ti dá jasnú hlášku, nie "ticho"
-    toast("err", "Pre tento start nie je mozne vybrat 'Bis'. Skus iny start (alebo backend vracia iny format casu).");
+    toast("err", "Pre tento start nie je mozne vybrat 'Bis'. Skus iny start.");
   } else {
     $("#bookConfirm").disabled = false;
 
@@ -1830,20 +1673,43 @@ function openBookingFromSlot(startISO, preferredEndISO = null){
   show($("#modalOverlay"), true);
 }
 
+async function confirmBooking(){
+  const startISO = state.selectedStartISO;
+  const endISO = $("#bookTo")?.value;
+  const title = ($("#bookTitle")?.value || "Fitnessraum Booking").trim();
+  const note = ($("#bookNote")?.value || "").trim();
+
+  if(!startISO || !endISO){
+    toast("err", "Chyba: chyba start alebo end cas.");
+    return;
+  }
+
+  $("#bookConfirm").disabled = true;
+
+  try{
+    await api("reserve_slot", { start: startISO, end: endISO, title, note });
+    toast("ok", t("toast_book_ok"));
+    show($("#modalOverlay"), false);
+    await Promise.all([ refreshCalendar(), refreshMyReservations() ]);
+  }catch(e){
+    const err = (e && (e.error || e.message)) ? (e.error || e.message) : "unknown_error";
+    console.error("reserve_slot failed:", e);
+    toast("err", `Buchung fehlgeschlagen: ${err}`);
+  }finally{
+    $("#bookConfirm").disabled = false;
+  }
+}
+
 /* ===========================
-   Heute buchen (favorites)
+   Heute buchen
 =========================== */
 async function openBookingToday(){
   state.anchor = new Date();
   setView("day");
   scrollToCalendar();
 
-  try{
-    await refreshDay();
-  }catch(e){
-    toast("err", t("toast_fetch_fail"));
-    return;
-  }
+  try{ await refreshDay(); }
+  catch(e){ toast("err", t("toast_fetch_fail")); return; }
 
   const dateISO = fmtDayLabel(state.anchor);
   const startISO = findBestSlotForTime(state.daySlots || [], dateISO, state.favStart);
@@ -1865,7 +1731,7 @@ function startHeroTimer(){
 }
 
 /* ===========================
-   Menu actions
+   Menu
 =========================== */
 function openMenu(v=true){ $("#menuOverlay").style.display = v ? "flex" : "none"; }
 
@@ -1922,13 +1788,8 @@ $("#todayBtn")?.addEventListener("click", ()=>{
   scrollToCalendar();
 });
 
-$("#bookBtn")?.addEventListener("click", async ()=>{
-  await openBookingToday();
-});
-
-$("#heroBookToday")?.addEventListener("click", async ()=>{
-  await openBookingToday();
-});
+$("#bookBtn")?.addEventListener("click", openBookingToday);
+$("#heroBookToday")?.addEventListener("click", openBookingToday);
 
 $("#heroOpenDay")?.addEventListener("click", async ()=>{
   state.anchor = new Date();
@@ -1944,18 +1805,17 @@ $("#heroCancel")?.addEventListener("click", ()=>{
 
 $("#modalClose")?.addEventListener("click", ()=> show($("#modalOverlay"), false));
 $("#modalOverlay")?.addEventListener("click", (e)=>{ if(e.target === $("#modalOverlay")) show($("#modalOverlay"), false); });
+
+/* !!! priamo bind na button (žiadny inline) !!! */
 $("#bookConfirm")?.addEventListener("click", confirmBooking);
 
 if(window.matchMedia){
-  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ()=> {
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ()=>{
     if(state.theme === "auto") applyTheme();
   });
 }
 
-/* IMPORTANT:
-   - aby sa už NIKDY nestalo "confirmBooking is not defined",
-     exportneme funkciu globálne (aj keby niekde ostal inline onclick).
-*/
+/* EXTRA SAFETY: aby nikdy nepadlo "confirmBooking not defined" ani pri starom inline */
 window.confirmBooking = confirmBooking;
 window.openBookingFromSlot = openBookingFromSlot;
 
