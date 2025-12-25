@@ -741,6 +741,22 @@
         </div>
       </div>
 
+            <div class="row">
+        <div>
+          <div class="kv">Beliebte Zeit</div>
+          <div class="vv" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <div style="display:flex; gap:8px; align-items:center;">
+              <span style="color:var(--muted); font-weight:800; font-size:12px;">Start</span>
+              <select id="favStartSel" style="padding:9px 10px; border-radius:999px; border:1px solid var(--line); background:var(--chip); color:var(--text); font-weight:900;"></select>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <span style="color:var(--muted); font-weight:800; font-size:12px;">Länge</span>
+              <select id="favDurSel" style="padding:9px 10px; border-radius:999px; border:1px solid var(--line); background:var(--chip); color:var(--text); font-weight:900;"></select>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="row">
         <div>
           <div class="kv">Push</div>
@@ -879,6 +895,9 @@ const state = {
   lang: localStorage.getItem("fr_lang") || "de",
   theme: localStorage.getItem("fr_theme") || "auto",
   pushEnabled: (localStorage.getItem("fr_push") || "0") === "1",
+
+    favStart: localStorage.getItem("fr_fav_start") || "18:00", // default
+  favDur: parseInt(localStorage.getItem("fr_fav_dur") || "60", 10), // minutes
 };
 
 const I18N = {
@@ -1220,6 +1239,40 @@ function getISOWeek(d){
   return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
 }
 
+function pad2(n){ return String(n).padStart(2,"0"); }
+
+function timeToMinutes(t){ // "HH:MM" -> minutes
+  const [h,m] = String(t).split(":").map(x=>parseInt(x,10));
+  return (h*60)+(m||0);
+}
+
+function minutesToTime(mins){
+  const h = Math.floor(mins/60);
+  const m = mins%60;
+  return `${pad2(h)}:${pad2(m)}`;
+}
+
+function addMinutesISO(iso, mins){
+  const d = new Date(iso);
+  d.setMinutes(d.getMinutes() + mins);
+  return d.toISOString();
+}
+
+// najbližší slot v deňSlots podľa času "HH:MM" (preferuje >=)
+function findBestSlotForTime(daySlots, dateISO, hhmm){
+  const targetMin = timeToMinutes(hhmm);
+  const candidates = daySlots
+    .filter(s => (s.status === "free") && s.start.slice(0,10) === dateISO);
+
+  // 1) nájdi prvý free slot s časom >= target
+  let best = candidates.find(s => timeToMinutes(s.start.slice(11,16)) >= targetMin);
+  if(best) return best.start;
+
+  // 2) fallback: prvý free slot v dni
+  best = candidates[0];
+  return best ? best.start : null;
+}
+  
 /* ===========================
    Scroll helper
 =========================== */
@@ -1663,28 +1716,31 @@ async function cancelById(eventId){
 /* ===========================
    Booking modal
 =========================== */
-function openBookingFromSlot(startISO){
+function openBookingFromSlot(startISO, preferredEndISO = null){
   state.selectedStartISO = startISO;
   state.selectedDayISO = startISO.slice(0,10);
 
+  // nastav "From"
   $("#bookFrom").value = startISO.slice(11,16);
   $("#bookTitle").value = "Fitnessraum Booking";
   $("#bookNote").value = "";
 
-  // "to" options: consecutive slots where status == free
   const daySlots = state.daySlots || [];
   const idx = daySlots.findIndex(s => s.start === startISO);
 
+  // nájdi všetky po sebe idúce sloty, ktoré ešte NIE SÚ voll
   const options = [];
   if(idx >= 0){
-    for(let i=idx+1; i<daySlots.length; i++){
-      if(daySlots[i].status !== "free") break;
+    for(let i = idx + 1; i < daySlots.length; i++){
+      // ak je block alebo voll (count >= 3), stop
+      if(daySlots[i].count >= 3 || daySlots[i].level === "block") break;
       options.push(daySlots[i].end);
     }
   }
 
   const sel = $("#bookTo");
   sel.innerHTML = "";
+
   options.forEach(endISO=>{
     const opt = document.createElement("option");
     opt.value = endISO;
@@ -1692,30 +1748,33 @@ function openBookingFromSlot(startISO){
     sel.appendChild(opt);
   });
 
-  setText($("#bookingInfo"), `${state.selectedDayISO} · ${t("from")} ${startISO.slice(11,16)} (${t("to")} wählen)`);
+  // 🔹 AUTOMATICKÝ VÝBER KONCA
+  if(options.length > 0){
+    let pick = null;
+
+    // 1️⃣ ak prišiel preferred end (napr. z fav času)
+    if(preferredEndISO && options.includes(preferredEndISO)){
+      pick = preferredEndISO;
+    } 
+    // 2️⃣ inak skús favDur (napr. 60 min)
+    else {
+      const wantEnd = addMinutesISO(startISO, state.favDur);
+      const wantMs = new Date(wantEnd).getTime();
+
+      const leq = options.filter(x => new Date(x).getTime() <= wantMs);
+      pick = leq.length ? leq[leq.length - 1] : options[0];
+    }
+
+    sel.value = pick;
+  }
+
+  setText(
+    $("#bookingInfo"),
+    `${state.selectedDayISO} · ${t("from")} ${startISO.slice(11,16)}`
+  );
 
   $("#bookConfirm").disabled = options.length === 0;
   show($("#modalOverlay"), true);
-}
-
-async function confirmBooking(){
-  const startISO = state.selectedStartISO;
-  const endISO = $("#bookTo").value;
-  const title = ($("#bookTitle").value || "Fitnessraum Booking").trim();
-  const note = ($("#bookNote").value || "").trim();
-  if(!startISO || !endISO) return;
-
-  $("#bookConfirm").disabled = true;
-  try{
-    await api("reserve_slot", { start: startISO, end: endISO, title, note });
-    toast("ok", t("toast_book_ok"));
-    show($("#modalOverlay"), false);
-    await Promise.all([ refreshCalendar(), refreshMyReservations() ]);
-  }catch(e){
-    toast("err", t("toast_book_fail"));
-  }finally{
-    $("#bookConfirm").disabled = false;
-  }
 }
 
 /* ===========================
@@ -1732,18 +1791,38 @@ function startHeroTimer(){
 =========================== */
 function openMenu(v=true){ $("#menuOverlay").style.display = v ? "flex" : "none"; }
 
-function openBookingToday(){
+async function openBookingToday(){
+  // 1️⃣ nastav dnešný deň
   state.anchor = new Date();
   setView("day");
 
-  // wait a tick for data refresh, then pick first clickable hour
-  setTimeout(()=>{
-    const hours = groupSlotsToHours(state.daySlots || []);
-    const first = hours.find(h=>h.clickable);
-    if(first) openBookingFromSlot(first.start);
-    else toast("err", t("toast_book_fail"));
-  }, 0);
+  // 2️⃣ počkaj, kým sa natiahnu sloty dňa
+  try{
+    await refreshDay();
+  }catch(e){
+    console.error(e);
+    toast("err", t("toast_fetch_fail"));
+    return;
+  }
+
+  const dateISO = fmtDayLabel(state.anchor);
+
+  // 3️⃣ nájdi najlepší slot podľa obľúbeného času
+  const startISO = findBestSlotForTime(
+    state.daySlots || [],
+    dateISO,
+    state.favStart
+  );
+
+  if(!startISO){
+    toast("err", t("toast_book_fail"));
+    return;
+  }
+
+  // 4️⃣ otvor booking modal s prednastaveným časom
+  openBookingFromSlot(startISO);
 }
+
 
 /* ===========================
    Wire events
@@ -1798,17 +1877,17 @@ $("#todayBtn")?.addEventListener("click", ()=>{
   scrollToCalendar();
 });
 
-$("#bookBtn")?.addEventListener("click", ()=>{
-  state.anchor = new Date();
-  setView("day");
-  openBookingToday();
+$("#bookBtn")?.addEventListener("click", async ()=>{
   scrollToCalendar();
+  await openBookingToday();
 });
 
-$("#heroBookToday")?.addEventListener("click", ()=>{
-  openBookingToday();
+
+$("#heroBookToday")?.addEventListener("click", async ()=>{
   scrollToCalendar();
+  await openBookingToday();
 });
+
 $("#heroOpenDay")?.addEventListener("click", ()=>{
   state.anchor = new Date();
   setView("day");
@@ -1831,6 +1910,47 @@ if(window.matchMedia){
 
 applyTheme();
 applyLang();
+  function fillFavoriteSelectors(){
+  const sSel = $("#favStartSel");
+  const dSel = $("#favDurSel");
+  if(!sSel || !dSel) return;
+
+  // Start times: 05:00 .. 22:00 step 15 (aby koniec mohol byť do 23:00)
+  sSel.innerHTML = "";
+  for(let mins = 5*60; mins <= 22*60; mins += 15){
+    const hhmm = minutesToTime(mins);
+    const opt = document.createElement("option");
+    opt.value = hhmm;
+    opt.textContent = hhmm;
+    sSel.appendChild(opt);
+  }
+
+  // Durations: 30..180 step 15
+  dSel.innerHTML = "";
+  for(let dur = 30; dur <= 180; dur += 15){
+    const opt = document.createElement("option");
+    opt.value = String(dur);
+    opt.textContent = `${dur} min`;
+    dSel.appendChild(opt);
+  }
+
+  // set current
+  sSel.value = state.favStart;
+  dSel.value = String(state.favDur);
+
+  sSel.onchange = ()=>{
+    state.favStart = sSel.value;
+    localStorage.setItem("fr_fav_start", state.favStart);
+  };
+  dSel.onchange = ()=>{
+    state.favDur = parseInt(dSel.value, 10);
+    localStorage.setItem("fr_fav_dur", String(state.favDur));
+  };
+}
+
+// zavolaj raz po applyLang/applyTheme (ideálne hneď po bootAfterLogin -> po render menu)
+fillFavoriteSelectors();
+
 </script>
 </body>
 </html>
