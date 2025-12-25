@@ -363,24 +363,62 @@
     }
 
     // ---------- Backend gate ----------
-    async function backendMe_(user) {
-      const idToken = await user.getIdToken(true);
+async function backendMe_(user) {
+  const idToken = await user.getIdToken(true);
 
-      const resp = await fetch(BACKEND_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "me", idToken })
-      });
+  const resp = await fetch(BACKEND_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "me", idToken })
+  });
 
-      return await resp.json();
-    }
+  return await resp.json();
+}
+
+// ✅ SEM PRIDAJ (NOVÉ) ----------
+async function fetchCalendar_(range = "today", from = null, to = null) {
+  const user = auth.currentUser;
+  if (!user) throw new Error("not_authenticated");
+
+  const idToken = await user.getIdToken(true);
+
+  const resp = await fetch(BACKEND_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action: "calendar",
+      idToken,
+      range,
+      from,
+      to
+    })
+  });
+
+  return await resp.json();
+}
+
+// alebo (ak robíme sloty)
+async function fetchSlotsToday_() {
+  const user = auth.currentUser;
+  if (!user) throw new Error("not_authenticated");
+
+  const idToken = await user.getIdToken(true);
+
+  const r = await fetch(BACKEND_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "slots", idToken })
+  });
+
+  return await r.json();
+}
 
     // ---------- Bindings ----------
     document.getElementById("langDe").addEventListener("click", () => setLang("de"));
     document.getElementById("langEn").addEventListener("click", () => setLang("en"));
     document.getElementById("langDe2").addEventListener("click", () => setLang("de"));
     document.getElementById("langEn2").addEventListener("click", () => setLang("en"));
-
+    
     els.sendBtn.addEventListener("click", async () => {
       const email = (els.email.value || "").trim();
       if (!email.includes("@")) return showMsg(t("msg.invalidEmail"), "err");
@@ -408,9 +446,17 @@
       showMsg(t("msg.loggedOut"), "");
     });
 
-    document.getElementById("openCalendarBtn").addEventListener("click", () => {
-      showAppMsg(t("app.calendarSoon"), "ok");
-    });
+    document.getElementById("openCalendarBtn").addEventListener("click", async () => {
+  try {
+    const data = await fetchCalendar_("today");
+    console.log("Calendar events:", data);
+    showAppMsg(`Events today: ${data.events?.length ?? 0}`, "ok");
+  } catch (e) {
+    console.error(e);
+    showAppMsg("Calendar load failed", "err");
+  }
+});
+
 
     // ---------- Boot ----------
     applyI18n();
