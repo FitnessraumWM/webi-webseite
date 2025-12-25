@@ -90,6 +90,8 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyqMOFEywa32j-ALJ9OzWpfZI2vftY9hw9Do4Oc9DZGNuApSr55V2ywUxozqn5lfvRX/exec";
+
     // Analytics (optional)
     let analytics = null;
     try { analytics = getAnalytics(app); } catch (e) { /* ignore */ }
@@ -301,16 +303,51 @@
 
     (async () => {
       const handled = await completeSignInIfLink();
+async function backendMe_(user) {
+  const idToken = await user.getIdToken(true);
 
-      onAuthStateChanged(auth, (user) => {
-        els.form.style.display = "block";
-        if (user) {
-          setPillKey("signedIn");
-          els.email.value = user.email || "";
-        } else if (!handled) {
-          setPillKey("ready");
-        }
-      });
+  const resp = await fetch(BACKEND_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "me", idToken })
+  });
+
+  return await resp.json();
+}
+
+      onAuthStateChanged(auth, async (user) => {
+  els.form.style.display = "block";
+
+  if (!user) {
+    setPillKey("ready");
+    return;
+  }
+
+  setPillKey("checking");
+  clearMsg();
+
+  try {
+    const me = await backendMe_(user);
+
+    if (!me.ok) throw new Error(me.error || "backend_error");
+
+    if (!me.allowed) {
+      showMsg("Kein Zugriff / Access denied", "err");
+      await signOut(auth);
+      setPillKey("signedOut");
+      return;
+    }
+
+    setPillKey("signedIn");
+    showMsg(`OK: ${me.email} (${me.role})`, "ok");
+
+    // tu neskôr zobrazíme app UI
+  } catch (e) {
+    console.error(e);
+    showMsg("Backend-Check fehlgeschlagen. Siehe Konsole.", "err");
+    setPillKey("error");
+  }
+});
     })();
   </script>
 </body>
