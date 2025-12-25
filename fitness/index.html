@@ -1190,13 +1190,21 @@ function renderHero(resList){
 }
 
 async function cancelById(eventId){
+  if(state.loadingCancel) return;
+  state.loadingCancel = true;
+
   try{
     await api("cancel_reservation", { eventId, all: state.adminAll });
-    toast("ok", t("toast_cancel_ok"));
-    await refreshCalendar();
-    await refreshMyReservations();
+    toast("ok", state.adminAll ? t("toast_cancel_admin_ok") : t("toast_cancel_ok"));
+
+    await Promise.all([
+      refreshCalendar(),
+      refreshMyReservations()
+    ]);
   }catch(e){
     toast("err", t("err_cancel_fail"));
+  }finally{
+    state.loadingCancel = false;
   }
 }
 
