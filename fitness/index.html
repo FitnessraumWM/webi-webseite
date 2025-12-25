@@ -12,8 +12,8 @@
     h1 { font-size:20px; margin:0 0 6px; }
     .sub { color:#a9b6c7; font-size:13px; margin:0 0 16px; line-height:1.4; }
     label { display:block; font-size:12px; color:#a9b6c7; margin: 12px 0 6px; }
-    input { width:100%; padding:12px 12px; border-radius:12px; border:1px solid #2a3b52; background:#0e1520; color:#e9eef7; outline:none; }
-    input:focus { border-color:#4a83ff; box-shadow:0 0 0 4px rgba(74,131,255,.18); }
+    input, select { width:100%; padding:12px 12px; border-radius:12px; border:1px solid #2a3b52; background:#0e1520; color:#e9eef7; outline:none; }
+    input:focus, select:focus { border-color:#4a83ff; box-shadow:0 0 0 4px rgba(74,131,255,.18); }
     button { padding:12px; border-radius:12px; border:0; background:#4a83ff; color:#08111f; font-weight:700; cursor:pointer; }
     button:disabled { opacity:.55; cursor:not-allowed; }
     .row { display:flex; gap:10px; margin-top:10px; flex-wrap:wrap; }
@@ -27,17 +27,14 @@
     .lang button { width:auto; margin:0; padding:6px 10px; border-radius:999px; background:transparent; color:#a9b6c7; border:1px solid #2a3b52; font-weight:700; }
     .lang button.active { background:#0e1520; color:#e9eef7; border-color:#4a83ff55; }
 
-    /* simple layout */
     .grid2 { display:grid; grid-template-columns: 420px 1fr; gap:16px; align-items:start; }
     @media (max-width: 920px) { .grid2 { grid-template-columns: 1fr; } }
 
-    /* calendar containers */
     .calWrap { margin-top:14px; display:none; }
     .calTop { display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; align-items:center; }
     .calTop .spacer { flex:1; }
     .calBox { border:1px solid #2a3b52; background:#0e1520; border-radius:14px; padding:12px; }
 
-    /* buttons in grids */
     .cellBtn {
       text-align:left; padding:10px; border-radius:12px;
       border:1px solid #2a3b52; background:#0e1520;
@@ -62,7 +59,7 @@
     .modal h3 { margin:0 0 6px; font-size:16px; }
     .modal p { margin:0 0 10px; color:#a9b6c7; font-size:13px; line-height:1.35; white-space:pre-line; }
     .modal textarea {
-      width:100%; min-height:80px; resize:vertical;
+      width:100%; min-height:70px; resize:vertical;
       padding:10px 12px; border-radius:12px; border:1px solid #2a3b52;
       background:#0e1520; color:#e9eef7; outline:none;
     }
@@ -150,6 +147,11 @@
       <h3 id="mTitle">Reservierung</h3>
       <p id="mText"></p>
 
+      <label id="mEndLabel" style="margin-top:10px; display:block; font-size:12px; color:#a9b6c7;">
+        Bis
+      </label>
+      <select id="mEndSelect"></select>
+
       <label id="mNoteLabel" style="margin-top:10px; display:block; font-size:12px; color:#a9b6c7;">
         Notiz (optional)
       </label>
@@ -175,7 +177,6 @@
     const START_HOUR = 5;
     const END_HOUR = 23;
 
-    // Safety net (frontend abort)
     const BACKEND_TIMEOUT_MS = 60_000;
 
     // =========================
@@ -209,7 +210,7 @@
 
     // =========================
     // 3) i18n (DE/EN)
-    //    - DE: umlauts ok (ä/ö/ü)
+    //    - DE: ä/ö/ü ok
     //    - ß -> ss (user preference)
     // =========================
     const LS_LANG_KEY = "webi_lang";
@@ -260,14 +261,15 @@
         },
         modal: {
           title: "Reservierung",
+          endLabel: "Bis",
           noteLabel: "Notiz (optional)",
           confirm: "Buchen",
           cancel: "Abbrechen",
-          text: (from,to)=>`Willst du diesen Slot buchen?\n${from} – ${to}`,
+          text: (from)=>`Start: ${from}\nWähle Ende (bis) und buche.`,
           errMap: {
             limit_parallel_3: "Maximal 3 parallele Reservierungen in diesem Zeitraum.",
             limit_user_2_per_day: "Maximal 2 Reservierungen pro Tag für deinen Account.",
-            access_denied: "Zugriff nicht erlaubt.",
+            access_denied: "Zugriff nicht erlaubt."
           }
         }
       },
@@ -311,18 +313,19 @@
           month: "Month",
           week: "Week",
           day: "Day",
-          hint: "Month: click a day → day slots. Week: click a cell → day. Day: click free → book."
+          hint: "Month: click a day → day slots. Week: click a cell → day. Day: click free → booking."
         },
         modal: {
           title: "Reservation",
+          endLabel: "Until",
           noteLabel: "Note (optional)",
           confirm: "Book",
           cancel: "Cancel",
-          text: (from,to)=>`Book this slot?\n${from} – ${to}`,
+          text: (from)=>`Start: ${from}\nChoose end time and book.`,
           errMap: {
             limit_parallel_3: "Max 3 parallel bookings in that time window.",
             limit_user_2_per_day: "Max 2 bookings per day for your account.",
-            access_denied: "Access denied.",
+            access_denied: "Access denied."
           }
         }
       }
@@ -356,7 +359,6 @@
       logoutBtn: document.getElementById("logoutBtn"),
       openCalendarBtn: document.getElementById("openCalendarBtn"),
 
-      loginBlock: document.getElementById("loginBlock"),
       appBlock: document.getElementById("appBlock"),
       appLocked: document.getElementById("appLocked"),
 
@@ -366,7 +368,6 @@
       langDe: document.getElementById("langDe"),
       langEn: document.getElementById("langEn"),
 
-      // calendar UI
       calBlock: document.getElementById("calBlock"),
       tabMonth: document.getElementById("tabMonth"),
       tabWeek: document.getElementById("tabWeek"),
@@ -381,6 +382,8 @@
       modalBack: document.getElementById("modalBack"),
       mTitle: document.getElementById("mTitle"),
       mText: document.getElementById("mText"),
+      mEndLabel: document.getElementById("mEndLabel"),
+      mEndSelect: document.getElementById("mEndSelect"),
       mNoteLabel: document.getElementById("mNoteLabel"),
       mNote: document.getElementById("mNote"),
       mConfirm: document.getElementById("mConfirm"),
@@ -420,8 +423,8 @@
       els.tabDay.textContent = t("app.day");
       els.calHint.textContent = t("app.hint");
 
-      // modal i18n
       els.mTitle.textContent = t("modal.title");
+      els.mEndLabel.textContent = t("modal.endLabel");
       els.mNoteLabel.textContent = t("modal.noteLabel");
       els.mConfirm.textContent = t("modal.confirm");
       els.mCancel.textContent = t("modal.cancel");
@@ -519,13 +522,37 @@
     }
 
     // =========================
-    // 6) Backend calls (with timeout)
+    // 6) Backend calls (token cache + timeout)
     // =========================
-    async function postBackend_(payload) {
+    let _cachedIdToken = null;
+    let _cachedIdTokenExpMs = 0;
+
+    async function getIdTokenCached_() {
       const user = auth.currentUser;
       if (!user) throw new Error("not_authenticated");
 
-      const idToken = await user.getIdToken(true);
+      const now = Date.now();
+      if (_cachedIdToken && (_cachedIdTokenExpMs - now) > 3 * 60 * 1000) {
+        return _cachedIdToken;
+      }
+
+      const tok = await user.getIdToken(); // !!! bez true (ziadne forced refresh)
+
+      // exp z JWT payload (iba pre cache)
+      try {
+        const parts = tok.split(".");
+        const payload = JSON.parse(atob(parts[1].replace(/-/g, "+").replace(/_/g, "/")));
+        _cachedIdTokenExpMs = (payload.exp * 1000) || (now + 45 * 60 * 1000);
+      } catch {
+        _cachedIdTokenExpMs = now + 45 * 60 * 1000;
+      }
+
+      _cachedIdToken = tok;
+      return tok;
+    }
+
+    async function postBackend_(payload) {
+      const idToken = await getIdTokenCached_();
 
       const ctrl = new AbortController();
       const tId = setTimeout(() => ctrl.abort(), BACKEND_TIMEOUT_MS);
@@ -547,13 +574,14 @@
       return await postBackend_({ action: "me" });
     }
 
-    async function fetchDaySlots_(dateYmd) {
+    async function fetchDaySlots_(dateYmd, nocache=false) {
       return await postBackend_({
         action: "slots_day",
         date: dateYmd,
         slotMin: SLOT_MIN,
         startHour: START_HOUR,
-        endHour: END_HOUR
+        endHour: END_HOUR,
+        nocache: !!nocache
       });
     }
 
@@ -588,7 +616,7 @@
     }
 
     // =========================
-    // 7) Date/time helpers (frontend)
+    // 7) Date/time helpers
     // =========================
     function ymdLocal_(d = new Date()) {
       const y = d.getFullYear();
@@ -621,6 +649,9 @@
       els.week.style.display  = (v === "week")  ? "block" : "none";
       els.day.style.display   = (v === "day")   ? "block" : "none";
     }
+
+    let _currentDaySlots = [];
+    let _currentDayYmd = "";
 
     async function renderMonth_(anchorYmd) {
       clearAppMsg();
@@ -742,21 +773,23 @@
       });
     }
 
-    async function renderDay_(ymd) {
+    async function renderDay_(ymd, opt = {}) {
       clearAppMsg();
 
-      const data = await fetchDaySlots_(ymd);
+      const data = await fetchDaySlots_(ymd, !!opt.nocache);
       if (!data.ok) throw new Error(JSON.stringify(data));
 
-      const items = data.slots.map(s => {
+      _currentDaySlots = data.slots || [];
+      _currentDayYmd = ymd;
+
+      const items = _currentDaySlots.map((s, idx) => {
         const label = `${fmtTime_(s.from)} – ${fmtTime_(s.to)}`;
         const bg = s.free ? "#0e1520" : "rgba(255,90,122,0.08)";
         const txt = s.free ? (LANG === "de" ? "frei" : "free") : (LANG === "de" ? "gebucht" : "booked");
 
         return `
           <button
-            data-from="${s.from}"
-            data-to="${s.to}"
+            data-idx="${idx}"
             style="
               width:100%; text-align:left; padding:10px 12px; border-radius:12px;
               border:1px solid #2a3b52; background:${bg}; color:#e9eef7;
@@ -781,20 +814,45 @@
       `;
 
       // Click to book only free slots
-      els.day.querySelectorAll('button[data-from][data-to]:not([disabled])').forEach(btn => {
+      els.day.querySelectorAll('button[data-idx]:not([disabled])').forEach(btn => {
         btn.addEventListener("click", async () => {
-          const fromIso = btn.getAttribute("data-from");
-          const toIso = btn.getAttribute("data-to");
+          const idx = Number(btn.getAttribute("data-idx"));
+          const startSlot = _currentDaySlots[idx];
+          if (!startSlot?.free) return;
 
-          const txtFrom = fmtTime_(fromIso);
-          const txtTo = fmtTime_(toIso);
+          // Build contiguous free range options (dropdown "bis")
+          const fromIso = startSlot.from;
+          const fromTxt = fmtTime_(fromIso);
 
-          openModal_(t("modal.title"), t("modal.text")(txtFrom, txtTo));
+          const options = [];
+          let lastToIso = startSlot.to;
+          options.push({ toIso: lastToIso, label: fmtTime_(lastToIso) });
+
+          for (let j = idx + 1; j < _currentDaySlots.length; j++) {
+            const prev = _currentDaySlots[j - 1];
+            const cur = _currentDaySlots[j];
+            if (!cur?.free) break;
+
+            // contiguous?
+            if (cur.from !== prev.to) break;
+
+            lastToIso = cur.to;
+            options.push({ toIso: lastToIso, label: fmtTime_(lastToIso) });
+          }
+
+          // Fill dropdown
+          els.mEndSelect.innerHTML = options.map((o, k) => {
+            const sel = (k === 0) ? "selected" : "";
+            return `<option value="${o.toIso}" ${sel}>${o.label}</option>`;
+          }).join("");
+
+          openModal_(t("modal.title"), t("modal.text")(fromTxt));
           els.mConfirm.disabled = false;
           els.mConfirm.textContent = t("modal.confirm");
 
           els.mConfirm.onclick = async () => {
             try {
+              const toIso = els.mEndSelect.value;
               els.mConfirm.disabled = true;
               modalMsg_(t("msg.bookingWait"), "");
 
@@ -811,8 +869,8 @@
 
               modalMsg_(t("msg.bookingOk"), "ok");
 
-              // refresh day view
-              await renderDay_(ymd);
+              // Refresh Day view without cache so booking is visible immediately
+              await renderDay_(_currentDayYmd, { nocache: true });
 
               setTimeout(() => closeModal_(), 600);
             } catch (e) {
