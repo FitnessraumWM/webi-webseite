@@ -1001,6 +1001,13 @@
         try {
           const me = await backendMe_();
           setLoggedInUI_(me);
+          if (me?.allowed) {
+  els.calBlock.style.display = "block";
+  const today = ymdLocal_(new Date());
+  els.picker.value = today;
+  await renderMonth_(today);
+  showView_("month");
+}
         } catch (e) {
           console.error(e);
           showMsg((String(e).includes("timeout") ? t("msg.timeout") : t("msg.backendFail")) + " " + String(e), "err");
