@@ -1,1017 +1,699 @@
 <!doctype html>
-<html lang="de">
+<html lang="sk">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Webi Fitness</title>
+  <title>Fitnessraum Reservations</title>
+
+  <!-- OneSignal Web SDK (v16) -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+
+  <!-- Firebase (compat for simplicity) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 
   <style>
-    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
-    body { margin:0; background:#0b0f14; color:#e9eef7; }
-    .wrap { min-height:100vh; display:flex; align-items:flex-start; justify-content:center; padding:18px; }
-    .card { width:100%; max-width:980px; background:#121a24; border:1px solid #223042; border-radius:18px; padding:16px; box-shadow: 0 10px 30px rgba(0,0,0,.35); position:relative; }
-
-    h1 { font-size:22px; margin:0 0 6px; }
-    .sub { color:#a9b6c7; font-size:13px; margin:0 0 14px; line-height:1.4; }
-
-    .pill { display:inline-block; padding:4px 10px; border-radius:999px; background:#0e1520; border:1px solid #2a3b52; color:#a9b6c7; font-size:12px; }
-    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-
-    .btn { padding:12px 14px; border-radius:12px; border:0; background:#4a83ff; color:#08111f; font-weight:800; cursor:pointer; }
-    .btn:disabled { opacity:.55; cursor:not-allowed; }
-    .ghost { background:transparent; color:#cfe0ff; border:1px solid #2a3b52; font-weight:800; }
-
-    .box { border:1px solid #2a3b52; background:#0e1520; border-radius:14px; padding:12px; }
-
-    .grid { display:grid; grid-template-columns: 1fr; gap:14px; }
-    @media (min-width: 920px) { .grid { grid-template-columns: 1fr 1fr; } }
-
-    /* month grid */
-    .monthGrid { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; }
-    .cellBtn {
-      text-align:left; padding:10px; border-radius:12px;
-      border:1px solid #2a3b52; background:#0e1520;
-      color:#e9eef7; cursor:pointer; min-height:66px;
+    :root{
+      --bg:#0b1220; --card:#111a2b; --muted:#94a3b8; --text:#e5e7eb;
+      --accent:#22c55e; --danger:#ef4444; --warn:#f59e0b; --line:#1f2a44;
+      --free:#1a2f25; --busy:#2a1a1a;
     }
-    .cellBtn.dim { background:transparent; opacity:.55; }
-    .timeLabel { color:#a9b6c7; font-size:12px; }
-    .muted { color:#a9b6c7; font-size:12px; }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:var(--bg);color:var(--text)}
+    a{color:#93c5fd;text-decoration:none}
+    .wrap{max-width:1100px;margin:0 auto;padding:16px}
+    .topbar{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-bottom:12px}
+    .brand{display:flex;align-items:center;gap:10px}
+    .badge{font-size:12px;padding:4px 8px;border:1px solid var(--line);border-radius:999px;color:var(--muted)}
+    .btn{border:1px solid var(--line);background:#0f172a;color:var(--text);padding:10px 12px;border-radius:12px;cursor:pointer}
+    .btn:hover{border-color:#334155}
+    .btn.accent{background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.35)}
+    .btn.danger{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.35)}
+    .btn.small{padding:6px 10px;border-radius:10px;font-size:12px}
+    .grid{display:grid;grid-template-columns: 1.2fr .8fr;gap:14px}
+    @media(max-width:980px){.grid{grid-template-columns:1fr}}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px}
+    .card h3{margin:0 0 10px 0;font-size:16px}
+    .muted{color:var(--muted);font-size:13px}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .hr{height:1px;background:var(--line);margin:12px 0}
 
-    /* day list */
-    .scroll { max-height:520px; overflow:auto; padding-right:6px; }
-    .slotBtn {
-      width:100%; text-align:left; padding:10px 12px; border-radius:12px;
-      border:1px solid #2a3b52; background:#0e1520; color:#e9eef7;
-      cursor:pointer;
-      display:flex; justify-content:space-between; gap:12px; align-items:center;
-    }
-    .slotBtn.busy { background: rgba(255,90,122,0.08); cursor:not-allowed; opacity:.75; }
-    .slotBtn b { font-weight:800; }
+    /* hamburger menu */
+    .menuWrap{position:relative}
+    .menuBtn{display:flex;align-items:center;gap:8px}
+    .menu{position:absolute;right:0;top:44px;min-width:320px;z-index:50;background:var(--card);border:1px solid var(--line);
+      border-radius:16px;padding:12px;display:none;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    .menu.open{display:block}
+    .menu .item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 6px;border-radius:12px}
+    .menu .item:hover{background:rgba(255,255,255,.03)}
+    .toggle{display:flex;align-items:center;gap:10px}
+    .switch{width:44px;height:24px;border-radius:999px;border:1px solid var(--line);background:#0f172a;position:relative;cursor:pointer}
+    .knob{width:18px;height:18px;border-radius:999px;background:#64748b;position:absolute;top:2px;left:2px;transition:all .15s}
+    .switch.on{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.35)}
+    .switch.on .knob{left:22px;background:var(--accent)}
+    .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px;color:#cbd5e1}
 
-    /* top right */
-    .topRight { position:absolute; top:14px; right:14px; display:flex; gap:8px; align-items:center; }
-    .langBtn { width:auto; padding:6px 10px; border-radius:999px; background:transparent; color:#a9b6c7; border:1px solid #2a3b52; font-weight:800; cursor:pointer; }
-    .langBtn.active { background:#0e1520; color:#e9eef7; border-color:#4a83ff55; }
-    .menuBtn { width:auto; padding:8px 10px; border-radius:12px; background:transparent; color:#e9eef7; border:1px solid #2a3b52; font-weight:900; cursor:pointer; }
+    /* calendar */
+    .views{display:flex;gap:8px;flex-wrap:wrap}
+    .pill{border:1px solid var(--line);background:#0f172a;color:var(--text);padding:8px 10px;border-radius:999px;cursor:pointer;font-size:13px}
+    .pill.active{border-color:rgba(34,197,94,.5);background:rgba(34,197,94,.12)}
+    .monthGrid{display:grid;grid-template-columns: repeat(7, 1fr);gap:6px}
+    .dayBox{border:1px solid var(--line);border-radius:14px;padding:10px;min-height:70px;background:#0f172a;cursor:pointer}
+    .dayBox:hover{border-color:#334155}
+    .dayNum{font-size:13px;color:#cbd5e1}
+    .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;background:var(--accent)}
+    .dot.busy{background:var(--warn)}
+    .weekGrid{display:grid;grid-template-columns: repeat(7, 1fr);gap:8px}
+    .weekCol{border:1px solid var(--line);border-radius:16px;overflow:hidden}
+    .weekHead{padding:8px 10px;background:#0f172a;border-bottom:1px solid var(--line);font-size:12px;color:#cbd5e1}
+    .slot{padding:7px 10px;border-bottom:1px solid rgba(31,42,68,.6);font-size:12px;display:flex;justify-content:space-between;gap:8px}
+    .slot.free{background:rgba(34,197,94,.08);cursor:pointer}
+    .slot.busy{background:rgba(239,68,68,.08);opacity:.9}
+    .slot:last-child{border-bottom:none}
+    .slot .t{color:#e2e8f0}
+    .slot .s{color:var(--muted)}
 
     /* modal */
-    .backdrop { position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; padding:16px; z-index:50; }
-    .modal { width:min(560px, 100%); background:#121a24; border:1px solid #223042; border-radius:18px; padding:16px; box-shadow:0 20px 60px rgba(0,0,0,.5); }
-    .modal h2 { margin:0 0 10px; font-size:18px; }
-    .field { display:flex; flex-direction:column; gap:6px; margin:10px 0; }
-    select, textarea, input[type="date"] {
-      width:100%; padding:12px; border-radius:12px; border:1px solid #2a3b52; background:#0e1520; color:#e9eef7; outline:none;
-    }
-    textarea { min-height:90px; resize:vertical; }
-    .msg { margin-top:10px; padding:10px 12px; border-radius:12px; font-size:13px; line-height:1.35; border:1px solid #2a3b52; background:#0e1520; color:#cfe0ff; display:none; }
-    .msg.err { border-color:#ff5a7a55; color:#ffd1da; }
-    .msg.ok  { border-color:#35d07f55; color:#caffdf; }
-
-    /* drawer */
-    .drawerBackdrop { position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; z-index:60; }
-    .drawer {
-      position:fixed; top:0; right:0; height:100vh; width:min(360px, 92vw);
-      background:#121a24; border-left:1px solid #223042; padding:14px; z-index:61;
-      transform:translateX(100%); transition:transform .18s ease;
-    }
-    .drawer.open { transform:translateX(0); }
-    .drawer h3 { margin:0 0 10px; }
-    .drawer .item { padding:10px 10px; border-radius:12px; border:1px solid #2a3b52; background:#0e1520; margin:8px 0; cursor:pointer; font-weight:800; }
-    .drawer .small { font-size:12px; color:#a9b6c7; margin-top:10px; }
-    .toggleRow { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-    .switch { width:52px; height:30px; border-radius:999px; border:1px solid #2a3b52; background:#0e1520; position:relative; cursor:pointer; }
-    .knob { position:absolute; top:3px; left:3px; width:24px; height:24px; border-radius:999px; background:#a9b6c7; transition:left .15s ease, background .15s ease; }
-    .switch.on { border-color:#35d07f55; }
-    .switch.on .knob { left:25px; background:#35d07f; }
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:99;padding:14px}
+    .overlay.open{display:flex}
+    .modal{max-width:560px;width:100%;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px}
+    .modal h3{margin:0 0 10px 0}
+    select,input{width:100%;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:#0f172a;color:var(--text)}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media(max-width:520px){.two{grid-template-columns:1fr}}
+    .hidden{display:none !important}
+    .list{display:flex;flex-direction:column;gap:10px}
+    .resItem{border:1px solid var(--line);border-radius:14px;padding:10px;background:#0f172a}
+    .resTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
   </style>
 </head>
 
 <body>
-  <div class="wrap">
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">
+      <div style="font-weight:700">Fitnessraum</div>
+      <span class="badge" id="statusBadge">offline</span>
+    </div>
+
+    <div class="row">
+      <div class="menuWrap">
+        <button class="btn menuBtn" id="hambBtn">☰ Menu</button>
+        <div class="menu" id="hambMenu">
+          <div class="item"><div class="muted">Status</div><div class="kbd" id="mStatus">—</div></div>
+          <div class="item"><div class="muted">Email</div><div class="kbd" id="mEmail">—</div></div>
+          <div class="item"><div class="muted">Role</div><div class="kbd" id="mRole">—</div></div>
+          <div class="item"><div class="muted">Backend</div><div class="kbd" id="mBackend">—</div></div>
+          <div class="item">
+            <div class="muted">Push</div>
+            <div class="toggle">
+              <div class="switch" id="pushSwitch"><div class="knob"></div></div>
+              <div class="kbd" id="pushLabel">off</div>
+            </div>
+          </div>
+          <div class="hr"></div>
+          <button class="btn danger" id="logoutBtn" style="width:100%">Odhlásiť</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="card" id="loginCard">
+    <h3>Prihlásenie</h3>
+    <div class="two">
+      <div>
+        <label class="muted">Email</label>
+        <input id="email" type="email" placeholder="email" />
+      </div>
+      <div>
+        <label class="muted">Heslo</label>
+        <input id="pass" type="password" placeholder="heslo" />
+      </div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn accent" id="loginBtn">Prihlásiť</button>
+      <span class="muted" id="loginMsg"></span>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div class="grid hidden" id="appGrid">
+
     <div class="card">
-
-      <div class="topRight">
-        <button id="langDe" class="langBtn" type="button">DE</button>
-        <button id="langEn" class="langBtn" type="button">EN</button>
-        <button id="menuBtn" class="menuBtn" type="button">≡</button>
-      </div>
-
-      <h1 id="t_title">Webi Fitness</h1>
-      <p id="t_sub" class="sub"></p>
-
-      <div class="row" style="margin:0 0 10px;">
-        <span id="pillState" class="pill"></span>
-        <span id="pillEmail" class="pill" style="display:none;"></span>
-        <span id="pillRole" class="pill" style="display:none;"></span>
-        <span id="pillBackend" class="pill" style="display:none;"></span>
-      </div>
-
-      <div id="lockedBox" class="box" style="display:none;">
-        <div class="muted" id="lockedText"></div>
-      </div>
-
-      <div id="app" class="grid" style="display:none; margin-top:12px;">
-        <!-- LEFT -->
-        <div class="box">
-          <div class="row" style="margin-bottom:10px;">
-            <span class="pill" id="pillAllowed"></span>
-            <span class="pill" id="pillTz"></span>
-          </div>
-
-          <div class="row" style="margin:0 0 10px;">
-            <button id="tabMonth" class="ghost btn" type="button" style="padding:10px 12px;"></button>
-            <button id="tabWeek" class="ghost btn" type="button" style="padding:10px 12px;"></button>
-            <button id="tabDay" class="ghost btn" type="button" style="padding:10px 12px;"></button>
-            <div style="flex:1;"></div>
-            <input id="dayPicker" type="date" style="width:auto; min-width:160px;" />
-          </div>
-
-          <div id="viewMonth"></div>
-          <div id="viewDay" style="display:none;"></div>
-          <div id="viewWeek" style="display:none;"></div>
-
-          <div class="muted" id="hint" style="margin-top:10px;"></div>
-          <div id="appMsg" class="msg"></div>
-        </div>
-
-        <!-- RIGHT -->
-        <div class="box">
-          <div class="row" style="justify-content:space-between; align-items:flex-start;">
-            <div style="min-width:220px;">
-              <div class="muted" id="t_next"></div>
-              <div style="font-weight:900; font-size:16px; margin-top:6px;" id="nextLine">–</div>
-            </div>
-            <div class="row">
-              <button id="btnReserve" class="btn" type="button"></button>
-              <button id="btnMy" class="ghost btn" type="button"></button>
-            </div>
-          </div>
-
-          <div style="margin-top:12px; border-top:1px solid #2a3b52; padding-top:12px;">
-            <div class="row" style="justify-content:space-between;">
-              <div style="font-weight:900; font-size:18px;" id="t_myTitle"></div>
-              <button id="btnRefreshMy" class="ghost btn" type="button" style="padding:10px 12px;"></button>
-            </div>
-            <div class="muted" id="t_myHint" style="margin:8px 0 10px;"></div>
-
-            <div id="myList" class="scroll" style="max-height:340px;"></div>
-          </div>
+      <div class="row" style="justify-content:space-between">
+        <h3 style="margin:0">Kalendár</h3>
+        <div class="row">
+          <button class="btn small" id="prevBtn">◀</button>
+          <button class="btn small" id="todayBtn">Dnes</button>
+          <button class="btn small" id="nextBtn">▶</button>
         </div>
       </div>
 
-    </div>
-  </div>
-
-  <!-- Booking Modal -->
-  <div id="bkBackdrop" class="backdrop">
-    <div class="modal">
-      <h2 id="bkTitle"></h2>
-      <div class="muted" id="bkInfo"></div>
-
-      <div class="field">
-        <div class="muted" id="bkUntilLabel"></div>
-        <select id="bkUntil"></select>
-      </div>
-
-      <div class="field">
-        <div class="muted" id="bkNoteLabel"></div>
-        <textarea id="bkNote" placeholder=""></textarea>
-      </div>
-
-      <div class="row" style="margin-top:12px;">
-        <button id="bkConfirm" class="btn" type="button" style="flex:1;"></button>
-        <button id="bkCancel" class="ghost btn" type="button"></button>
-      </div>
-
-      <div id="bkMsg" class="msg"></div>
-    </div>
-  </div>
-
-  <!-- Drawer -->
-  <div id="drawerBackdrop" class="drawerBackdrop"></div>
-  <div id="drawer" class="drawer">
-    <h3 id="t_menuTitle"></h3>
-
-    <div class="item" id="m_refresh"></div>
-    <div class="item" id="m_my"></div>
-
-    <div class="item" id="m_settings"></div>
-    <div id="settingsBox" class="box" style="display:none; margin-top:10px;">
-      <div class="toggleRow">
-        <div>
-          <div style="font-weight:900;" id="t_push"></div>
-          <div class="muted" id="t_pushHint" style="margin-top:4px;"></div>
+      <div class="row" style="margin-top:10px;justify-content:space-between">
+        <div class="views">
+          <button class="pill active" data-view="month" id="viewMonth">Mesiac</button>
+          <button class="pill" data-view="week" id="viewWeek">Týždeň</button>
+          <button class="pill" data-view="day" id="viewDay">Deň</button>
         </div>
-        <div id="pushSwitch" class="switch"><div class="knob"></div></div>
+        <div class="kbd" id="anchorLabel">—</div>
       </div>
-      <div class="small" id="pushStateLine" style="margin-top:10px;"></div>
+
+      <div class="hr"></div>
+
+      <div id="calendarArea"></div>
     </div>
 
-    <div class="item" id="m_logout"></div>
+    <div class="card">
+      <h3>Moje rezervácie</h3>
+      <div class="muted" id="myResHint">—</div>
+      <div class="hr"></div>
+      <div class="list" id="myResList"></div>
+    </div>
 
-    <div class="small" id="t_menuFoot"></div>
   </div>
+</div>
 
-  <script type="module">
-    // =========================
-    // CONFIG
-    // =========================
-    const BACKEND_URL = "https://steep-wildflower-af8b.fitnessraumwm.workers.dev";
+<!-- BOOK MODAL -->
+<div class="overlay" id="bookOverlay">
+  <div class="modal">
+    <div class="row" style="justify-content:space-between">
+      <h3 style="margin:0">Rezervácia</h3>
+      <button class="btn small" id="closeModal">✕</button>
+    </div>
 
-    const TZ = "Europe/Zurich";
-    const SLOT_MIN = 15;
-    const START_HOUR = 5;
-    const END_HOUR = 23;
+    <div class="hr"></div>
 
-    const ONESIGNAL_APP_ID = "61b4fca3-7bbd-4556-973d-0a589623e89b";
-    const LS_LANG_KEY = "webi_lang";
-    const LS_PUSH_ENABLED = "webi_push_enabled";
+    <div class="two">
+      <div>
+        <label class="muted">Start</label>
+        <input id="bookStart" disabled />
+      </div>
+      <div>
+        <label class="muted">Bis</label>
+        <select id="bookEnd"></select>
+      </div>
+    </div>
 
-    // =========================
-    // Firebase imports
-    // =========================
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-    import {
-      getAuth,
-      onAuthStateChanged,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+    <div style="margin-top:10px">
+      <label class="muted">Poznámka (voliteľné)</label>
+      <input id="bookNote" placeholder="napr. tréning / meno / ..." />
+    </div>
 
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyCY2nmL9I9TjxB0rlVPMCmcl4WKna21IJE",
-      authDomain: "fitnessraumwm-app.firebaseapp.com",
-      projectId: "fitnessraumwm-app",
-      storageBucket: "fitnessraumwm-app.firebasestorage.app",
-      messagingSenderId: "130435754352",
-      appId: "1:130435754352:web:a8a38eeeee7c25867e47b5",
-      measurementId: "G-B629775N63"
+    <div class="row" style="margin-top:12px;justify-content:space-between">
+      <span class="muted" id="bookMsg"></span>
+      <button class="btn accent" id="bookBtn">Buchen</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/** ========= CONFIG ========= **/
+
+// 1) Apps Script WebApp URL (deploy -> web app)
+const BACKEND_URL = "PASTE_YOUR_SCRIPT_WEBAPP_URL_HERE";
+
+// 2) Firebase config (Web app)
+const firebaseConfig = {
+  apiKey: "PASTE_FIREBASE_WEB_APIKEY",
+  authDomain: "PASTE.firebaseapp.com",
+  projectId: "PASTE",
+};
+
+/** ========= INIT ========= **/
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+const $ = (id)=>document.getElementById(id);
+
+let state = {
+  user: null,
+  idToken: null,
+  idTokenExp: 0,
+  view: "month",
+  anchor: new Date(),
+  lastAvail: null, // last day availability for building "Bis" options
+  modal: { startISO: null, endChoices: [] },
+  pushEnabled: false,
+  inFlight: new Map(), // dedupe requests
+};
+
+function fmtTime(d){
+  const x = new Date(d);
+  return x.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+}
+function fmtDate(d){
+  const x = new Date(d);
+  return x.toLocaleDateString([], {weekday:"short", year:"numeric", month:"2-digit", day:"2-digit"});
+}
+function ymd(d){
+  const x = new Date(d);
+  const y = x.getFullYear();
+  const m = String(x.getMonth()+1).padStart(2,"0");
+  const dd = String(x.getDate()).padStart(2,"0");
+  return `${y}-${m}-${dd}`;
+}
+function ym(d){
+  const x = new Date(d);
+  const y = x.getFullYear();
+  const m = String(x.getMonth()+1).padStart(2,"0");
+  return `${y}-${m}`;
+}
+function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+function addMonths(d,n){ const x=new Date(d); x.setMonth(x.getMonth()+n); return x; }
+
+function setStatus(ok, text){
+  $("statusBadge").textContent = text || (ok ? "online" : "offline");
+  $("mStatus").textContent = $("statusBadge").textContent;
+}
+function setMenuUser(){
+  $("mEmail").textContent = state.user?.email || "—";
+  $("mRole").textContent = state.user?.isAdmin ? "admin" : "user";
+}
+
+/** ========= TOKEN CACHE ========= **/
+async function getIdTokenCached(force=false){
+  const now = Date.now();
+  if (!force && state.idToken && now < state.idTokenExp - 15_000) {
+    return state.idToken;
+  }
+  const u = auth.currentUser;
+  if (!u) throw new Error("not_logged_in");
+  const t = await u.getIdToken(force);
+  state.idToken = t;
+
+  // decode JWT exp (seconds)
+  const payload = JSON.parse(atob(t.split(".")[1]));
+  state.idTokenExp = (payload.exp || 0) * 1000;
+  return t;
+}
+
+/** ========= REQUEST (with dedupe) ========= **/
+async function api(action, body={}){
+  const token = await getIdTokenCached(false);
+  const key = action + ":" + JSON.stringify(body);
+
+  if (state.inFlight.has(key)) return state.inFlight.get(key);
+
+  const p = (async ()=>{
+    const t0 = performance.now();
+    const res = await fetch(BACKEND_URL, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ action, idToken: token, ...body })
+    });
+    const data = await res.json().catch(()=>({ok:false,error:"bad_json"}));
+    const ms = Math.round(performance.now() - t0);
+    $("mBackend").textContent = ms + " ms";
+    if (!data.ok) throw new Error(data.error || "backend_error");
+    return data;
+  })();
+
+  state.inFlight.set(key, p);
+  try { return await p; }
+  finally { state.inFlight.delete(key); }
+}
+
+/** ========= OneSignal (optional UI) ========= **/
+function initOneSignal(){
+  // We only init when user is logged and toggle is ON.
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  window.OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "61b4fca3-7bbd-4556-973d-0a589623e89b"
+    });
+
+    // attach external_user_id = Firebase localId
+    if (state.user?.uid) {
+      try { await OneSignal.login(state.user.uid); } catch(e){}
+    }
+  });
+}
+
+function setPushUI(on){
+  state.pushEnabled = !!on;
+  const sw = $("pushSwitch");
+  if (on) sw.classList.add("on"); else sw.classList.remove("on");
+  $("pushLabel").textContent = on ? "on" : "off";
+  localStorage.setItem("pushEnabled", on ? "1" : "0");
+}
+
+async function enablePush(){
+  setPushUI(true);
+  initOneSignal();
+  // ask permission after init
+  try{
+    window.OneSignalDeferred.push(async function(OneSignal){
+      await OneSignal.Notifications.requestPermission();
+    });
+  }catch(e){}
+}
+function disablePush(){
+  setPushUI(false);
+  // OneSignal "logout" optional; we keep it simple
+}
+
+/** ========= UI Wiring ========= **/
+$("hambBtn").onclick = ()=>{
+  $("hambMenu").classList.toggle("open");
+};
+document.addEventListener("click",(e)=>{
+  const menu = $("hambMenu");
+  const wrap = document.querySelector(".menuWrap");
+  if (!wrap.contains(e.target)) menu.classList.remove("open");
+});
+
+$("pushSwitch").onclick = async ()=>{
+  if (!state.user) return;
+  if (state.pushEnabled) disablePush();
+  else await enablePush();
+};
+
+$("logoutBtn").onclick = async ()=>{
+  await auth.signOut();
+};
+
+$("loginBtn").onclick = async ()=>{
+  $("loginMsg").textContent = "";
+  try{
+    const email = $("email").value.trim();
+    const pass = $("pass").value;
+    await auth.signInWithEmailAndPassword(email, pass);
+  }catch(e){
+    $("loginMsg").textContent = "Login failed";
+  }
+};
+
+$("viewMonth").onclick = ()=>setView("month");
+$("viewWeek").onclick = ()=>setView("week");
+$("viewDay").onclick = ()=>setView("day");
+
+$("prevBtn").onclick = ()=>{
+  if (state.view==="month") state.anchor = addMonths(state.anchor, -1);
+  else if (state.view==="week") state.anchor = addDays(state.anchor, -7);
+  else state.anchor = addDays(state.anchor, -1);
+  refreshAll();
+};
+$("nextBtn").onclick = ()=>{
+  if (state.view==="month") state.anchor = addMonths(state.anchor, 1);
+  else if (state.view==="week") state.anchor = addDays(state.anchor, 7);
+  else state.anchor = addDays(state.anchor, 1);
+  refreshAll();
+};
+$("todayBtn").onclick = ()=>{
+  state.anchor = new Date();
+  refreshAll();
+};
+
+function setView(v){
+  state.view = v;
+  for (const b of document.querySelectorAll(".pill")) b.classList.remove("active");
+  if (v==="month") $("viewMonth").classList.add("active");
+  if (v==="week") $("viewWeek").classList.add("active");
+  if (v==="day") $("viewDay").classList.add("active");
+  refreshAll();
+}
+
+/** ========= Modal ========= **/
+$("closeModal").onclick = closeModal;
+$("bookOverlay").addEventListener("click",(e)=>{
+  if (e.target.id==="bookOverlay") closeModal();
+});
+
+function openModal(startISO, endChoices){
+  state.modal.startISO = startISO;
+  state.modal.endChoices = endChoices;
+
+  $("bookStart").value = `${fmtDate(startISO)} ${fmtTime(startISO)}`;
+  $("bookEnd").innerHTML = endChoices.map(iso=>{
+    const d = new Date(iso);
+    return `<option value="${iso}">${fmtTime(d)}</option>`;
+  }).join("");
+
+  $("bookNote").value = "";
+  $("bookMsg").textContent = "";
+  $("bookOverlay").classList.add("open");
+}
+
+function closeModal(){
+  $("bookOverlay").classList.remove("open");
+  state.modal.startISO = null;
+  state.modal.endChoices = [];
+}
+
+$("bookBtn").onclick = async ()=>{
+  try{
+    $("bookMsg").textContent = "Booking...";
+    const startISO = state.modal.startISO;
+    const endISO = $("bookEnd").value;
+
+    await api("reserve_slot", {
+      start: startISO,
+      end: endISO,
+      note: $("bookNote").value.trim(),
+      title: "Fitnessraum"
+    });
+
+    $("bookMsg").textContent = "OK";
+    closeModal();
+
+    // refresh day + month + my reservations
+    await refreshCalendar();
+    await refreshMyReservations();
+  }catch(e){
+    const msg = String(e.message || e);
+    $("bookMsg").textContent =
+      msg.includes("limit_2_per_day") ? "Limit: max 2 rezervácie na deň." :
+      msg.includes("slot_busy") ? "Slot je obsadený." :
+      msg.includes("outside_hours") ? "Mimo povoleného času (05:00–23:00)." :
+      "Chyba: " + msg;
+  }
+};
+
+/** ========= Render Calendar ========= **/
+async function refreshCalendar(){
+  $("anchorLabel").textContent =
+    state.view==="month" ? ym(state.anchor) :
+    state.view==="week" ? ("Týždeň: " + ymd(state.anchor)) :
+    ymd(state.anchor);
+
+  if (state.view==="month") await renderMonth();
+  if (state.view==="week") await renderWeek();
+  if (state.view==="day") await renderDay();
+}
+
+async function renderMonth(){
+  const anchor = new Date(state.anchor);
+  const monthStart = new Date(anchor.getFullYear(), anchor.getMonth(), 1);
+  const startDow = (monthStart.getDay()+6)%7; // Mon=0
+  const gridStart = addDays(monthStart, -startDow);
+
+  const m = ym(anchor);
+  const data = await api("availability_month", { date: m });
+  const busy = data.busyCountByDay || {};
+
+  const boxes = [];
+  for (let i=0;i<42;i++){
+    const d = addDays(gridStart, i);
+    const ds = ymd(d);
+    const inMonth = d.getMonth() === anchor.getMonth();
+    const count = busy[ds] || 0;
+    boxes.push(`
+      <div class="dayBox" data-day="${ds}" style="opacity:${inMonth?1:.5}">
+        <div class="dayNum">${ds}</div>
+        <div style="margin-top:8px" class="muted">
+          ${count ? `<span class="dot busy"></span>${count} event` : `<span class="dot"></span>free`}
+        </div>
+      </div>
+    `);
+  }
+
+  $("calendarArea").innerHTML = `<div class="monthGrid">${boxes.join("")}</div>`;
+
+  document.querySelectorAll(".dayBox").forEach(el=>{
+    el.onclick = ()=>{
+      const ds = el.getAttribute("data-day");
+      state.anchor = new Date(ds+"T00:00:00");
+      setView("day");
     };
+  });
+}
 
-    const fbApp = initializeApp(firebaseConfig);
-    const auth = getAuth(fbApp);
+async function renderDay(){
+  const ds = ymd(state.anchor);
+  const data = await api("availability_day", { date: ds });
+  state.lastAvail = data;
 
-    // =========================
-    // i18n
-    // =========================
-    const I18N = {
-      de: {
-        sub: "Reserviere deinen Slot. Deine Reservierungen kannst du jederzeit stornieren.",
-        pill: { checking:"pruefe…", signedIn:"angemeldet", error:"Fehler" },
-        app: {
-          allowed:"Zugriff: erlaubt",
-          denied:"Zugriff: nicht erlaubt",
-          tz:"Zeitzone: Europe/Zurich",
-          month:"Monat", week:"Woche", day:"Tag",
-          hint:"Monat: Klick auf Tag → Tages-Slots. Tag: Klick auf frei → Reservierung.",
-          next:"Nächster Termin",
-          reserve:"Reservieren",
-          my:"Meine Reservierungen",
-          refresh:"Aktualisieren",
-          myTitle:"Meine Reservierungen",
-          myHint:"Liste zeigt kommende Reservierungen. Storno ist sofort.",
-          cancel:"Storno",
-          none:"Keine Reservierungen."
-        },
-        booking: {
-          title:"Reservierung",
-          start:"Start",
-          pickUntil:"Wähle Ende (bis) und buche.",
-          until:"Bis",
-          note:"Notiz (optional)",
-          notePh:"z. B. komme 10 min spaeter…",
-          book:"Buchen",
-          close:"Abbrechen",
-          booked:"Gebucht ✅",
-          limit:"Limit erreicht: maximal 2 aktive Reservierungen."
-        },
-        menu: {
-          title:"Menue",
-          my:"Meine Reservierungen",
-          refresh:"Aktualisieren",
-          settings:"Einstellungen",
-          logout:"Abmelden",
-          foot:"Tip: Push kannst du hier aktivieren."
-        },
-        push: {
-          title:"Push",
-          hint:"Nur bei Reservierung/Storno. Keine Werbung.",
-          off:"aus",
-          on:"ein",
-          needPerm:"Bitte im Browser erlauben.",
-          active:"Aktiv (abonniert).",
-          saved:"Gespeichert."
+  const slots = data.slots || [];
+  const html = slots.map((s, idx)=>{
+    const st = new Date(s.start);
+    const en = new Date(s.end);
+    return `
+      <div class="slot ${s.status}" data-idx="${idx}">
+        <div class="t">${fmtTime(st)} - ${fmtTime(en)}</div>
+        <div class="s">${s.status}</div>
+      </div>
+    `;
+  }).join("");
+
+  $("calendarArea").innerHTML = html || `<div class="muted">No slots</div>`;
+
+  // click free slot -> open modal with "Bis" choices (continuous free slots forward)
+  document.querySelectorAll(".slot.free").forEach(el=>{
+    el.onclick = ()=>{
+      const idx = parseInt(el.getAttribute("data-idx"),10);
+      const choices = [];
+      for (let j=idx+1;j<=slots.length;j++){
+        if (j===slots.length){
+          // allow end at last slot end
+          const lastEnd = slots[slots.length-1].end;
+          choices.push(lastEnd);
+          break;
         }
-      },
-      en: {
-        sub: "Book your slot. You can cancel your bookings anytime.",
-        pill: { checking:"checking…", signedIn:"signed in", error:"error" },
-        app: {
-          allowed:"Access: allowed",
-          denied:"Access: denied",
-          tz:"Timezone: Europe/Zurich",
-          month:"Month", week:"Week", day:"Day",
-          hint:"Month: click a day → day slots. Day: click free → booking.",
-          next:"Next booking",
-          reserve:"Book",
-          my:"My bookings",
-          refresh:"Refresh",
-          myTitle:"My bookings",
-          myHint:"List shows upcoming bookings. Cancel is instant.",
-          cancel:"Cancel",
-          none:"No bookings."
-        },
-        booking: {
-          title:"Booking",
-          start:"Start",
-          pickUntil:"Pick end time (until) and book.",
-          until:"Until",
-          note:"Note (optional)",
-          notePh:"e.g. 10 min late…",
-          book:"Book",
-          close:"Close",
-          booked:"Booked ✅",
-          limit:"Limit reached: max 2 active bookings."
-        },
-        menu: {
-          title:"Menu",
-          my:"My bookings",
-          refresh:"Refresh",
-          settings:"Settings",
-          logout:"Sign out",
-          foot:"Tip: enable push here."
-        },
-        push: {
-          title:"Push",
-          hint:"Only booking/cancel updates. No ads.",
-          off:"off",
-          on:"on",
-          needPerm:"Please allow in the browser.",
-          active:"Active (subscribed).",
-          saved:"Saved."
-        }
+        if (slots[j].status!=="free") break;
+        choices.push(slots[j].end);
       }
+      openModal(slots[idx].start, choices);
     };
+  });
+}
 
-    function detectLang() {
-      const saved = localStorage.getItem(LS_LANG_KEY);
-      if (saved === "de" || saved === "en") return saved;
-      const nav = (navigator.language || "de").toLowerCase();
-      return nav.startsWith("en") ? "en" : "de";
-    }
-    let LANG = detectLang();
-    const t = (path) => path.split(".").reduce((o,k)=>o?.[k], I18N[LANG]);
+async function renderWeek(){
+  const ds = ymd(state.anchor);
+  const data = await api("availability_week", { date: ds });
+  const days = data.days || [];
 
-    // =========================
-    // DOM
-    // =========================
-    const el = {
-      langDe: document.getElementById("langDe"),
-      langEn: document.getElementById("langEn"),
-      menuBtn: document.getElementById("menuBtn"),
-
-      pillState: document.getElementById("pillState"),
-      pillEmail: document.getElementById("pillEmail"),
-      pillRole: document.getElementById("pillRole"),
-      pillBackend: document.getElementById("pillBackend"),
-
-      lockedBox: document.getElementById("lockedBox"),
-      lockedText: document.getElementById("lockedText"),
-
-      app: document.getElementById("app"),
-
-      pillAllowed: document.getElementById("pillAllowed"),
-      pillTz: document.getElementById("pillTz"),
-
-      tabMonth: document.getElementById("tabMonth"),
-      tabWeek: document.getElementById("tabWeek"),
-      tabDay: document.getElementById("tabDay"),
-      picker: document.getElementById("dayPicker"),
-
-      viewMonth: document.getElementById("viewMonth"),
-      viewDay: document.getElementById("viewDay"),
-      viewWeek: document.getElementById("viewWeek"),
-
-      hint: document.getElementById("hint"),
-      appMsg: document.getElementById("appMsg"),
-
-      nextLine: document.getElementById("nextLine"),
-      t_next: document.getElementById("t_next"),
-
-      btnReserve: document.getElementById("btnReserve"),
-      btnMy: document.getElementById("btnMy"),
-      btnRefreshMy: document.getElementById("btnRefreshMy"),
-
-      t_myTitle: document.getElementById("t_myTitle"),
-      t_myHint: document.getElementById("t_myHint"),
-      myList: document.getElementById("myList"),
-
-      // booking modal
-      bkBackdrop: document.getElementById("bkBackdrop"),
-      bkTitle: document.getElementById("bkTitle"),
-      bkInfo: document.getElementById("bkInfo"),
-      bkUntilLabel: document.getElementById("bkUntilLabel"),
-      bkUntil: document.getElementById("bkUntil"),
-      bkNoteLabel: document.getElementById("bkNoteLabel"),
-      bkNote: document.getElementById("bkNote"),
-      bkConfirm: document.getElementById("bkConfirm"),
-      bkCancel: document.getElementById("bkCancel"),
-      bkMsg: document.getElementById("bkMsg"),
-
-      // drawer
-      drawerBackdrop: document.getElementById("drawerBackdrop"),
-      drawer: document.getElementById("drawer"),
-      t_menuTitle: document.getElementById("t_menuTitle"),
-      m_refresh: document.getElementById("m_refresh"),
-      m_my: document.getElementById("m_my"),
-      m_settings: document.getElementById("m_settings"),
-      settingsBox: document.getElementById("settingsBox"),
-      m_logout: document.getElementById("m_logout"),
-      t_menuFoot: document.getElementById("t_menuFoot"),
-
-      // push
-      pushSwitch: document.getElementById("pushSwitch"),
-      t_push: document.getElementById("t_push"),
-      t_pushHint: document.getElementById("t_pushHint"),
-      pushStateLine: document.getElementById("pushStateLine"),
-    };
-
-    function setLang(newLang) {
-      LANG = newLang;
-      localStorage.setItem(LS_LANG_KEY, LANG);
-      applyI18n();
-      // rerender small stuff
-      renderMyReservations_().catch(()=>{});
-      renderMonth_(el.picker.value).catch(()=>{});
-      renderDay_(el.picker.value).catch(()=>{});
-    }
-
-    function applyI18n() {
-      document.documentElement.lang = LANG;
-      document.getElementById("t_sub").textContent = t("sub");
-
-      el.langDe.classList.toggle("active", LANG === "de");
-      el.langEn.classList.toggle("active", LANG === "en");
-
-      el.tabMonth.textContent = t("app.month");
-      el.tabWeek.textContent = t("app.week");
-      el.tabDay.textContent = t("app.day");
-      el.hint.textContent = t("app.hint");
-
-      el.t_next.textContent = t("app.next");
-      el.btnReserve.textContent = t("app.reserve");
-      el.btnMy.textContent = t("app.my");
-      el.btnRefreshMy.textContent = t("app.refresh");
-      el.t_myTitle.textContent = t("app.myTitle");
-      el.t_myHint.textContent = t("app.myHint");
-
-      el.bkTitle.textContent = t("booking.title");
-      el.bkUntilLabel.textContent = t("booking.until");
-      el.bkNoteLabel.textContent = t("booking.note");
-      el.bkNote.placeholder = t("booking.notePh");
-      el.bkConfirm.textContent = t("booking.book");
-      el.bkCancel.textContent = t("booking.close");
-
-      el.t_menuTitle.textContent = t("menu.title");
-      el.m_refresh.textContent = t("menu.refresh");
-      el.m_my.textContent = t("menu.my");
-      el.m_settings.textContent = t("menu.settings");
-      el.m_logout.textContent = t("menu.logout");
-      el.t_menuFoot.textContent = t("menu.foot");
-
-      el.t_push.textContent = t("push.title");
-      el.t_pushHint.textContent = t("push.hint");
-    }
-
-    // =========================
-    // Helpers
-    // =========================
-    function showMsg_(node, text, kind="") {
-      node.style.display = "block";
-      node.className = "msg " + (kind === "err" ? "err" : kind === "ok" ? "ok" : "");
-      node.textContent = text;
-    }
-    function hideMsg_(node) {
-      node.style.display = "none";
-      node.textContent = "";
-      node.className = "msg";
-    }
-
-    function setPill(key) {
-      el.pillState.textContent = "Status: " + t("pill."+key);
-    }
-
-    function ymdLocal_(d = new Date()) {
-      const y = d.getFullYear();
-      const m = String(d.getMonth()+1).padStart(2,"0");
-      const da = String(d.getDate()).padStart(2,"0");
-      return `${y}-${m}-${da}`;
-    }
-
-    function fmtTime_(iso) {
-      const dt = new Date(iso);
-      return new Intl.DateTimeFormat(LANG === "de" ? "de-CH" : "en-GB", {
-        timeZone: TZ, hour: "2-digit", minute: "2-digit"
-      }).format(dt);
-    }
-
-    function fmtDateTimeLine_(startIso, endIso) {
-      const s = new Date(startIso);
-      const e = new Date(endIso);
-      const sD = new Intl.DateTimeFormat(LANG === "de" ? "de-CH" : "en-GB", { timeZone: TZ, year:"numeric", month:"2-digit", day:"2-digit" }).format(s);
-      const sT = fmtTime_(startIso);
-      const eD = new Intl.DateTimeFormat(LANG === "de" ? "de-CH" : "en-GB", { timeZone: TZ, year:"numeric", month:"2-digit", day:"2-digit" }).format(e);
-      const eT = fmtTime_(endIso);
-      return `${sD}, ${sT} – ${eD}, ${eT}`;
-    }
-
-    function mondayOf_(anchorYmd) {
-      const base = anchorYmd ? new Date(anchorYmd + "T12:00:00") : new Date();
-      const day = base.getDay();
-      const diff = (day === 0 ? -6 : 1 - day);
-      const monday = new Date(base);
-      monday.setDate(monday.getDate() + diff);
-      return ymdLocal_(monday);
-    }
-
-    // =========================
-    // Backend
-    // =========================
-    async function postBackend_(payload, { timeoutMs = 20000 } = {}) {
-      const user = auth.currentUser;
-      if (!user) throw new Error("not_authenticated");
-
-      // neforce refresh (rychlejsie)
-      const idToken = await user.getIdToken(false);
-
-      const ctrl = new AbortController();
-      const tmr = setTimeout(() => ctrl.abort(), timeoutMs);
-
-      const t0 = performance.now();
-      const r = await fetch(BACKEND_URL, {
-        method: "POST",
-        headers: { "Content-Type":"application/json" },
-        body: JSON.stringify({ ...payload, idToken }),
-        signal: ctrl.signal
-      }).finally(()=>clearTimeout(tmr));
-
-      const ms = Math.round(performance.now() - t0);
-      el.pillBackend.style.display = "inline-block";
-      el.pillBackend.textContent = `Backend: ${ms} ms`;
-
-      const j = await r.json();
-      if (!j.ok) throw new Error(JSON.stringify(j));
-      return j;
-    }
-
-    const backend = {
-      me: () => postBackend_({ action:"me" }, { timeoutMs: 15000 }),
-      month: (year, month) => postBackend_({ action:"summary_month", year, month, slotMin:SLOT_MIN, startHour:START_HOUR, endHour:END_HOUR }, { timeoutMs: 30000 }),
-      day: (ymd) => postBackend_({ action:"slots_day", date:ymd, slotMin:SLOT_MIN, startHour:START_HOUR, endHour:END_HOUR }, { timeoutMs: 30000 }),
-      my: () => postBackend_({ action:"my_reservations" }, { timeoutMs: 25000 }),
-      reserve: (from, to, note) => postBackend_({ action:"reserve_slot", from, to, note }, { timeoutMs: 30000 }),
-      cancel: (eventId) => postBackend_({ action:"cancel_reservation", eventId }, { timeoutMs: 30000 }),
-      pushRegister: (subId) => postBackend_({ action:"push_register", subId }, { timeoutMs: 15000 }),
-    };
-
-    // =========================
-    // Views
-    // =========================
-    function showView_(v) {
-      el.viewMonth.style.display = (v === "month") ? "block" : "none";
-      el.viewDay.style.display   = (v === "day") ? "block" : "none";
-      el.viewWeek.style.display  = (v === "week") ? "block" : "none";
-    }
-
-    // month caching (simple in-memory)
-    const monthCache = new Map(); // key "YYYY-MM" -> {ts,data}
-    async function renderMonth_(anchorYmd) {
-      hideMsg_(el.appMsg);
-
-      const d = anchorYmd ? new Date(anchorYmd+"T12:00:00") : new Date();
-      const year = d.getFullYear();
-      const month = d.getMonth() + 1;
-      const key = `${year}-${String(month).padStart(2,"0")}`;
-
-      let data;
-      const cached = monthCache.get(key);
-      if (cached && (Date.now() - cached.ts) < 25000) {
-        data = cached.data;
-      } else {
-        data = await backend.month(year, month);
-        monthCache.set(key, { ts: Date.now(), data });
-      }
-
-      const first = new Date(year, month-1, 1, 12, 0, 0, 0);
-      const start = new Date(first);
-      const day = start.getDay();
-      const offset = (day === 0 ? 6 : day - 1);
-      start.setDate(start.getDate() - offset);
-
-      const cells = [];
-      for (let i=0;i<42;i++){
-        const cd = new Date(start); cd.setDate(cd.getDate()+i);
-        const y = cd.getFullYear(), m = cd.getMonth()+1, da = cd.getDate();
-        const ymd = `${y}-${String(m).padStart(2,"0")}-${String(da).padStart(2,"0")}`;
-        const inMonth = (cd.getMonth() === (month-1));
-
-        const s = data.summary[ymd];
-        const free = s ? s.freeCount : 0;
-        const total = s ? s.totalCount : 0;
-
-        cells.push(`
-          <button class="cellBtn ${inMonth ? "" : "dim"}" data-ymd="${ymd}">
-            <div class="timeLabel">${da}</div>
-            <div style="margin-top:6px; font-size:12px;">
-              ${s ? `free: <b>${free}</b> / ${total}` : ""}
-            </div>
-          </button>
-        `);
-      }
-
-      el.viewMonth.innerHTML = `
-        <div class="monthGrid">${cells.join("")}</div>
-      `;
-
-      el.viewMonth.querySelectorAll("button[data-ymd]").forEach(btn=>{
-        btn.addEventListener("click", async ()=>{
-          const ymd = btn.getAttribute("data-ymd");
-          el.picker.value = ymd;
-          await renderDay_(ymd);
-          showView_("day");
-        });
-      });
-    }
-
-    async function renderDay_(ymd) {
-      hideMsg_(el.appMsg);
-      const data = await backend.day(ymd);
-
-      const items = data.slots.map(s => {
-        const label = `${fmtTime_(s.from)} – ${fmtTime_(s.to)}`;
-        const txt = s.free ? (LANG==="de" ? "frei" : "free") : (LANG==="de" ? "gebucht" : "booked");
-        return `
-          <button class="slotBtn ${s.free ? "" : "busy"}" data-from="${s.from}" data-to="${s.to}" ${s.free ? "" : "disabled"}>
-            <div>${label}</div>
-            <div class="timeLabel">${txt}</div>
-          </button>
-        `;
-      }).join("");
-
-      el.viewDay.innerHTML = `
-        <div class="muted" style="margin-bottom:8px;">${ymd}</div>
-        <div class="scroll" style="display:flex; flex-direction:column; gap:8px;">
-          ${items}
+  // show week columns with fewer rows: only 05-23 by 15min, but still ok
+  const cols = days.map((dObj)=>{
+    const date = dObj.date || "";
+    const slots = (dObj.slots || []);
+    const rows = slots.map((s, idx)=>{
+      const st = new Date(s.start);
+      const en = new Date(s.end);
+      return `
+        <div class="slot ${s.status}" data-day="${date}" data-idx="${idx}">
+          <div class="t">${fmtTime(st)}</div>
+          <div class="s">${s.status}</div>
         </div>
       `;
+    }).join("");
+    return `
+      <div class="weekCol">
+        <div class="weekHead">${date}</div>
+        <div>${rows}</div>
+      </div>
+    `;
+  }).join("");
 
-      // click free slot -> open modal with until dropdown
-      el.viewDay.querySelectorAll("button.slotBtn[data-from]").forEach(btn=>{
-        btn.addEventListener("click", ()=>{
-          const from = btn.getAttribute("data-from");
-          openBookingModal_(ymd, from, data.slots);
-        });
-      });
-    }
+  $("calendarArea").innerHTML = `<div class="weekGrid">${cols}</div>`;
 
-    async function renderWeek_(anchorYmd) {
-      // zatial neimplementujeme komplikovane UI (u teba radsej klasika)
-      // TODO: ked budes chciet, spravime normalne 7 stlpcov s mensimi bunkami
-      el.viewWeek.innerHTML = `<div class="muted">Week view prídeme spravit ako klasiku (7 stĺpcov) v dalsom kroku.</div>`;
-    }
+  // click free -> open modal on that day (need day availability to build end choices)
+  document.querySelectorAll(".weekCol .slot.free").forEach(el=>{
+    el.onclick = async ()=>{
+      const day = el.getAttribute("data-day");
+      const idx = parseInt(el.getAttribute("data-idx"),10);
+      const d = await api("availability_day", { date: day });
+      const slots = d.slots || [];
 
-    // =========================
-    // My reservations + cancel
-    // =========================
-    async function renderMyReservations_() {
-      hideMsg_(el.appMsg);
-      const data = await backend.my();
-
-      // next
-      if (data.nextMine) {
-        el.nextLine.textContent = fmtDateTimeLine_(data.nextMine.start, data.nextMine.end);
-      } else {
-        el.nextLine.textContent = "–";
+      const choices = [];
+      for (let j=idx+1;j<=slots.length;j++){
+        if (j===slots.length){
+          const lastEnd = slots[slots.length-1].end;
+          choices.push(lastEnd);
+          break;
+        }
+        if (slots[j].status!=="free") break;
+        choices.push(slots[j].end);
       }
+      openModal(slots[idx].start, choices);
+    };
+  });
+}
 
-      const list = data.reservations || [];
-      if (!list.length) {
-        el.myList.innerHTML = `<div class="muted">${t("app.none")}</div>`;
-        return;
-      }
+/** ========= My Reservations ========= **/
+async function refreshMyReservations(){
+  const data = await api("my_reservations", { includePast:false });
+  const list = data.reservations || [];
+  $("myResHint").textContent = list.length ? `Budúce: ${list.length}` : "Žiadne budúce rezervácie.";
 
-      el.myList.innerHTML = list.map(ev => {
-        const line = fmtDateTimeLine_(ev.start, ev.end);
-        const ownerLine = ev.ownerEmail ? `<div class="muted" style="margin-top:4px;">${ev.ownerEmail}</div>` : "";
-        return `
-          <div class="box" style="margin:0 0 10px;">
-            <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
-              <div>
-                <div style="font-weight:900; font-size:16px;">${ev.title || "Fitness"}</div>
-                <div class="muted" style="margin-top:4px;">${line}</div>
-                ${ownerLine}
-              </div>
-              <button class="ghost btn" data-cancel="${ev.id}" type="button" style="padding:10px 12px;">
-                ${t("app.cancel")}
-              </button>
-            </div>
+  $("myResList").innerHTML = list.map(r=>{
+    return `
+      <div class="resItem">
+        <div class="resTop">
+          <div>
+            <div style="font-weight:600">${fmtDate(r.start)} ${fmtTime(r.start)} – ${fmtTime(r.end)}</div>
+            <div class="muted">${r.title}${r.ownerEmail ? " · " + r.ownerEmail : ""}</div>
           </div>
-        `;
-      }).join("");
+          <button class="btn small danger" data-id="${r.id}">Storno</button>
+        </div>
+      </div>
+    `;
+  }).join("");
 
-      el.myList.querySelectorAll("button[data-cancel]").forEach(btn=>{
-        btn.addEventListener("click", async ()=>{
-          const id = btn.getAttribute("data-cancel");
-          btn.disabled = true;
-          try {
-            await backend.cancel(id);
-            await hardRefresh_();
-          } catch (e) {
-            showMsg_(el.appMsg, String(e), "err");
-          } finally {
-            btn.disabled = false;
-          }
-        });
-      });
-    }
-
-    async function hardRefresh_() {
-      // refresh list + day view + month summary
-      monthCache.clear();
-      await renderMyReservations_();
-      await renderMonth_(el.picker.value);
-      await renderDay_(el.picker.value);
-    }
-
-    // =========================
-    // Booking modal
-    // =========================
-    let bookingCtx = null; // { ymd, fromIso, toChoicesIso[] }
-    function openBookingModal_(ymd, fromIso, daySlots) {
-      hideMsg_(el.bkMsg);
-
-      // build "until" choices: continuous free slots after selected start
-      const idx = daySlots.findIndex(s => s.from === fromIso);
-      if (idx < 0) return;
-
-      const toChoices = [];
-      for (let i = idx; i < daySlots.length; i++) {
-        const s = daySlots[i];
-        if (!s.free) break;
-        // continuous means next slot.from == previous.to
-        if (i > idx) {
-          const prev = daySlots[i-1];
-          if (prev.to !== s.from) break;
-        }
-        toChoices.push(s.to);
+  $("myResList").querySelectorAll("button[data-id]").forEach(btn=>{
+    btn.onclick = async ()=>{
+      try{
+        btn.disabled = true;
+        await api("cancel_reservation", { eventId: btn.getAttribute("data-id") });
+        await refreshCalendar();
+        await refreshMyReservations();
+      }catch(e){
+        alert("Storno zlyhalo: " + (e.message || e));
+      }finally{
+        btn.disabled = false;
       }
+    };
+  });
+}
 
-      if (!toChoices.length) return;
+/** ========= Auth State ========= **/
+auth.onAuthStateChanged(async (u)=>{
+  if (!u){
+    state.user = null;
+    state.idToken = null;
+    setStatus(false,"offline");
+    $("loginCard").classList.remove("hidden");
+    $("appGrid").classList.add("hidden");
+    return;
+  }
 
-      bookingCtx = { ymd, fromIso, toChoices };
+  try{
+    setStatus(true,"online");
+    $("loginCard").classList.add("hidden");
+    $("appGrid").classList.remove("hidden");
 
-      el.bkInfo.textContent = `${t("booking.start")}: ${fmtTime_(fromIso)}  •  ${t("booking.pickUntil")}`;
-      el.bkUntil.innerHTML = toChoices.map(toIso => {
-        const label = fmtTime_(toIso);
-        return `<option value="${toIso}">${label}</option>`;
-      }).join("");
+    // load push toggle preference
+    setPushUI(localStorage.getItem("pushEnabled")==="1");
 
-      el.bkNote.value = "";
+    // ping to get role + uid
+    const data = await api("ping", {});
+    state.user = data.user;
+    setMenuUser();
 
-      el.bkBackdrop.style.display = "flex";
-    }
+    // attach OneSignal external id when toggle is ON
+    if (state.pushEnabled) await enablePush();
 
-    function closeBookingModal_() {
-      bookingCtx = null;
-      el.bkBackdrop.style.display = "none";
-      hideMsg_(el.bkMsg);
-    }
+    // initial render
+    await refreshAll();
+  }catch(e){
+    console.error(e);
+    setStatus(false,"error");
+  }
+});
 
-    el.bkCancel.addEventListener("click", closeBookingModal_);
-    el.bkBackdrop.addEventListener("click", (e)=>{
-      if (e.target === el.bkBackdrop) closeBookingModal_();
-    });
+async function refreshAll(){
+  try{
+    await refreshCalendar();
+    await refreshMyReservations();
+  }catch(e){
+    console.error(e);
+  }
+}
 
-    el.bkConfirm.addEventListener("click", async ()=>{
-      if (!bookingCtx) return;
-      el.bkConfirm.disabled = true;
-      hideMsg_(el.bkMsg);
+/** ========= Startup defaults ========= **/
+setStatus(false,"offline");
+</script>
 
-      try {
-        const toIso = el.bkUntil.value;
-        const note = el.bkNote.value || "";
-        const res = await backend.reserve(bookingCtx.fromIso, toIso, note);
-
-        showMsg_(el.bkMsg, t("booking.booked"), "ok");
-
-        // auto close after 700ms and refresh UI
-        setTimeout(async ()=>{
-          closeBookingModal_();
-          await hardRefresh_();
-        }, 700);
-
-      } catch (e) {
-        const s = String(e || "");
-        if (s.includes("limit_reached_max_2_active")) {
-          showMsg_(el.bkMsg, t("booking.limit"), "err");
-        } else if (s.includes("slot_not_free")) {
-          showMsg_(el.bkMsg, LANG==="de" ? "Slot ist nicht frei." : "Slot is not free.", "err");
-        } else {
-          showMsg_(el.bkMsg, s, "err");
-        }
-      } finally {
-        el.bkConfirm.disabled = false;
-      }
-    });
-
-    // =========================
-    // Drawer (hamburger)
-    // =========================
-    function openDrawer_() {
-      el.drawerBackdrop.style.display = "block";
-      el.drawer.classList.add("open");
-    }
-    function closeDrawer_() {
-      el.drawerBackdrop.style.display = "none";
-      el.drawer.classList.remove("open");
-      el.settingsBox.style.display = "none";
-    }
-    el.menuBtn.addEventListener("click", openDrawer_);
-    el.drawerBackdrop.addEventListener("click", closeDrawer_);
-
-    el.m_settings.addEventListener("click", ()=>{
-      el.settingsBox.style.display = (el.settingsBox.style.display === "none") ? "block" : "none";
-    });
-
-    el.m_refresh.addEventListener("click", async ()=>{
-      closeDrawer_();
-      await hardRefresh_().catch(e=>showMsg_(el.appMsg, String(e), "err"));
-    });
-
-    el.m_my.addEventListener("click", async ()=>{
-      closeDrawer_();
-      // scroll to my list
-      el.myList.scrollIntoView({ behavior:"smooth", block:"start" });
-    });
-
-    el.m_logout.addEventListener("click", async ()=>{
-      closeDrawer_();
-      await signOut(auth);
-      location.reload();
-    });
-
-    // =========================
-    // OneSignal (lazy)
-    // =========================
-    let oneSignalLoaded = false;
-
-    function setPushSwitchUI_(on) {
-      el.pushSwitch.classList.toggle("on", !!on);
-      el.pushStateLine.textContent = `${t("push.title")}: ${on ? t("push.on") : t("push.off")}`;
-    }
-
-    async function loadOneSignal_() {
-      if (oneSignalLoaded) return;
-      oneSignalLoaded = true;
-
-      await new Promise((resolve, reject) => {
-        const s = document.createElement("script");
-        s.src = "https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js";
-        s.defer = true;
-        s.onload = resolve;
-        s.onerror = reject;
-        document.head.appendChild(s);
-      });
-
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      await new Promise((resolve) => {
-        window.OneSignalDeferred.push(async function(OneSignal) {
-          await OneSignal.init({ appId: ONESIGNAL_APP_ID });
-          resolve();
-        });
-      });
-    }
-
-    async function enablePushFlow_() {
-      await loadOneSignal_();
-      // request permission + subscribe
-      const OneSignal = window.OneSignal;
-      const perm = await OneSignal.Notifications.permission;
-      if (perm !== "granted") {
-        await OneSignal.Notifications.requestPermission();
-      }
-      // get subscription id and save to backend
-      const subId = await OneSignal.User.PushSubscription.id;
-      if (subId) {
-        await backend.pushRegister(subId);
-        el.pushStateLine.textContent = t("push.active");
-      } else {
-        el.pushStateLine.textContent = t("push.needPerm");
-      }
-    }
-
-    el.pushSwitch.addEventListener("click", async ()=>{
-      const cur = (localStorage.getItem(LS_PUSH_ENABLED) === "1");
-      const next = !cur;
-      localStorage.setItem(LS_PUSH_ENABLED, next ? "1" : "0");
-      setPushSwitchUI_(next);
-
-      if (next) {
-        try {
-          await enablePushFlow_();
-        } catch (e) {
-          el.pushStateLine.textContent = String(e);
-        }
-      }
-    });
-
-    // =========================
-    // Tab bindings
-    // =========================
-    el.tabMonth.addEventListener("click", async ()=>{ await renderMonth_(el.picker.value); showView_("month"); });
-    el.tabDay.addEventListener("click", async ()=>{ await renderDay_(el.picker.value); showView_("day"); });
-    el.tabWeek.addEventListener("click", async ()=>{ await renderWeek_(el.picker.value); showView_("week"); });
-
-    el.picker.addEventListener("change", async ()=>{
-      await renderDay_(el.picker.value);
-      showView_("day");
-    });
-
-    el.btnReserve.addEventListener("click", async ()=>{
-      // open today day view
-      await renderDay_(el.picker.value);
-      showView_("day");
-    });
-    el.btnMy.addEventListener("click", ()=>{
-      el.myList.scrollIntoView({ behavior:"smooth", block:"start" });
-    });
-    el.btnRefreshMy.addEventListener("click", async ()=>{
-      await hardRefresh_().catch(e=>showMsg_(el.appMsg, String(e), "err"));
-    });
-
-    // =========================
-    // Boot
-    // =========================
-    el.langDe.addEventListener("click", ()=>setLang("de"));
-    el.langEn.addEventListener("click", ()=>setLang("en"));
-
-    applyI18n();
-    setPill("checking");
-
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        // ak nie si prihlaseny, presmeruj (u teba to uz riesi Firebase email link flow inde)
-        setPill("error");
-        el.lockedBox.style.display = "block";
-        el.lockedText.textContent = "Nicht angemeldet. Bitte Login-Link benutzen.";
-        return;
-      }
-
-      setPill("signedIn");
-      el.pillEmail.style.display = "inline-block";
-      el.pillEmail.textContent = user.email || "";
-      el.pillRole.style.display = "inline-block";
-
-      try {
-        const me = await backend.me();
-        el.pillRole.textContent = "role: " + (me.role || "none");
-
-        el.app.style.display = "block";
-        el.pillAllowed.textContent = me.allowed ? t("app.allowed") : t("app.denied");
-        el.pillTz.textContent = t("app.tz");
-
-        if (!me.allowed) {
-          el.lockedBox.style.display = "block";
-          el.lockedText.textContent = LANG==="de"
-            ? "Du bist nicht freigeschaltet. Bitte Admin kontaktieren."
-            : "You are not enabled yet. Please contact an admin.";
-          return;
-        }
-
-        // init date
-        const today = ymdLocal_(new Date());
-        el.picker.value = today;
-
-        // push UI state
-        const pushEnabled = (localStorage.getItem(LS_PUSH_ENABLED) === "1");
-        setPushSwitchUI_(pushEnabled);
-
-        // show month by default
-        await renderMyReservations_();
-        await renderMonth_(today);
-        showView_("month");
-
-        // if push enabled -> lazy init (no prompt unless user turns it on)
-        if (pushEnabled) {
-          // do not auto request permission; only load SDK
-          loadOneSignal_().catch(()=>{});
-        }
-
-      } catch (e) {
-        setPill("error");
-        showMsg_(el.appMsg, String(e), "err");
-      }
-    });
-  </script>
 </body>
 </html>
