@@ -4,234 +4,212 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Webi Fitness</title>
+
   <style>
     :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
     body { margin:0; background:#0b0f14; color:#e9eef7; }
-
     .wrap { min-height:100vh; display:flex; align-items:flex-start; justify-content:center; padding:18px; }
     .card { width:100%; max-width:980px; background:#121a24; border:1px solid #223042; border-radius:18px; padding:16px; box-shadow: 0 10px 30px rgba(0,0,0,.35); position:relative; }
 
-    h1 { font-size:20px; margin:0; }
-    .sub { color:#a9b6c7; font-size:13px; margin:6px 0 14px; line-height:1.4; }
+    h1 { font-size:22px; margin:0 0 6px; }
+    .sub { color:#a9b6c7; font-size:13px; margin:0 0 14px; line-height:1.4; }
 
-    .pillRow { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:10px; }
-    .pill { display:inline-flex; gap:8px; align-items:center; padding:6px 10px; border-radius:999px; background:#0e1520; border:1px solid #2a3b52; color:#a9b6c7; font-size:12px; }
-
-    .grid2 { display:grid; grid-template-columns: 1fr; gap:12px; }
-    @media (min-width: 980px){ .grid2 { grid-template-columns: 1fr 1fr; } }
-
-    .box { border:1px solid #2a3b52; background:#0e1520; border-radius:14px; padding:12px; }
+    .pill { display:inline-block; padding:4px 10px; border-radius:999px; background:#0e1520; border:1px solid #2a3b52; color:#a9b6c7; font-size:12px; }
     .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
 
-    label { display:block; font-size:12px; color:#a9b6c7; margin: 10px 0 6px; }
-    input, textarea, select {
-      width:100%; padding:12px 12px; border-radius:12px;
-      border:1px solid #2a3b52; background:#0b1220; color:#e9eef7; outline:none;
-    }
-    input:focus, textarea:focus, select:focus { border-color:#4a83ff; box-shadow:0 0 0 4px rgba(74,131,255,.18); }
-
-    button {
-      padding:12px 14px; border-radius:12px; border:0;
-      background:#4a83ff; color:#08111f; font-weight:800; cursor:pointer;
-    }
-    button:disabled { opacity:.55; cursor:not-allowed; }
+    .btn { padding:12px 14px; border-radius:12px; border:0; background:#4a83ff; color:#08111f; font-weight:800; cursor:pointer; }
+    .btn:disabled { opacity:.55; cursor:not-allowed; }
     .ghost { background:transparent; color:#cfe0ff; border:1px solid #2a3b52; font-weight:800; }
-    .soft { background:rgba(74,131,255,0.12); color:#cfe0ff; border:1px solid #2a3b52; font-weight:800; }
 
-    .msg { margin-top:10px; padding:10px 12px; border-radius:12px; font-size:13px; line-height:1.35; border:1px solid #2a3b52; background:#0b1220; color:#cfe0ff; display:none; }
-    .msg.err { border-color:#ff5a7a55; color:#ffd1da; display:block; }
-    .msg.ok  { border-color:#35d07f55; color:#caffdf; display:block; }
+    .box { border:1px solid #2a3b52; background:#0e1520; border-radius:14px; padding:12px; }
 
-    /* Top right: language + burger */
-    .topRight { position:absolute; top:12px; right:12px; display:flex; gap:8px; align-items:center; }
-    .chipBtn { width:auto; padding:6px 10px; border-radius:999px; background:transparent; color:#a9b6c7; border:1px solid #2a3b52; font-weight:800; }
-    .chipBtn.active { background:#0b1220; color:#e9eef7; border-color:#4a83ff55; }
+    .grid { display:grid; grid-template-columns: 1fr; gap:14px; }
+    @media (min-width: 920px) { .grid { grid-template-columns: 1fr 1fr; } }
 
-    /* Calendar */
-    .calTop { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-    .tabBtn { padding:8px 12px; border-radius:12px; }
-    .monthGrid { display:grid; grid-template-columns: repeat(7, 1fr); gap:8px; margin-top:10px; }
+    /* month grid */
+    .monthGrid { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; }
     .cellBtn {
       text-align:left; padding:10px; border-radius:12px;
-      border:1px solid #2a3b52; background:#0b1220; color:#e9eef7;
-      cursor:pointer; min-height:62px;
+      border:1px solid #2a3b52; background:#0e1520;
+      color:#e9eef7; cursor:pointer; min-height:66px;
     }
-    .cellBtn.dim { opacity:.45; }
+    .cellBtn.dim { background:transparent; opacity:.55; }
     .timeLabel { color:#a9b6c7; font-size:12px; }
-    .scroll { max-height:420px; overflow:auto; padding-right:6px; }
+    .muted { color:#a9b6c7; font-size:12px; }
+
+    /* day list */
+    .scroll { max-height:520px; overflow:auto; padding-right:6px; }
     .slotBtn {
       width:100%; text-align:left; padding:10px 12px; border-radius:12px;
-      border:1px solid #2a3b52; background:#0b1220; color:#e9eef7; cursor:pointer;
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      border:1px solid #2a3b52; background:#0e1520; color:#e9eef7;
+      cursor:pointer;
+      display:flex; justify-content:space-between; gap:12px; align-items:center;
     }
-    .slotBtn.busy { cursor:not-allowed; opacity:.65; background:rgba(255,90,122,0.08); }
-    .slotBtn.free { background:#0b1220; }
+    .slotBtn.busy { background: rgba(255,90,122,0.08); cursor:not-allowed; opacity:.75; }
+    .slotBtn b { font-weight:800; }
 
-    /* Drawer */
-    .drawerOverlay { position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; z-index:30; }
+    /* top right */
+    .topRight { position:absolute; top:14px; right:14px; display:flex; gap:8px; align-items:center; }
+    .langBtn { width:auto; padding:6px 10px; border-radius:999px; background:transparent; color:#a9b6c7; border:1px solid #2a3b52; font-weight:800; cursor:pointer; }
+    .langBtn.active { background:#0e1520; color:#e9eef7; border-color:#4a83ff55; }
+    .menuBtn { width:auto; padding:8px 10px; border-radius:12px; background:transparent; color:#e9eef7; border:1px solid #2a3b52; font-weight:900; cursor:pointer; }
+
+    /* modal */
+    .backdrop { position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; padding:16px; z-index:50; }
+    .modal { width:min(560px, 100%); background:#121a24; border:1px solid #223042; border-radius:18px; padding:16px; box-shadow:0 20px 60px rgba(0,0,0,.5); }
+    .modal h2 { margin:0 0 10px; font-size:18px; }
+    .field { display:flex; flex-direction:column; gap:6px; margin:10px 0; }
+    select, textarea, input[type="date"] {
+      width:100%; padding:12px; border-radius:12px; border:1px solid #2a3b52; background:#0e1520; color:#e9eef7; outline:none;
+    }
+    textarea { min-height:90px; resize:vertical; }
+    .msg { margin-top:10px; padding:10px 12px; border-radius:12px; font-size:13px; line-height:1.35; border:1px solid #2a3b52; background:#0e1520; color:#cfe0ff; display:none; }
+    .msg.err { border-color:#ff5a7a55; color:#ffd1da; }
+    .msg.ok  { border-color:#35d07f55; color:#caffdf; }
+
+    /* drawer */
+    .drawerBackdrop { position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; z-index:60; }
     .drawer {
       position:fixed; top:0; right:0; height:100vh; width:min(360px, 92vw);
-      background:#0e1520; border-left:1px solid #223042; padding:14px;
-      transform:translateX(110%); transition:transform .2s ease; z-index:31;
-      display:flex; flex-direction:column; gap:10px;
+      background:#121a24; border-left:1px solid #223042; padding:14px; z-index:61;
+      transform:translateX(100%); transition:transform .18s ease;
     }
-    .drawer.open { transform:translateX(0%); }
-    .drawerOverlay.show { display:block; }
-    .drawerTitle { font-size:16px; font-weight:900; margin:6px 0 4px; }
-    .menuBtn { width:100%; text-align:left; }
-
-    /* Modal */
-    .modalOverlay { position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; z-index:40; }
-    .modal {
-      position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
-      width:min(520px, 92vw); background:#0e1520; border:1px solid #223042;
-      border-radius:18px; padding:14px; z-index:41; display:none;
-      box-shadow:0 10px 30px rgba(0,0,0,.45);
-    }
-    .modalTitle { font-size:18px; font-weight:900; margin:4px 0 10px; }
-    .modalActions { display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; margin-top:10px; }
-
-    /* Hide login block when signed in */
-    #loginBox { display:none; }
-    #appBox { display:none; }
-
-    .muted { color:#a9b6c7; font-size:12px; }
-    .h2 { font-size:16px; font-weight:900; margin:0 0 8px; }
-
-    .listItem {
-      border:1px solid #2a3b52; background:#0b1220; border-radius:14px;
-      padding:12px; display:flex; justify-content:space-between; gap:10px; align-items:center;
-    }
-    .listItem .title { font-weight:900; }
-    .listItem .meta { color:#a9b6c7; font-size:12px; margin-top:4px; }
+    .drawer.open { transform:translateX(0); }
+    .drawer h3 { margin:0 0 10px; }
+    .drawer .item { padding:10px 10px; border-radius:12px; border:1px solid #2a3b52; background:#0e1520; margin:8px 0; cursor:pointer; font-weight:800; }
+    .drawer .small { font-size:12px; color:#a9b6c7; margin-top:10px; }
+    .toggleRow { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .switch { width:52px; height:30px; border-radius:999px; border:1px solid #2a3b52; background:#0e1520; position:relative; cursor:pointer; }
+    .knob { position:absolute; top:3px; left:3px; width:24px; height:24px; border-radius:999px; background:#a9b6c7; transition:left .15s ease, background .15s ease; }
+    .switch.on { border-color:#35d07f55; }
+    .switch.on .knob { left:25px; background:#35d07f; }
   </style>
 </head>
 
 <body>
   <div class="wrap">
     <div class="card">
+
       <div class="topRight">
-        <button id="langDe" class="chipBtn" type="button">DE</button>
-        <button id="langEn" class="chipBtn" type="button">EN</button>
-        <button id="btnMenu" class="chipBtn" type="button">☰</button>
+        <button id="langDe" class="langBtn" type="button">DE</button>
+        <button id="langEn" class="langBtn" type="button">EN</button>
+        <button id="menuBtn" class="menuBtn" type="button">≡</button>
       </div>
 
-      <h1>Webi Fitness</h1>
-      <div id="subtitle" class="sub"></div>
+      <h1 id="t_title">Webi Fitness</h1>
+      <p id="t_sub" class="sub"></p>
 
-      <!-- minimal pills (main screen) -->
-      <div class="pillRow">
-        <span class="pill" id="pillAllowed"></span>
-        <span class="pill" id="pillTz"></span>
+      <div class="row" style="margin:0 0 10px;">
+        <span id="pillState" class="pill"></span>
+        <span id="pillEmail" class="pill" style="display:none;"></span>
+        <span id="pillRole" class="pill" style="display:none;"></span>
+        <span id="pillBackend" class="pill" style="display:none;"></span>
       </div>
 
-      <div id="msg" class="msg"></div>
+      <div id="lockedBox" class="box" style="display:none;">
+        <div class="muted" id="lockedText"></div>
+      </div>
 
-      <!-- LOGIN (shown only if NOT signed in) -->
-      <div id="loginBox" class="box" style="margin-top:12px;">
-        <div class="h2" id="t_loginTitle"></div>
-        <label id="t_emailLabel" for="email"></label>
-        <input id="email" type="email" autocomplete="email" />
-        <div class="row" style="margin-top:10px;">
-          <button id="sendBtn" style="flex:1;"></button>
-          <button id="changeBtn" class="ghost" type="button"></button>
+      <div id="app" class="grid" style="display:none; margin-top:12px;">
+        <!-- LEFT -->
+        <div class="box">
+          <div class="row" style="margin-bottom:10px;">
+            <span class="pill" id="pillAllowed"></span>
+            <span class="pill" id="pillTz"></span>
+          </div>
+
+          <div class="row" style="margin:0 0 10px;">
+            <button id="tabMonth" class="ghost btn" type="button" style="padding:10px 12px;"></button>
+            <button id="tabWeek" class="ghost btn" type="button" style="padding:10px 12px;"></button>
+            <button id="tabDay" class="ghost btn" type="button" style="padding:10px 12px;"></button>
+            <div style="flex:1;"></div>
+            <input id="dayPicker" type="date" style="width:auto; min-width:160px;" />
+          </div>
+
+          <div id="viewMonth"></div>
+          <div id="viewDay" style="display:none;"></div>
+          <div id="viewWeek" style="display:none;"></div>
+
+          <div class="muted" id="hint" style="margin-top:10px;"></div>
+          <div id="appMsg" class="msg"></div>
         </div>
-        <div class="muted" id="t_tip" style="margin-top:10px;"></div>
-      </div>
 
-      <!-- APP (shown only if signed in + allowed) -->
-      <div id="appBox" style="margin-top:12px;">
-        <div class="grid2">
-
-          <!-- LEFT: Dashboard -->
-          <div class="box">
-            <div class="h2" id="t_nextTitle"></div>
-            <div id="nextBox" class="muted"></div>
-
-            <div class="row" style="margin-top:12px;">
-              <button id="btnOpenReserve" style="flex:1;"></button>
-              <button id="btnShowMy" class="ghost" type="button" style="flex:1;"></button>
+        <!-- RIGHT -->
+        <div class="box">
+          <div class="row" style="justify-content:space-between; align-items:flex-start;">
+            <div style="min-width:220px;">
+              <div class="muted" id="t_next"></div>
+              <div style="font-weight:900; font-size:16px; margin-top:6px;" id="nextLine">–</div>
             </div>
-
-            <div class="row" style="margin-top:10px;">
-              <button id="btnOpenCalendar" class="soft" type="button" style="flex:1;"></button>
-              <button id="btnRefreshAll" class="ghost" type="button" style="flex:1;"></button>
+            <div class="row">
+              <button id="btnReserve" class="btn" type="button"></button>
+              <button id="btnMy" class="ghost btn" type="button"></button>
             </div>
           </div>
 
-          <!-- RIGHT: Calendar -->
-          <div class="box" id="calendarBox" style="display:none;">
-            <div class="calTop">
-              <button id="tabMonth" class="ghost tabBtn" type="button"></button>
-              <button id="tabWeek" class="ghost tabBtn" type="button"></button>
-              <button id="tabDay" class="ghost tabBtn" type="button"></button>
-              <div style="flex:1;"></div>
-              <input id="dayPicker" type="date" style="max-width:190px;" />
+          <div style="margin-top:12px; border-top:1px solid #2a3b52; padding-top:12px;">
+            <div class="row" style="justify-content:space-between;">
+              <div style="font-weight:900; font-size:18px;" id="t_myTitle"></div>
+              <button id="btnRefreshMy" class="ghost btn" type="button" style="padding:10px 12px;"></button>
             </div>
+            <div class="muted" id="t_myHint" style="margin:8px 0 10px;"></div>
 
-            <div id="monthView"></div>
-            <div id="weekView" style="display:none;"></div>
-            <div id="dayView" style="display:none;"></div>
-
-            <div class="muted" id="calHint" style="margin-top:10px;"></div>
+            <div id="myList" class="scroll" style="max-height:340px;"></div>
           </div>
-
-        </div>
-
-        <!-- MY RESERVATIONS -->
-        <div class="box" style="margin-top:12px;">
-          <div class="row" style="justify-content:space-between;">
-            <div class="h2" id="t_myTitle"></div>
-            <button id="btnRefreshMy" class="ghost" type="button"></button>
-          </div>
-          <div class="muted" id="t_myHint" style="margin:6px 0 10px;"></div>
-          <div id="myList" class="scroll"></div>
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- Booking Modal -->
+  <div id="bkBackdrop" class="backdrop">
+    <div class="modal">
+      <h2 id="bkTitle"></h2>
+      <div class="muted" id="bkInfo"></div>
+
+      <div class="field">
+        <div class="muted" id="bkUntilLabel"></div>
+        <select id="bkUntil"></select>
+      </div>
+
+      <div class="field">
+        <div class="muted" id="bkNoteLabel"></div>
+        <textarea id="bkNote" placeholder=""></textarea>
+      </div>
+
+      <div class="row" style="margin-top:12px;">
+        <button id="bkConfirm" class="btn" type="button" style="flex:1;"></button>
+        <button id="bkCancel" class="ghost btn" type="button"></button>
+      </div>
+
+      <div id="bkMsg" class="msg"></div>
     </div>
   </div>
 
   <!-- Drawer -->
-  <div id="drawerOverlay" class="drawerOverlay"></div>
+  <div id="drawerBackdrop" class="drawerBackdrop"></div>
   <div id="drawer" class="drawer">
-    <div class="drawerTitle" id="t_menuTitle"></div>
-    <div class="pill" id="mInfoEmail"></div>
-    <div class="pill" id="mInfoRole"></div>
-    <div class="pill" id="mInfoBackend"></div>
+    <h3 id="t_menuTitle"></h3>
 
-    <div style="height:8px;"></div>
+    <div class="item" id="m_refresh"></div>
+    <div class="item" id="m_my"></div>
 
-    <button class="btn ghost menuBtn" id="mRefresh" type="button"></button>
-    <button class="btn ghost menuBtn" id="mLogout" type="button"></button>
-
-    <div style="height:8px;"></div>
-    <div class="drawerTitle" id="t_menuPush"></div>
-    <button class="btn ghost menuBtn" id="mPushEnable" type="button"></button>
-    <div class="muted" id="mPushHint"></div>
-
-    <div style="flex:1;"></div>
-    <div class="muted" style="opacity:.7;">Webi Fitness</div>
-  </div>
-
-  <!-- Booking Modal -->
-  <div id="modalOverlay" class="modalOverlay"></div>
-  <div id="modal" class="modal">
-    <div class="modalTitle" id="t_modalTitle"></div>
-    <div class="muted" id="modalStartInfo"></div>
-
-    <label id="t_modalBis"></label>
-    <select id="selectBis"></select>
-
-    <label id="t_modalNote"></label>
-    <textarea id="note" rows="3" placeholder=""></textarea>
-
-    <div id="modalMsg" class="msg" style="display:none;"></div>
-
-    <div class="modalActions">
-      <button id="btnCancelModal" class="ghost" type="button"></button>
-      <button id="btnConfirm" type="button"></button>
+    <div class="item" id="m_settings"></div>
+    <div id="settingsBox" class="box" style="display:none; margin-top:10px;">
+      <div class="toggleRow">
+        <div>
+          <div style="font-weight:900;" id="t_push"></div>
+          <div class="muted" id="t_pushHint" style="margin-top:4px;"></div>
+        </div>
+        <div id="pushSwitch" class="switch"><div class="knob"></div></div>
+      </div>
+      <div class="small" id="pushStateLine" style="margin-top:10px;"></div>
     </div>
+
+    <div class="item" id="m_logout"></div>
+
+    <div class="small" id="t_menuFoot"></div>
   </div>
 
   <script type="module">
@@ -239,27 +217,27 @@
     // CONFIG
     // =========================
     const BACKEND_URL = "https://steep-wildflower-af8b.fitnessraumwm.workers.dev";
+
     const TZ = "Europe/Zurich";
     const SLOT_MIN = 15;
     const START_HOUR = 5;
     const END_HOUR = 23;
 
-    // OneSignal (fill later)
-    const ONESIGNAL_APP_ID = ""; // TODO: sem vloz App ID z OneSignal
+    const ONESIGNAL_APP_ID = "61b4fca3-7bbd-4556-973d-0a589623e89b";
+    const LS_LANG_KEY = "webi_lang";
+    const LS_PUSH_ENABLED = "webi_push_enabled";
 
     // =========================
     // Firebase imports
     // =========================
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
     import {
-      getAuth, onAuthStateChanged,
-      sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink,
+      getAuth,
+      onAuthStateChanged,
       signOut
     } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
-    // =========================
     // Firebase config
-    // =========================
     const firebaseConfig = {
       apiKey: "AIzaSyCY2nmL9I9TjxB0rlVPMCmcl4WKna21IJE",
       authDomain: "fitnessraumwm-app.firebaseapp.com",
@@ -270,291 +248,263 @@
       measurementId: "G-B629775N63"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+    const fbApp = initializeApp(firebaseConfig);
+    const auth = getAuth(fbApp);
 
     // =========================
     // i18n
     // =========================
-    const LS_LANG_KEY = "webi_lang";
-    const LS_EMAIL_KEY = "webi_emailForSignIn";
-
     const I18N = {
       de: {
-        sub_logged_out: "Login ohne Passwort: Wir senden dir einen Link per E-Mail. Link öffnen → fertig.",
-        sub_logged_in: "Reserviere deinen Slot. Deine Reservierungen kannst du jederzeit stornieren.",
-        loginTitle: "Login",
-        emailLabel: "E-Mail",
-        emailPh: "z. B. name@domain.ch",
-        sendBtn: "Login-Link senden",
-        changeBtn: "E-Mail ändern",
-        tip: "Tipp: Wenn du den Link auf einem anderen Gerät öffnest, fragt die App die E-Mail nochmals ab.",
-        tz: "Zeitzone: Europe/Zurich",
-        allowed: "Zugriff: erlaubt",
-        denied: "Zugriff: nicht erlaubt",
-        nextTitle: "Nächster Termin",
-        btnReserve: "Reservieren",
-        btnMy: "Meine Reservierungen",
-        btnCalendar: "Kalender",
-        btnRefresh: "Aktualisieren",
-        myTitle: "Meine Reservierungen",
-        myHint: "Liste zeigt kommende Reservierungen. Storno ist sofort.",
-        myRefresh: "Liste aktualisieren",
-        tabMonth: "Monat",
-        tabWeek: "Woche",
-        tabDay: "Tag",
-        calHint: "Monat: Klick auf Tag → Tages-Slots. Tag: Klick auf frei → Reservierung. Woche: Klassisch 7 Spalten.",
-        menuTitle: "Menü",
-        menuRefresh: "Aktualisieren",
-        menuLogout: "Abmelden",
-        menuPush: "Push",
-        menuPushEnable: "Push aktivieren",
-        menuPushHint: "Push braucht OneSignal App ID + Service Worker im Root. (Wir machen das im nächsten Schritt.)",
-        modalTitle: "Reservierung",
-        modalBis: "Bis",
-        modalNote: "Notiz (optional)",
-        modalNotePh: "z. B. komme 10 min später…",
-        modalCancel: "Abbrechen",
-        modalConfirm: "Buchen",
-        msgInvalidEmail: "Bitte eine gültige E-Mail eingeben.",
-        msgSentOk: "Erledigt. Link wurde per E-Mail gesendet.",
-        msgNeedEmail: "Du hast den Link geöffnet, aber die E-Mail ist hier nicht gespeichert. Bitte dieselbe E-Mail eingeben.",
-        msgSignOk: "Login erfolgreich.",
-        msgSignFail: "Link ungültig oder abgelaufen. Bitte einen neuen Link senden.",
-        msgBackendErr: "Backend Fehler: ",
-        msgBooked: "Gebucht ✅",
-        msgCancelled: "Storniert ✅",
-        msgDailyLimit: "Limit: Maximal 2 Reservierungen pro Tag.",
-        msgParallelLimit: "Limit: Maximal 3 parallele Reservierungen.",
+        sub: "Reserviere deinen Slot. Deine Reservierungen kannst du jederzeit stornieren.",
+        pill: { checking:"pruefe…", signedIn:"angemeldet", error:"Fehler" },
+        app: {
+          allowed:"Zugriff: erlaubt",
+          denied:"Zugriff: nicht erlaubt",
+          tz:"Zeitzone: Europe/Zurich",
+          month:"Monat", week:"Woche", day:"Tag",
+          hint:"Monat: Klick auf Tag → Tages-Slots. Tag: Klick auf frei → Reservierung.",
+          next:"Nächster Termin",
+          reserve:"Reservieren",
+          my:"Meine Reservierungen",
+          refresh:"Aktualisieren",
+          myTitle:"Meine Reservierungen",
+          myHint:"Liste zeigt kommende Reservierungen. Storno ist sofort.",
+          cancel:"Storno",
+          none:"Keine Reservierungen."
+        },
+        booking: {
+          title:"Reservierung",
+          start:"Start",
+          pickUntil:"Wähle Ende (bis) und buche.",
+          until:"Bis",
+          note:"Notiz (optional)",
+          notePh:"z. B. komme 10 min spaeter…",
+          book:"Buchen",
+          close:"Abbrechen",
+          booked:"Gebucht ✅",
+          limit:"Limit erreicht: maximal 2 aktive Reservierungen."
+        },
+        menu: {
+          title:"Menue",
+          my:"Meine Reservierungen",
+          refresh:"Aktualisieren",
+          settings:"Einstellungen",
+          logout:"Abmelden",
+          foot:"Tip: Push kannst du hier aktivieren."
+        },
+        push: {
+          title:"Push",
+          hint:"Nur bei Reservierung/Storno. Keine Werbung.",
+          off:"aus",
+          on:"ein",
+          needPerm:"Bitte im Browser erlauben.",
+          active:"Aktiv (abonniert).",
+          saved:"Gespeichert."
+        }
       },
       en: {
-        sub_logged_out: "Passwordless login: we’ll email you a sign-in link. Open it → done.",
-        sub_logged_in: "Reserve your slot. You can cancel your reservations anytime.",
-        loginTitle: "Login",
-        emailLabel: "Email",
-        emailPh: "e.g. name@domain.ch",
-        sendBtn: "Send sign-in link",
-        changeBtn: "Change email",
-        tip: "Tip: if you open the link on another device, the app will ask for your email again.",
-        tz: "Timezone: Europe/Zurich",
-        allowed: "Access: allowed",
-        denied: "Access: denied",
-        nextTitle: "Next appointment",
-        btnReserve: "Reserve",
-        btnMy: "My reservations",
-        btnCalendar: "Calendar",
-        btnRefresh: "Refresh",
-        myTitle: "My reservations",
-        myHint: "Shows upcoming reservations. Cancel is instant.",
-        myRefresh: "Refresh list",
-        tabMonth: "Month",
-        tabWeek: "Week",
-        tabDay: "Day",
-        calHint: "Month: click a day → day slots. Day: click free → reserve. Week: classic 7 columns.",
-        menuTitle: "Menu",
-        menuRefresh: "Refresh",
-        menuLogout: "Sign out",
-        menuPush: "Push",
-        menuPushEnable: "Enable push",
-        menuPushHint: "Push needs OneSignal App ID + Service Worker in root. (Next step.)",
-        modalTitle: "Reservation",
-        modalBis: "Until",
-        modalNote: "Note (optional)",
-        modalNotePh: "e.g. 10 min late…",
-        modalCancel: "Cancel",
-        modalConfirm: "Book",
-        msgInvalidEmail: "Please enter a valid email.",
-        msgSentOk: "Done. We sent you a sign-in link.",
-        msgNeedEmail: "You opened a sign-in link but the email isn’t stored here. Please enter the same email.",
-        msgSignOk: "Signed in successfully.",
-        msgSignFail: "Link is invalid or expired. Please request a new one.",
-        msgBackendErr: "Backend error: ",
-        msgBooked: "Booked ✅",
-        msgCancelled: "Cancelled ✅",
-        msgDailyLimit: "Limit: max 2 reservations per day.",
-        msgParallelLimit: "Limit: max 3 parallel reservations.",
+        sub: "Book your slot. You can cancel your bookings anytime.",
+        pill: { checking:"checking…", signedIn:"signed in", error:"error" },
+        app: {
+          allowed:"Access: allowed",
+          denied:"Access: denied",
+          tz:"Timezone: Europe/Zurich",
+          month:"Month", week:"Week", day:"Day",
+          hint:"Month: click a day → day slots. Day: click free → booking.",
+          next:"Next booking",
+          reserve:"Book",
+          my:"My bookings",
+          refresh:"Refresh",
+          myTitle:"My bookings",
+          myHint:"List shows upcoming bookings. Cancel is instant.",
+          cancel:"Cancel",
+          none:"No bookings."
+        },
+        booking: {
+          title:"Booking",
+          start:"Start",
+          pickUntil:"Pick end time (until) and book.",
+          until:"Until",
+          note:"Note (optional)",
+          notePh:"e.g. 10 min late…",
+          book:"Book",
+          close:"Close",
+          booked:"Booked ✅",
+          limit:"Limit reached: max 2 active bookings."
+        },
+        menu: {
+          title:"Menu",
+          my:"My bookings",
+          refresh:"Refresh",
+          settings:"Settings",
+          logout:"Sign out",
+          foot:"Tip: enable push here."
+        },
+        push: {
+          title:"Push",
+          hint:"Only booking/cancel updates. No ads.",
+          off:"off",
+          on:"on",
+          needPerm:"Please allow in the browser.",
+          active:"Active (subscribed).",
+          saved:"Saved."
+        }
       }
     };
 
-    function detectInitialLang() {
+    function detectLang() {
       const saved = localStorage.getItem(LS_LANG_KEY);
       if (saved === "de" || saved === "en") return saved;
       const nav = (navigator.language || "de").toLowerCase();
       return nav.startsWith("en") ? "en" : "de";
     }
-    let LANG = detectInitialLang();
-    const t = (k)=>I18N[LANG][k] || k;
+    let LANG = detectLang();
+    const t = (path) => path.split(".").reduce((o,k)=>o?.[k], I18N[LANG]);
 
     // =========================
     // DOM
     // =========================
-    const $ = (id)=>document.getElementById(id);
+    const el = {
+      langDe: document.getElementById("langDe"),
+      langEn: document.getElementById("langEn"),
+      menuBtn: document.getElementById("menuBtn"),
 
-    const els = {
-      subtitle: $("subtitle"),
-      msg: $("msg"),
+      pillState: document.getElementById("pillState"),
+      pillEmail: document.getElementById("pillEmail"),
+      pillRole: document.getElementById("pillRole"),
+      pillBackend: document.getElementById("pillBackend"),
 
-      pillAllowed: $("pillAllowed"),
-      pillTz: $("pillTz"),
+      lockedBox: document.getElementById("lockedBox"),
+      lockedText: document.getElementById("lockedText"),
 
-      loginBox: $("loginBox"),
-      appBox: $("appBox"),
+      app: document.getElementById("app"),
 
-      email: $("email"),
-      sendBtn: $("sendBtn"),
-      changeBtn: $("changeBtn"),
+      pillAllowed: document.getElementById("pillAllowed"),
+      pillTz: document.getElementById("pillTz"),
 
-      btnOpenReserve: $("btnOpenReserve"),
-      btnShowMy: $("btnShowMy"),
-      btnOpenCalendar: $("btnOpenCalendar"),
-      btnRefreshAll: $("btnRefreshAll"),
+      tabMonth: document.getElementById("tabMonth"),
+      tabWeek: document.getElementById("tabWeek"),
+      tabDay: document.getElementById("tabDay"),
+      picker: document.getElementById("dayPicker"),
 
-      calendarBox: $("calendarBox"),
-      tabMonth: $("tabMonth"),
-      tabWeek: $("tabWeek"),
-      tabDay: $("tabDay"),
-      picker: $("dayPicker"),
-      monthView: $("monthView"),
-      weekView: $("weekView"),
-      dayView: $("dayView"),
-      calHint: $("calHint"),
+      viewMonth: document.getElementById("viewMonth"),
+      viewDay: document.getElementById("viewDay"),
+      viewWeek: document.getElementById("viewWeek"),
 
-      nextBox: $("nextBox"),
+      hint: document.getElementById("hint"),
+      appMsg: document.getElementById("appMsg"),
 
-      btnRefreshMy: $("btnRefreshMy"),
-      myList: $("myList"),
+      nextLine: document.getElementById("nextLine"),
+      t_next: document.getElementById("t_next"),
 
-      // Drawer
-      drawerOverlay: $("drawerOverlay"),
-      drawer: $("drawer"),
-      btnMenu: $("btnMenu"),
-      mInfoEmail: $("mInfoEmail"),
-      mInfoRole: $("mInfoRole"),
-      mInfoBackend: $("mInfoBackend"),
-      mRefresh: $("mRefresh"),
-      mLogout: $("mLogout"),
-      mPushEnable: $("mPushEnable"),
-      mPushHint: $("mPushHint"),
+      btnReserve: document.getElementById("btnReserve"),
+      btnMy: document.getElementById("btnMy"),
+      btnRefreshMy: document.getElementById("btnRefreshMy"),
 
-      // Modal
-      modalOverlay: $("modalOverlay"),
-      modal: $("modal"),
-      modalStartInfo: $("modalStartInfo"),
-      selectBis: $("selectBis"),
-      note: $("note"),
-      modalMsg: $("modalMsg"),
-      btnCancelModal: $("btnCancelModal"),
-      btnConfirm: $("btnConfirm"),
+      t_myTitle: document.getElementById("t_myTitle"),
+      t_myHint: document.getElementById("t_myHint"),
+      myList: document.getElementById("myList"),
 
-      // lang
-      langDe: $("langDe"),
-      langEn: $("langEn"),
+      // booking modal
+      bkBackdrop: document.getElementById("bkBackdrop"),
+      bkTitle: document.getElementById("bkTitle"),
+      bkInfo: document.getElementById("bkInfo"),
+      bkUntilLabel: document.getElementById("bkUntilLabel"),
+      bkUntil: document.getElementById("bkUntil"),
+      bkNoteLabel: document.getElementById("bkNoteLabel"),
+      bkNote: document.getElementById("bkNote"),
+      bkConfirm: document.getElementById("bkConfirm"),
+      bkCancel: document.getElementById("bkCancel"),
+      bkMsg: document.getElementById("bkMsg"),
 
-      // texts
-      t_loginTitle: $("t_loginTitle"),
-      t_emailLabel: $("t_emailLabel"),
-      t_tip: $("t_tip"),
-      t_nextTitle: $("t_nextTitle"),
-      t_myTitle: $("t_myTitle"),
-      t_myHint: $("t_myHint"),
-      t_menuTitle: $("t_menuTitle"),
-      t_menuPush: $("t_menuPush"),
-      t_modalTitle: $("t_modalTitle"),
-      t_modalBis: $("t_modalBis"),
-      t_modalNote: $("t_modalNote"),
+      // drawer
+      drawerBackdrop: document.getElementById("drawerBackdrop"),
+      drawer: document.getElementById("drawer"),
+      t_menuTitle: document.getElementById("t_menuTitle"),
+      m_refresh: document.getElementById("m_refresh"),
+      m_my: document.getElementById("m_my"),
+      m_settings: document.getElementById("m_settings"),
+      settingsBox: document.getElementById("settingsBox"),
+      m_logout: document.getElementById("m_logout"),
+      t_menuFoot: document.getElementById("t_menuFoot"),
+
+      // push
+      pushSwitch: document.getElementById("pushSwitch"),
+      t_push: document.getElementById("t_push"),
+      t_pushHint: document.getElementById("t_pushHint"),
+      pushStateLine: document.getElementById("pushStateLine"),
     };
 
-    const state = {
-      me: null,
-      lastDaySlots: null, // for booking modal (day slots)
-      booking: { ymd:null, fromIso:null, fromLabel:null, toOptions:[] }
-    };
-
-    function showMsg(text, kind="") {
-      els.msg.style.display = "block";
-      els.msg.className = "msg " + (kind === "err" ? "err" : kind === "ok" ? "ok" : "");
-      els.msg.textContent = text;
-    }
-    function hideMsg() {
-      els.msg.style.display = "none";
-      els.msg.className = "msg";
-      els.msg.textContent = "";
-    }
-
-    function showModalMsg(text, kind="") {
-      els.modalMsg.style.display = "block";
-      els.modalMsg.className = "msg " + (kind === "err" ? "err" : kind === "ok" ? "ok" : "");
-      els.modalMsg.textContent = text;
-    }
-    function hideModalMsg() {
-      els.modalMsg.style.display = "none";
-      els.modalMsg.className = "msg";
-      els.modalMsg.textContent = "";
+    function setLang(newLang) {
+      LANG = newLang;
+      localStorage.setItem(LS_LANG_KEY, LANG);
+      applyI18n();
+      // rerender small stuff
+      renderMyReservations_().catch(()=>{});
+      renderMonth_(el.picker.value).catch(()=>{});
+      renderDay_(el.picker.value).catch(()=>{});
     }
 
     function applyI18n() {
       document.documentElement.lang = LANG;
+      document.getElementById("t_sub").textContent = t("sub");
 
-      els.langDe.classList.toggle("active", LANG === "de");
-      els.langEn.classList.toggle("active", LANG === "en");
+      el.langDe.classList.toggle("active", LANG === "de");
+      el.langEn.classList.toggle("active", LANG === "en");
 
-      els.t_loginTitle.textContent = t("loginTitle");
-      els.t_emailLabel.textContent = t("emailLabel");
-      els.email.placeholder = t("emailPh");
-      els.sendBtn.textContent = t("sendBtn");
-      els.changeBtn.textContent = t("changeBtn");
-      els.t_tip.textContent = t("tip");
+      el.tabMonth.textContent = t("app.month");
+      el.tabWeek.textContent = t("app.week");
+      el.tabDay.textContent = t("app.day");
+      el.hint.textContent = t("app.hint");
 
-      els.pillTz.textContent = t("tz");
+      el.t_next.textContent = t("app.next");
+      el.btnReserve.textContent = t("app.reserve");
+      el.btnMy.textContent = t("app.my");
+      el.btnRefreshMy.textContent = t("app.refresh");
+      el.t_myTitle.textContent = t("app.myTitle");
+      el.t_myHint.textContent = t("app.myHint");
 
-      els.t_nextTitle.textContent = t("nextTitle");
-      els.btnOpenReserve.textContent = t("btnReserve");
-      els.btnShowMy.textContent = t("btnMy");
-      els.btnOpenCalendar.textContent = t("btnCalendar");
-      els.btnRefreshAll.textContent = t("btnRefresh");
+      el.bkTitle.textContent = t("booking.title");
+      el.bkUntilLabel.textContent = t("booking.until");
+      el.bkNoteLabel.textContent = t("booking.note");
+      el.bkNote.placeholder = t("booking.notePh");
+      el.bkConfirm.textContent = t("booking.book");
+      el.bkCancel.textContent = t("booking.close");
 
-      els.t_myTitle.textContent = t("myTitle");
-      els.t_myHint.textContent = t("myHint");
-      els.btnRefreshMy.textContent = t("myRefresh");
+      el.t_menuTitle.textContent = t("menu.title");
+      el.m_refresh.textContent = t("menu.refresh");
+      el.m_my.textContent = t("menu.my");
+      el.m_settings.textContent = t("menu.settings");
+      el.m_logout.textContent = t("menu.logout");
+      el.t_menuFoot.textContent = t("menu.foot");
 
-      els.tabMonth.textContent = t("tabMonth");
-      els.tabWeek.textContent = t("tabWeek");
-      els.tabDay.textContent = t("tabDay");
-      els.calHint.textContent = t("calHint");
-
-      els.t_menuTitle.textContent = t("menuTitle");
-      els.mRefresh.textContent = t("menuRefresh");
-      els.mLogout.textContent = t("menuLogout");
-      els.t_menuPush.textContent = t("menuPush");
-      els.mPushEnable.textContent = t("menuPushEnable");
-      els.mPushHint.textContent = t("menuPushHint");
-
-      els.t_modalTitle.textContent = t("modalTitle");
-      els.t_modalBis.textContent = t("modalBis");
-      els.t_modalNote.textContent = t("modalNote");
-      els.note.placeholder = t("modalNotePh");
-      els.btnCancelModal.textContent = t("modalCancel");
-      els.btnConfirm.textContent = t("modalConfirm");
-
-      // subtitle depends on login state
-      els.subtitle.textContent = auth.currentUser ? t("sub_logged_in") : t("sub_logged_out");
-    }
-
-    function setLang(l) {
-      LANG = l;
-      localStorage.setItem(LS_LANG_KEY, l);
-      applyI18n();
-      // rerender bits that show formatted times
-      if (auth.currentUser && state.me?.allowed) renderDashboardSafe_();
+      el.t_push.textContent = t("push.title");
+      el.t_pushHint.textContent = t("push.hint");
     }
 
     // =========================
-    // Date formatting
+    // Helpers
     // =========================
+    function showMsg_(node, text, kind="") {
+      node.style.display = "block";
+      node.className = "msg " + (kind === "err" ? "err" : kind === "ok" ? "ok" : "");
+      node.textContent = text;
+    }
+    function hideMsg_(node) {
+      node.style.display = "none";
+      node.textContent = "";
+      node.className = "msg";
+    }
+
+    function setPill(key) {
+      el.pillState.textContent = "Status: " + t("pill."+key);
+    }
+
     function ymdLocal_(d = new Date()) {
       const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, "0");
-      const da = String(d.getDate()).padStart(2, "0");
+      const m = String(d.getMonth()+1).padStart(2,"0");
+      const da = String(d.getDate()).padStart(2,"0");
       return `${y}-${m}-${da}`;
     }
 
@@ -565,16 +515,18 @@
       }).format(dt);
     }
 
-    function fmtDateTime_(iso) {
-      const dt = new Date(iso);
-      return new Intl.DateTimeFormat(LANG === "de" ? "de-CH" : "en-GB", {
-        timeZone: TZ, year:"numeric", month:"2-digit", day:"2-digit",
-        hour:"2-digit", minute:"2-digit"
-      }).format(dt);
+    function fmtDateTimeLine_(startIso, endIso) {
+      const s = new Date(startIso);
+      const e = new Date(endIso);
+      const sD = new Intl.DateTimeFormat(LANG === "de" ? "de-CH" : "en-GB", { timeZone: TZ, year:"numeric", month:"2-digit", day:"2-digit" }).format(s);
+      const sT = fmtTime_(startIso);
+      const eD = new Intl.DateTimeFormat(LANG === "de" ? "de-CH" : "en-GB", { timeZone: TZ, year:"numeric", month:"2-digit", day:"2-digit" }).format(e);
+      const eT = fmtTime_(endIso);
+      return `${sD}, ${sT} – ${eD}, ${eT}`;
     }
 
     function mondayOf_(anchorYmd) {
-      const base = new Date((anchorYmd || ymdLocal_()) + "T12:00:00");
+      const base = anchorYmd ? new Date(anchorYmd + "T12:00:00") : new Date();
       const day = base.getDay();
       const diff = (day === 0 ? -6 : 1 - day);
       const monday = new Date(base);
@@ -583,145 +535,92 @@
     }
 
     // =========================
-    // Backend calls
+    // Backend
     // =========================
-    let cachedIdToken = null;
-    let cachedIdTokenExp = 0;
-
-    async function getIdTokenCached_() {
+    async function postBackend_(payload, { timeoutMs = 20000 } = {}) {
       const user = auth.currentUser;
       if (!user) throw new Error("not_authenticated");
-      const now = Date.now();
-      if (cachedIdToken && now < cachedIdTokenExp) return cachedIdToken;
-      // no force refresh -> faster
-      const tok = await user.getIdToken(false);
-      cachedIdToken = tok;
-      cachedIdTokenExp = now + 45 * 1000; // 45s cache
-      return tok;
-    }
 
-    async function postBackend_(payload) {
-      const idToken = await getIdTokenCached_();
+      // neforce refresh (rychlejsie)
+      const idToken = await user.getIdToken(false);
+
+      const ctrl = new AbortController();
+      const tmr = setTimeout(() => ctrl.abort(), timeoutMs);
+
       const t0 = performance.now();
       const r = await fetch(BACKEND_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...payload, idToken })
-      });
-      const data = await r.json().catch(()=>({ ok:false, error:"bad_json" }));
+        headers: { "Content-Type":"application/json" },
+        body: JSON.stringify({ ...payload, idToken }),
+        signal: ctrl.signal
+      }).finally(()=>clearTimeout(tmr));
+
       const ms = Math.round(performance.now() - t0);
-      // show in drawer info
-      els.mInfoBackend.textContent = "Backend: " + ms + " ms";
-      return data;
+      el.pillBackend.style.display = "inline-block";
+      el.pillBackend.textContent = `Backend: ${ms} ms`;
+
+      const j = await r.json();
+      if (!j.ok) throw new Error(JSON.stringify(j));
+      return j;
     }
 
-    const api = {
-      me: ()=>postBackend_({ action:"me" }),
-      summaryMonth: (year, month)=>postBackend_({ action:"summary_month", year, month, slotMin:SLOT_MIN, startHour:START_HOUR, endHour:END_HOUR }),
-      slotsDay: (ymd)=>postBackend_({ action:"slots_day", date:ymd, slotMin:SLOT_MIN, startHour:START_HOUR, endHour:END_HOUR }),
-      slotsWeek: (weekStart)=>postBackend_({ action:"slots_week", weekStart, slotMin:SLOT_MIN, startHour:START_HOUR, endHour:END_HOUR }),
-      reserve: (fromIso,toIso,note)=>postBackend_({ action:"reserve_slot", from:fromIso, to:toIso, note }),
-      my: (days=30)=>postBackend_({ action:"my_reservations", days }),
-      cancel: (eventId)=>postBackend_({ action:"cancel_reservation", eventId }),
-      // admin endpoints prepared (UI later)
-      adminList: (range,date)=>postBackend_({ action:"admin_list", range, date }),
-      adminCancel: (eventId)=>postBackend_({ action:"admin_cancel", eventId }),
+    const backend = {
+      me: () => postBackend_({ action:"me" }, { timeoutMs: 15000 }),
+      month: (year, month) => postBackend_({ action:"summary_month", year, month, slotMin:SLOT_MIN, startHour:START_HOUR, endHour:END_HOUR }, { timeoutMs: 30000 }),
+      day: (ymd) => postBackend_({ action:"slots_day", date:ymd, slotMin:SLOT_MIN, startHour:START_HOUR, endHour:END_HOUR }, { timeoutMs: 30000 }),
+      my: () => postBackend_({ action:"my_reservations" }, { timeoutMs: 25000 }),
+      reserve: (from, to, note) => postBackend_({ action:"reserve_slot", from, to, note }, { timeoutMs: 30000 }),
+      cancel: (eventId) => postBackend_({ action:"cancel_reservation", eventId }, { timeoutMs: 30000 }),
+      pushRegister: (subId) => postBackend_({ action:"push_register", subId }, { timeoutMs: 15000 }),
     };
 
     // =========================
-    // Firebase email link flow
-    // =========================
-    const actionCodeSettings = {
-      url: window.location.origin + window.location.pathname,
-      handleCodeInApp: true
-    };
-
-    async function sendLink(email) {
-      hideMsg();
-      els.sendBtn.disabled = true;
-      try {
-        await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-        localStorage.setItem(LS_EMAIL_KEY, email);
-        showMsg(t("msgSentOk"), "ok");
-      } catch (e) {
-        console.error(e);
-        showMsg(t("msgBackendErr") + (e?.code || "error"), "err");
-      } finally {
-        els.sendBtn.disabled = false;
-      }
-    }
-
-    async function completeSignInIfLink() {
-      if (!isSignInWithEmailLink(auth, window.location.href)) return false;
-      hideMsg();
-
-      let email = localStorage.getItem(LS_EMAIL_KEY);
-      if (!email) {
-        showMsg(t("msgNeedEmail"), "err");
-        return true;
-      }
-      try {
-        await signInWithEmailLink(auth, email, window.location.href);
-        localStorage.removeItem(LS_EMAIL_KEY);
-        window.history.replaceState({}, document.title, window.location.pathname);
-        showMsg(t("msgSignOk"), "ok");
-        return true;
-      } catch (e) {
-        console.error(e);
-        showMsg(t("msgSignFail"), "err");
-        return true;
-      }
-    }
-
-    // =========================
-    // Drawer
-    // =========================
-    function openDrawer_() {
-      els.drawerOverlay.classList.add("show");
-      els.drawer.classList.add("open");
-    }
-    function closeDrawer_() {
-      els.drawerOverlay.classList.remove("show");
-      els.drawer.classList.remove("open");
-    }
-
-    // =========================
-    // Calendar rendering
+    // Views
     // =========================
     function showView_(v) {
-      els.monthView.style.display = (v==="month") ? "block" : "none";
-      els.weekView.style.display  = (v==="week")  ? "block" : "none";
-      els.dayView.style.display   = (v==="day")   ? "block" : "none";
+      el.viewMonth.style.display = (v === "month") ? "block" : "none";
+      el.viewDay.style.display   = (v === "day") ? "block" : "none";
+      el.viewWeek.style.display  = (v === "week") ? "block" : "none";
     }
 
+    // month caching (simple in-memory)
+    const monthCache = new Map(); // key "YYYY-MM" -> {ts,data}
     async function renderMonth_(anchorYmd) {
-      const d = new Date((anchorYmd || ymdLocal_()) + "T12:00:00");
+      hideMsg_(el.appMsg);
+
+      const d = anchorYmd ? new Date(anchorYmd+"T12:00:00") : new Date();
       const year = d.getFullYear();
       const month = d.getMonth() + 1;
+      const key = `${year}-${String(month).padStart(2,"0")}`;
 
-      const data = await api.summaryMonth(year, month);
-      if (!data.ok) throw new Error(JSON.stringify(data));
+      let data;
+      const cached = monthCache.get(key);
+      if (cached && (Date.now() - cached.ts) < 25000) {
+        data = cached.data;
+      } else {
+        data = await backend.month(year, month);
+        monthCache.set(key, { ts: Date.now(), data });
+      }
 
-      const first = new Date(year, month-1, 1, 12,0,0,0);
+      const first = new Date(year, month-1, 1, 12, 0, 0, 0);
       const start = new Date(first);
       const day = start.getDay();
       const offset = (day === 0 ? 6 : day - 1);
       start.setDate(start.getDate() - offset);
 
       const cells = [];
-      for (let i=0;i<42;i++) {
-        const cd = new Date(start);
-        cd.setDate(cd.getDate() + i);
+      for (let i=0;i<42;i++){
+        const cd = new Date(start); cd.setDate(cd.getDate()+i);
         const y = cd.getFullYear(), m = cd.getMonth()+1, da = cd.getDate();
         const ymd = `${y}-${String(m).padStart(2,"0")}-${String(da).padStart(2,"0")}`;
-        const inMonth = cd.getMonth() === (month-1);
+        const inMonth = (cd.getMonth() === (month-1));
 
         const s = data.summary[ymd];
         const free = s ? s.freeCount : 0;
         const total = s ? s.totalCount : 0;
 
         cells.push(`
-          <button class="cellBtn ${inMonth?"":"dim"}" data-ymd="${ymd}">
+          <button class="cellBtn ${inMonth ? "" : "dim"}" data-ymd="${ymd}">
             <div class="timeLabel">${da}</div>
             <div style="margin-top:6px; font-size:12px;">
               ${s ? `free: <b>${free}</b> / ${total}` : ""}
@@ -730,12 +629,14 @@
         `);
       }
 
-      els.monthView.innerHTML = `<div class="monthGrid">${cells.join("")}</div>`;
+      el.viewMonth.innerHTML = `
+        <div class="monthGrid">${cells.join("")}</div>
+      `;
 
-      els.monthView.querySelectorAll("button[data-ymd]").forEach(btn=>{
+      el.viewMonth.querySelectorAll("button[data-ymd]").forEach(btn=>{
         btn.addEventListener("click", async ()=>{
           const ymd = btn.getAttribute("data-ymd");
-          els.picker.value = ymd;
+          el.picker.value = ymd;
           await renderDay_(ymd);
           showView_("day");
         });
@@ -743,203 +644,90 @@
     }
 
     async function renderDay_(ymd) {
-      const data = await api.slotsDay(ymd);
-      if (!data.ok) throw new Error(JSON.stringify(data));
+      hideMsg_(el.appMsg);
+      const data = await backend.day(ymd);
 
-      state.lastDaySlots = data.slots;
-
-      const items = data.slots.map(s=>{
+      const items = data.slots.map(s => {
         const label = `${fmtTime_(s.from)} – ${fmtTime_(s.to)}`;
-        const cls = s.free ? "free" : "busy";
         const txt = s.free ? (LANG==="de" ? "frei" : "free") : (LANG==="de" ? "gebucht" : "booked");
         return `
-          <button class="slotBtn ${cls}" data-from="${s.from}" data-to="${s.to}" ${s.free ? "" : "disabled"}>
+          <button class="slotBtn ${s.free ? "" : "busy"}" data-from="${s.from}" data-to="${s.to}" ${s.free ? "" : "disabled"}>
             <div>${label}</div>
             <div class="timeLabel">${txt}</div>
           </button>
         `;
       }).join("");
 
-      els.dayView.innerHTML = `
-        <div class="muted" style="margin:8px 0;">${ymd}</div>
-        <div class="scroll" style="display:flex; flex-direction:column; gap:8px;">${items}</div>
+      el.viewDay.innerHTML = `
+        <div class="muted" style="margin-bottom:8px;">${ymd}</div>
+        <div class="scroll" style="display:flex; flex-direction:column; gap:8px;">
+          ${items}
+        </div>
       `;
 
-      els.dayView.querySelectorAll("button.slotBtn.free").forEach(btn=>{
+      // click free slot -> open modal with until dropdown
+      el.viewDay.querySelectorAll("button.slotBtn[data-from]").forEach(btn=>{
         btn.addEventListener("click", ()=>{
-          const fromIso = btn.getAttribute("data-from");
-          openBookingModalFrom_(ymd, fromIso);
+          const from = btn.getAttribute("data-from");
+          openBookingModal_(ymd, from, data.slots);
         });
       });
     }
 
     async function renderWeek_(anchorYmd) {
-      const weekStart = mondayOf_(anchorYmd || ymdLocal_());
-      const data = await api.slotsWeek(weekStart);
-      if (!data.ok) throw new Error(JSON.stringify(data));
-
-      // classic 7 columns + time labels, smaller cells
-      const rows = [];
-      for (let h = START_HOUR; h < END_HOUR; h++) {
-        for (const mm of [0, 30]) rows.push({ h, mm });
-      }
-
-      const head = data.days.map(d => `
-        <div style="text-align:center; color:#a9b6c7; font-size:12px;">${d.date}</div>
-      `).join("");
-
-      const body = rows.map(r=>{
-        const label = `${String(r.h).padStart(2,"0")}:${String(r.mm).padStart(2,"0")}`;
-        const cols = data.days.map(dayObj=>{
-          const slot = dayObj.slots.find(s => fmtTime_(s.from) === label);
-          const free = slot ? slot.free : false;
-          const bg = free ? "#0b1220" : "rgba(255,90,122,0.08)";
-          return `<button data-ymd="${dayObj.date}" style="
-              width:100%; height:28px; border-radius:10px;
-              border:1px solid #2a3b52; background:${bg};
-              cursor:pointer; padding:0;"></button>`;
-        }).join("");
-
-        return `
-          <div style="display:grid; grid-template-columns:70px repeat(7,1fr); gap:8px; align-items:center;">
-            <div class="timeLabel">${label}</div>
-            ${cols}
-          </div>
-        `;
-      }).join("");
-
-      els.weekView.innerHTML = `
-        <div style="display:grid; grid-template-columns:70px repeat(7,1fr); gap:8px; margin:10px 0 8px;">
-          <div></div>${head}
-        </div>
-        <div class="scroll" style="display:flex; flex-direction:column; gap:8px;">${body}</div>
-      `;
-
-      els.weekView.querySelectorAll("button[data-ymd]").forEach(btn=>{
-        btn.addEventListener("click", async ()=>{
-          const ymd = btn.getAttribute("data-ymd");
-          els.picker.value = ymd;
-          await renderDay_(ymd);
-          showView_("day");
-        });
-      });
+      // zatial neimplementujeme komplikovane UI (u teba radsej klasika)
+      // TODO: ked budes chciet, spravime normalne 7 stlpcov s mensimi bunkami
+      el.viewWeek.innerHTML = `<div class="muted">Week view prídeme spravit ako klasiku (7 stĺpcov) v dalsom kroku.</div>`;
     }
 
     // =========================
-    // Booking modal (Start -> dropdown Bis)
-    // =========================
-    function openModal_() {
-      els.modalOverlay.style.display = "block";
-      els.modal.style.display = "block";
-    }
-    function closeModal_() {
-      els.modalOverlay.style.display = "none";
-      els.modal.style.display = "none";
-      hideModalMsg();
-      els.note.value = "";
-    }
-
-    function openBookingModalFrom_(ymd, fromIso) {
-      const slots = state.lastDaySlots || [];
-      const idx = slots.findIndex(s => s.from === fromIso);
-      if (idx < 0 || !slots[idx].free) return;
-
-      // build "Bis" options: consecutive free slots
-      const opts = [];
-      for (let i = idx; i < slots.length; i++) {
-        if (!slots[i].free) break;
-        // option ends at slots[i].to
-        opts.push({ toIso: slots[i].to, label: fmtTime_(slots[i].to) });
-      }
-      if (opts.length === 0) return;
-
-      state.booking.ymd = ymd;
-      state.booking.fromIso = fromIso;
-      state.booking.fromLabel = fmtTime_(fromIso);
-      state.booking.toOptions = opts;
-
-      els.modalStartInfo.textContent = (LANG==="de")
-        ? `Start: ${state.booking.fromLabel} – Wähle Ende (bis) und buche.`
-        : `Start: ${state.booking.fromLabel} – Select end time and book.`;
-
-      els.selectBis.innerHTML = opts.map((o, i)=>`<option value="${o.toIso}" ${i===0?"selected":""}>${o.label}</option>`).join("");
-
-      openModal_();
-    }
-
-    async function confirmBooking_() {
-      hideModalMsg();
-      els.btnConfirm.disabled = true;
-      try {
-        const fromIso = state.booking.fromIso;
-        const toIso = els.selectBis.value;
-        const note = (els.note.value || "").trim();
-
-        const res = await api.reserve(fromIso, toIso, note);
-
-        if (!res.ok) {
-          if (res.error === "daily_limit_2") return showModalMsg(t("msgDailyLimit"), "err");
-          if (res.error === "parallel_limit_3") return showModalMsg(t("msgParallelLimit"), "err");
-          return showModalMsg(t("msgBackendErr") + JSON.stringify(res), "err");
-        }
-
-        showModalMsg(t("msgBooked"), "ok");
-
-        // close automatically after short moment
-        setTimeout(()=>closeModal_(), 450);
-
-        // refresh: day + month + my list + next appointment
-        await renderDashboardSafe_();
-
-      } catch (e) {
-        console.error(e);
-        showModalMsg(t("msgBackendErr") + String(e), "err");
-      } finally {
-        els.btnConfirm.disabled = false;
-      }
-    }
-
-    // =========================
-    // My reservations
+    // My reservations + cancel
     // =========================
     async function renderMyReservations_() {
-      const data = await api.my(30);
-      if (!data.ok) throw new Error(JSON.stringify(data));
+      hideMsg_(el.appMsg);
+      const data = await backend.my();
 
-      if (!data.items || data.items.length === 0) {
-        els.myList.innerHTML = `<div class="muted">${LANG==="de" ? "Keine kommenden Reservierungen." : "No upcoming reservations."}</div>`;
+      // next
+      if (data.nextMine) {
+        el.nextLine.textContent = fmtDateTimeLine_(data.nextMine.start, data.nextMine.end);
+      } else {
+        el.nextLine.textContent = "–";
+      }
+
+      const list = data.reservations || [];
+      if (!list.length) {
+        el.myList.innerHTML = `<div class="muted">${t("app.none")}</div>`;
         return;
       }
 
-      els.myList.innerHTML = data.items.map(it=>{
-        const meta = `${fmtDateTime_(it.start)} – ${fmtDateTime_(it.end)}`;
-        const note = it.note ? `<div class="meta">${it.note}</div>` : "";
+      el.myList.innerHTML = list.map(ev => {
+        const line = fmtDateTimeLine_(ev.start, ev.end);
+        const ownerLine = ev.ownerEmail ? `<div class="muted" style="margin-top:4px;">${ev.ownerEmail}</div>` : "";
         return `
-          <div class="listItem">
-            <div>
-              <div class="title">${it.title || "Fitness"}</div>
-              <div class="meta">${meta}</div>
-              ${note}
-            </div>
-            <div>
-              <button class="ghost" data-cancel="${it.id}" type="button">${LANG==="de" ? "Storno" : "Cancel"}</button>
+          <div class="box" style="margin:0 0 10px;">
+            <div style="display:flex; justify-content:space-between; gap:10px; align-items:flex-start;">
+              <div>
+                <div style="font-weight:900; font-size:16px;">${ev.title || "Fitness"}</div>
+                <div class="muted" style="margin-top:4px;">${line}</div>
+                ${ownerLine}
+              </div>
+              <button class="ghost btn" data-cancel="${ev.id}" type="button" style="padding:10px 12px;">
+                ${t("app.cancel")}
+              </button>
             </div>
           </div>
         `;
       }).join("");
 
-      els.myList.querySelectorAll("button[data-cancel]").forEach(btn=>{
+      el.myList.querySelectorAll("button[data-cancel]").forEach(btn=>{
         btn.addEventListener("click", async ()=>{
           const id = btn.getAttribute("data-cancel");
           btn.disabled = true;
           try {
-            const r = await api.cancel(id);
-            if (!r.ok) throw new Error(JSON.stringify(r));
-            showMsg(t("msgCancelled"), "ok");
-            await renderDashboardSafe_();
+            await backend.cancel(id);
+            await hardRefresh_();
           } catch (e) {
-            console.error(e);
-            showMsg(t("msgBackendErr") + String(e), "err");
+            showMsg_(el.appMsg, String(e), "err");
           } finally {
             btn.disabled = false;
           }
@@ -947,208 +735,281 @@
       });
     }
 
-    async function renderNextAppointment_() {
-      // easiest: use my_reservations and take first
-      const data = await api.my(30);
-      if (!data.ok) throw new Error(JSON.stringify(data));
+    async function hardRefresh_() {
+      // refresh list + day view + month summary
+      monthCache.clear();
+      await renderMyReservations_();
+      await renderMonth_(el.picker.value);
+      await renderDay_(el.picker.value);
+    }
 
-      if (!data.items || data.items.length === 0) {
-        els.nextBox.textContent = (LANG==="de") ? "Kein Termin geplant." : "No appointment planned.";
-        return;
+    // =========================
+    // Booking modal
+    // =========================
+    let bookingCtx = null; // { ymd, fromIso, toChoicesIso[] }
+    function openBookingModal_(ymd, fromIso, daySlots) {
+      hideMsg_(el.bkMsg);
+
+      // build "until" choices: continuous free slots after selected start
+      const idx = daySlots.findIndex(s => s.from === fromIso);
+      if (idx < 0) return;
+
+      const toChoices = [];
+      for (let i = idx; i < daySlots.length; i++) {
+        const s = daySlots[i];
+        if (!s.free) break;
+        // continuous means next slot.from == previous.to
+        if (i > idx) {
+          const prev = daySlots[i-1];
+          if (prev.to !== s.from) break;
+        }
+        toChoices.push(s.to);
       }
-      const first = data.items[0];
-      els.nextBox.innerHTML = `
-        <div style="font-weight:900;">${first.title || "Fitness"}</div>
-        <div class="muted">${fmtDateTime_(first.start)} – ${fmtDateTime_(first.end)}</div>
-      `;
+
+      if (!toChoices.length) return;
+
+      bookingCtx = { ymd, fromIso, toChoices };
+
+      el.bkInfo.textContent = `${t("booking.start")}: ${fmtTime_(fromIso)}  •  ${t("booking.pickUntil")}`;
+      el.bkUntil.innerHTML = toChoices.map(toIso => {
+        const label = fmtTime_(toIso);
+        return `<option value="${toIso}">${label}</option>`;
+      }).join("");
+
+      el.bkNote.value = "";
+
+      el.bkBackdrop.style.display = "flex";
     }
 
-    // =========================
-    // Dashboard refresh (safe)
-    // =========================
-    async function renderDashboardSafe_() {
-      hideMsg();
-
-      // month/day depends on picker
-      const ymd = els.picker.value || ymdLocal_(new Date());
-      const d = new Date(ymd + "T12:00:00");
-      const year = d.getFullYear();
-      const month = d.getMonth() + 1;
-
-      // refresh core
-      await Promise.allSettled([
-        renderMonth_(ymd),
-        renderDay_(ymd),
-        renderMyReservations_(),
-        renderNextAppointment_()
-      ]);
-
-      // keep current view selection (default month)
-      showView_("month");
+    function closeBookingModal_() {
+      bookingCtx = null;
+      el.bkBackdrop.style.display = "none";
+      hideMsg_(el.bkMsg);
     }
 
-    // =========================
-    // Push (prepared)
-    // =========================
-    async function enablePush_() {
-      // We implement the real OneSignal step next.
-      // For now show instructions.
-      if (!ONESIGNAL_APP_ID) {
-        showMsg((LANG==="de")
-          ? "OneSignal App ID fehlt. Trage ONESIGNAL_APP_ID im index.html ein."
-          : "Missing OneSignal App ID. Put it into ONESIGNAL_APP_ID in index.html."
-        , "err");
-        return;
-      }
-      showMsg((LANG==="de")
-        ? "OneSignal ist vorbereitet. Nächster Schritt: SDK + Service Worker."
-        : "OneSignal prepared. Next step: SDK + Service Worker."
-      , "ok");
-    }
-
-    // =========================
-    // Bindings
-    // =========================
-    els.langDe.addEventListener("click", ()=>setLang("de"));
-    els.langEn.addEventListener("click", ()=>setLang("en"));
-
-    els.sendBtn.addEventListener("click", async ()=>{
-      const email = (els.email.value || "").trim();
-      if (!email.includes("@")) return showMsg(t("msgInvalidEmail"), "err");
-      await sendLink(email);
+    el.bkCancel.addEventListener("click", closeBookingModal_);
+    el.bkBackdrop.addEventListener("click", (e)=>{
+      if (e.target === el.bkBackdrop) closeBookingModal_();
     });
 
-    els.changeBtn.addEventListener("click", ()=>{
-      localStorage.removeItem(LS_EMAIL_KEY);
-      els.email.value = "";
-      showMsg((LANG==="de") ? "OK. Bitte neue E-Mail eingeben und Link senden." : "OK. Enter a new email and send a link.", "ok");
+    el.bkConfirm.addEventListener("click", async ()=>{
+      if (!bookingCtx) return;
+      el.bkConfirm.disabled = true;
+      hideMsg_(el.bkMsg);
+
+      try {
+        const toIso = el.bkUntil.value;
+        const note = el.bkNote.value || "";
+        const res = await backend.reserve(bookingCtx.fromIso, toIso, note);
+
+        showMsg_(el.bkMsg, t("booking.booked"), "ok");
+
+        // auto close after 700ms and refresh UI
+        setTimeout(async ()=>{
+          closeBookingModal_();
+          await hardRefresh_();
+        }, 700);
+
+      } catch (e) {
+        const s = String(e || "");
+        if (s.includes("limit_reached_max_2_active")) {
+          showMsg_(el.bkMsg, t("booking.limit"), "err");
+        } else if (s.includes("slot_not_free")) {
+          showMsg_(el.bkMsg, LANG==="de" ? "Slot ist nicht frei." : "Slot is not free.", "err");
+        } else {
+          showMsg_(el.bkMsg, s, "err");
+        }
+      } finally {
+        el.bkConfirm.disabled = false;
+      }
     });
 
-    els.btnMenu.addEventListener("click", ()=>openDrawer_());
-    els.drawerOverlay.addEventListener("click", ()=>closeDrawer_());
+    // =========================
+    // Drawer (hamburger)
+    // =========================
+    function openDrawer_() {
+      el.drawerBackdrop.style.display = "block";
+      el.drawer.classList.add("open");
+    }
+    function closeDrawer_() {
+      el.drawerBackdrop.style.display = "none";
+      el.drawer.classList.remove("open");
+      el.settingsBox.style.display = "none";
+    }
+    el.menuBtn.addEventListener("click", openDrawer_);
+    el.drawerBackdrop.addEventListener("click", closeDrawer_);
 
-    els.mLogout.addEventListener("click", async ()=>{
+    el.m_settings.addEventListener("click", ()=>{
+      el.settingsBox.style.display = (el.settingsBox.style.display === "none") ? "block" : "none";
+    });
+
+    el.m_refresh.addEventListener("click", async ()=>{
+      closeDrawer_();
+      await hardRefresh_().catch(e=>showMsg_(el.appMsg, String(e), "err"));
+    });
+
+    el.m_my.addEventListener("click", async ()=>{
+      closeDrawer_();
+      // scroll to my list
+      el.myList.scrollIntoView({ behavior:"smooth", block:"start" });
+    });
+
+    el.m_logout.addEventListener("click", async ()=>{
       closeDrawer_();
       await signOut(auth);
-      cachedIdToken = null; cachedIdTokenExp = 0;
       location.reload();
     });
 
-    els.mRefresh.addEventListener("click", async ()=>{
-      closeDrawer_();
-      if (!state.me?.allowed) return;
-      await renderDashboardSafe_();
-    });
+    // =========================
+    // OneSignal (lazy)
+    // =========================
+    let oneSignalLoaded = false;
 
-    els.mPushEnable.addEventListener("click", async ()=>{
-      closeDrawer_();
-      await enablePush_();
-    });
+    function setPushSwitchUI_(on) {
+      el.pushSwitch.classList.toggle("on", !!on);
+      el.pushStateLine.textContent = `${t("push.title")}: ${on ? t("push.on") : t("push.off")}`;
+    }
 
-    els.btnOpenCalendar.addEventListener("click", async ()=>{
-      els.calendarBox.style.display = (els.calendarBox.style.display === "none") ? "block" : "none";
-      if (els.calendarBox.style.display !== "none") {
-        const today = ymdLocal_(new Date());
-        els.picker.value = els.picker.value || today;
-        await renderMonth_(els.picker.value);
-        showView_("month");
+    async function loadOneSignal_() {
+      if (oneSignalLoaded) return;
+      oneSignalLoaded = true;
+
+      await new Promise((resolve, reject) => {
+        const s = document.createElement("script");
+        s.src = "https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js";
+        s.defer = true;
+        s.onload = resolve;
+        s.onerror = reject;
+        document.head.appendChild(s);
+      });
+
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      await new Promise((resolve) => {
+        window.OneSignalDeferred.push(async function(OneSignal) {
+          await OneSignal.init({ appId: ONESIGNAL_APP_ID });
+          resolve();
+        });
+      });
+    }
+
+    async function enablePushFlow_() {
+      await loadOneSignal_();
+      // request permission + subscribe
+      const OneSignal = window.OneSignal;
+      const perm = await OneSignal.Notifications.permission;
+      if (perm !== "granted") {
+        await OneSignal.Notifications.requestPermission();
+      }
+      // get subscription id and save to backend
+      const subId = await OneSignal.User.PushSubscription.id;
+      if (subId) {
+        await backend.pushRegister(subId);
+        el.pushStateLine.textContent = t("push.active");
+      } else {
+        el.pushStateLine.textContent = t("push.needPerm");
+      }
+    }
+
+    el.pushSwitch.addEventListener("click", async ()=>{
+      const cur = (localStorage.getItem(LS_PUSH_ENABLED) === "1");
+      const next = !cur;
+      localStorage.setItem(LS_PUSH_ENABLED, next ? "1" : "0");
+      setPushSwitchUI_(next);
+
+      if (next) {
+        try {
+          await enablePushFlow_();
+        } catch (e) {
+          el.pushStateLine.textContent = String(e);
+        }
       }
     });
 
-    els.btnRefreshAll.addEventListener("click", async ()=>renderDashboardSafe_());
-    els.btnRefreshMy.addEventListener("click", async ()=>renderMyReservations_());
+    // =========================
+    // Tab bindings
+    // =========================
+    el.tabMonth.addEventListener("click", async ()=>{ await renderMonth_(el.picker.value); showView_("month"); });
+    el.tabDay.addEventListener("click", async ()=>{ await renderDay_(el.picker.value); showView_("day"); });
+    el.tabWeek.addEventListener("click", async ()=>{ await renderWeek_(el.picker.value); showView_("week"); });
 
-    els.tabMonth.addEventListener("click", async ()=>{
-      await renderMonth_(els.picker.value || ymdLocal_(new Date()));
-      showView_("month");
-    });
-    els.tabWeek.addEventListener("click", async ()=>{
-      await renderWeek_(els.picker.value || ymdLocal_(new Date()));
-      showView_("week");
-    });
-    els.tabDay.addEventListener("click", async ()=>{
-      await renderDay_(els.picker.value || ymdLocal_(new Date()));
+    el.picker.addEventListener("change", async ()=>{
+      await renderDay_(el.picker.value);
       showView_("day");
     });
 
-    els.picker.addEventListener("change", async ()=>{
-      await renderDay_(els.picker.value);
+    el.btnReserve.addEventListener("click", async ()=>{
+      // open today day view
+      await renderDay_(el.picker.value);
       showView_("day");
     });
-
-    els.btnOpenReserve.addEventListener("click", async ()=>{
-      // reservation starts from day view: open calendar if hidden, switch to day, user clicks free slot
-      els.calendarBox.style.display = "block";
-      const today = ymdLocal_(new Date());
-      els.picker.value = els.picker.value || today;
-      await renderDay_(els.picker.value);
-      showView_("day");
-      // little hint
-      showMsg(LANG==="de" ? "Wähle einen freien Slot im Tagesplan." : "Pick a free slot in day view.", "ok");
+    el.btnMy.addEventListener("click", ()=>{
+      el.myList.scrollIntoView({ behavior:"smooth", block:"start" });
     });
-
-    els.btnShowMy.addEventListener("click", ()=>{
-      // scroll to my list
-      document.querySelector("#myList")?.scrollIntoView({ behavior:"smooth", block:"start" });
+    el.btnRefreshMy.addEventListener("click", async ()=>{
+      await hardRefresh_().catch(e=>showMsg_(el.appMsg, String(e), "err"));
     });
-
-    els.btnCancelModal.addEventListener("click", ()=>closeModal_());
-    els.modalOverlay.addEventListener("click", ()=>closeModal_());
-    els.btnConfirm.addEventListener("click", ()=>confirmBooking_());
 
     // =========================
     // Boot
     // =========================
+    el.langDe.addEventListener("click", ()=>setLang("de"));
+    el.langEn.addEventListener("click", ()=>setLang("en"));
+
     applyI18n();
-    await completeSignInIfLink();
+    setPill("checking");
 
-    onAuthStateChanged(auth, async (user)=>{
-      hideMsg();
-      cachedIdToken = null; cachedIdTokenExp = 0;
-
+    onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        els.subtitle.textContent = t("sub_logged_out");
-        els.loginBox.style.display = "block";
-        els.appBox.style.display = "none";
-        els.pillAllowed.textContent = (LANG==="de") ? "Status: abgemeldet" : "Status: signed out";
-        els.pillTz.textContent = t("tz");
+        // ak nie si prihlaseny, presmeruj (u teba to uz riesi Firebase email link flow inde)
+        setPill("error");
+        el.lockedBox.style.display = "block";
+        el.lockedText.textContent = "Nicht angemeldet. Bitte Login-Link benutzen.";
         return;
       }
 
-      els.subtitle.textContent = t("sub_logged_in");
+      setPill("signedIn");
+      el.pillEmail.style.display = "inline-block";
+      el.pillEmail.textContent = user.email || "";
+      el.pillRole.style.display = "inline-block";
 
-      // gate
       try {
-        const me = await api.me();
-        state.me = me;
+        const me = await backend.me();
+        el.pillRole.textContent = "role: " + (me.role || "none");
 
-        // drawer info
-        els.mInfoEmail.textContent = user.email || "";
-        els.mInfoRole.textContent = "role: " + (me.role || "none");
-
-        els.pillTz.textContent = t("tz");
-        els.pillAllowed.textContent = me.allowed ? t("allowed") : t("denied");
+        el.app.style.display = "block";
+        el.pillAllowed.textContent = me.allowed ? t("app.allowed") : t("app.denied");
+        el.pillTz.textContent = t("app.tz");
 
         if (!me.allowed) {
-          els.loginBox.style.display = "none";
-          els.appBox.style.display = "none";
-          showMsg(LANG==="de" ? "Du bist nicht freigeschaltet. Bitte Admin kontaktieren." : "You are not enabled yet. Contact admin.", "err");
+          el.lockedBox.style.display = "block";
+          el.lockedText.textContent = LANG==="de"
+            ? "Du bist nicht freigeschaltet. Bitte Admin kontaktieren."
+            : "You are not enabled yet. Please contact an admin.";
           return;
         }
 
-        els.loginBox.style.display = "none";
-        els.appBox.style.display = "block";
-
-        // initial date
+        // init date
         const today = ymdLocal_(new Date());
-        els.picker.value = today;
+        el.picker.value = today;
 
-        // load dashboard
-        await renderDashboardSafe_();
+        // push UI state
+        const pushEnabled = (localStorage.getItem(LS_PUSH_ENABLED) === "1");
+        setPushSwitchUI_(pushEnabled);
+
+        // show month by default
+        await renderMyReservations_();
+        await renderMonth_(today);
+        showView_("month");
+
+        // if push enabled -> lazy init (no prompt unless user turns it on)
+        if (pushEnabled) {
+          // do not auto request permission; only load SDK
+          loadOneSignal_().catch(()=>{});
+        }
 
       } catch (e) {
-        console.error(e);
-        showMsg(t("msgBackendErr") + String(e), "err");
+        setPill("error");
+        showMsg_(el.appMsg, String(e), "err");
       }
     });
   </script>
