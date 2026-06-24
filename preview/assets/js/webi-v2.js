@@ -89,4 +89,79 @@
       document.body.classList.remove("nav-open");
     }
   });
+
+  const galleryItems = Array.from(document.querySelectorAll("[data-gallery-src]"));
+  const dialog = document.querySelector("[data-photo-dialog]");
+  const dialogImage = document.querySelector("[data-gallery-image]");
+  const dialogCaption = document.querySelector("[data-gallery-caption]");
+  const closeButton = document.querySelector("[data-gallery-close]");
+  const prevButton = document.querySelector("[data-gallery-prev]");
+  const nextButton = document.querySelector("[data-gallery-next]");
+  let activeGalleryIndex = 0;
+  let lastFocusedElement = null;
+
+  function setGalleryImage(index) {
+    const item = galleryItems[index];
+    if (!item || !dialogImage || !dialogCaption) {
+      return;
+    }
+
+    activeGalleryIndex = index;
+    dialogImage.src = item.dataset.gallerySrc;
+    dialogImage.alt = item.dataset.galleryAlt || "";
+    dialogCaption.textContent = item.dataset.galleryTitle || item.dataset.galleryAlt || "";
+  }
+
+  function openGallery(index) {
+    if (!dialog || !dialog.showModal) {
+      return;
+    }
+
+    lastFocusedElement = document.activeElement;
+    setGalleryImage(index);
+    dialog.showModal();
+    closeButton?.focus();
+  }
+
+  function closeGallery() {
+    if (!dialog || !dialog.open) {
+      return;
+    }
+
+    dialog.close();
+    if (lastFocusedElement && typeof lastFocusedElement.focus === "function") {
+      lastFocusedElement.focus();
+    }
+  }
+
+  if (galleryItems.length && dialog) {
+    galleryItems.forEach(function (item, index) {
+      item.addEventListener("click", function () {
+        openGallery(index);
+      });
+    });
+
+    closeButton?.addEventListener("click", closeGallery);
+
+    prevButton?.addEventListener("click", function () {
+      const nextIndex = (activeGalleryIndex - 1 + galleryItems.length) % galleryItems.length;
+      setGalleryImage(nextIndex);
+    });
+
+    nextButton?.addEventListener("click", function () {
+      const nextIndex = (activeGalleryIndex + 1) % galleryItems.length;
+      setGalleryImage(nextIndex);
+    });
+
+    dialog.addEventListener("click", function (event) {
+      if (event.target === dialog) {
+        closeGallery();
+      }
+    });
+
+    dialog.addEventListener("cancel", function (event) {
+      event.preventDefault();
+      closeGallery();
+    });
+  }
 })();
