@@ -171,4 +171,149 @@
       closeGallery();
     });
   }
+
+  const partyroomCalendar = document.querySelector("[data-partyroom-calendar]");
+
+  if (partyroomCalendar) {
+    const calendarGrid = partyroomCalendar.querySelector("[data-calendar-grid]");
+    const calendarTitle = partyroomCalendar.querySelector("[data-calendar-title]");
+    const calendarMessage = partyroomCalendar.querySelector("[data-calendar-message]");
+    const prevMonthButton = partyroomCalendar.querySelector("[data-calendar-prev]");
+    const nextMonthButton = partyroomCalendar.querySelector("[data-calendar-next]");
+    const dataUrl = partyroomCalendar.dataset.partyroomData;
+    const weekdays = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
+    const statusLabels = {
+      frei: "Frei",
+      belegt: "Belegt",
+      "nicht verfügbar": "Nicht verfügbar",
+      "keine angabe": "Keine Angabe"
+    };
+    const statusClasses = {
+      frei: "frei",
+      belegt: "belegt",
+      "nicht verfügbar": "nicht-verfuegbar",
+      "keine angabe": "keine-angabe"
+    };
+    let visibleMonth = new Date();
+    visibleMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 1);
+    let occupancyDays = {};
+    let hasCurrentData = false;
+
+    function toIsoDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function monthTitle(date) {
+      return new Intl.DateTimeFormat("de-CH", {
+        month: "long",
+        year: "numeric"
+      }).format(date);
+    }
+
+    function dayLabel(date) {
+      return new Intl.DateTimeFormat("de-CH", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      }).format(date);
+    }
+
+    function publicStatus(rawStatus) {
+      const status = typeof rawStatus === "string" ? rawStatus.trim().toLowerCase() : "";
+      return Object.prototype.hasOwnProperty.call(statusLabels, status) ? status : "keine angabe";
+    }
+
+    function setCalendarMessage() {
+      if (!calendarMessage) {
+        return;
+      }
+
+      calendarMessage.textContent = hasCurrentData
+        ? ""
+        : "Die aktuelle Belegungsübersicht wird vorbereitet. Für verbindliche Fragen zur Verfügbarkeit wende dich bitte direkt an Michal Jančovič.";
+    }
+
+    function renderCalendar() {
+      if (!calendarGrid || !calendarTitle) {
+        return;
+      }
+
+      calendarTitle.textContent = monthTitle(visibleMonth);
+      calendarGrid.innerHTML = "";
+
+      weekdays.forEach(function (weekday) {
+        const weekdayElement = document.createElement("div");
+        weekdayElement.className = "calendar-weekday";
+        weekdayElement.textContent = weekday;
+        calendarGrid.appendChild(weekdayElement);
+      });
+
+      const year = visibleMonth.getFullYear();
+      const month = visibleMonth.getMonth();
+      const firstDay = new Date(year, month, 1);
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const leadingEmptyDays = (firstDay.getDay() + 6) % 7;
+
+      for (let i = 0; i < leadingEmptyDays; i += 1) {
+        const emptyDay = document.createElement("div");
+        emptyDay.className = "calendar-day is-outside";
+        calendarGrid.appendChild(emptyDay);
+      }
+
+      for (let day = 1; day <= daysInMonth; day += 1) {
+        const date = new Date(year, month, day);
+        const isoDate = toIsoDate(date);
+        const status = publicStatus(occupancyDays[isoDate]);
+        const dayElement = document.createElement("div");
+        const statusText = statusLabels[status];
+        dayElement.className = "calendar-day";
+        dayElement.dataset.status = statusClasses[status];
+        dayElement.setAttribute("role", "group");
+        dayElement.setAttribute("aria-label", `${dayLabel(date)}: ${statusText}`);
+        dayElement.innerHTML = `<span class="calendar-day-number">${day}</span><span class="calendar-day-status">${statusText}</span>`;
+        calendarGrid.appendChild(dayElement);
+      }
+
+      setCalendarMessage();
+    }
+
+    function changeMonth(offset) {
+      visibleMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + offset, 1);
+      renderCalendar();
+    }
+
+    prevMonthButton?.addEventListener("click", function () {
+      changeMonth(-1);
+    });
+
+    nextMonthButton?.addEventListener("click", function () {
+      changeMonth(1);
+    });
+
+    renderCalendar();
+
+    if (dataUrl) {
+      fetch(dataUrl, { cache: "no-store" })
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error("calendar data unavailable");
+          }
+          return response.json();
+        })
+        .then(function (data) {
+          const days = data && typeof data.days === "object" && data.days ? data.days : {};
+          occupancyDays = days;
+          hasCurrentData = Boolean(data?.updatedAt) && Object.keys(days).length > 0;
+          renderCalendar();
+        })
+        .catch(function () {
+          occupancyDays = {};
+          hasCurrentData = false;
+          renderCalendar();
+        });
+    }
+  }
 })();

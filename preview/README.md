@@ -12,6 +12,7 @@ preview/quartier.html
 preview/geschichte.html
 preview/hilfe-kontakt.html
 preview/sponsoren.html
+preview/downloads.html
 preview/rueckblicke/gemeinsam-unterwegs.html
 ```
 
@@ -24,4 +25,5 @@ Es gibt kein Build-System und keine externen Abhängigkeiten.
 - `Downloads & Formulare` ist später eine öffentliche Seite für geprüfte Dokumente, Formulare und PDF-Dateien.
 - `Interner Bereich` ist später ein schlanker Link-Hub für bestehende interne Web-Links, ohne Downloads, PDF-Sammlung, Formulare, Login oder neue Funktionen.
 - `Partner & Sponsoren` ist als öffentliche Preview-Seite vorhanden.
-- `Downloads & Formulare`, `Interner Bereich`, `Impressum` und `Datenschutz` werden im Footer erst aktiv verlinkt, wenn die jeweilige Preview-Seite vorhanden ist.
+- `Downloads & Formulare` ist als öffentliche Preview-Seite vorhanden.
+- `Interner Bereich`, `Impressum` und `Datenschutz` werden im Footer erst aktiv verlinkt, wenn die jeweilige Preview-Seite vorhanden ist.

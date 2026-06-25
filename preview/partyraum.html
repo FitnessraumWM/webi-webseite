@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Partyraum · webi.family</title>
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="stylesheet" href="assets/css/webi-v2.css">
+</head>
+<body>
+  <a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
+
+  <header class="site-header" data-header>
+    <div class="nav-shell">
+      <a class="brand" href="index.html#start" aria-label="Zur Startseite">
+        <img class="brand-logo brand-logo-light" src="../logo-qv-schwarz.png" alt="Quartierverein Webermühle-Klosterrüti">
+        <img class="brand-logo brand-logo-dark" src="../logo-qv-weiss.png" alt="" aria-hidden="true">
+        <span>webi.family</span>
+      </a>
+
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="hauptnavigation" data-menu-toggle>
+        Menü
+      </button>
+
+      <nav id="hauptnavigation" class="main-nav" aria-label="Hauptnavigation" data-nav>
+        <a href="index.html">Start</a>
+        <a href="veranstaltungen.html">Veranstaltungen</a>
+        <a href="raeume.html" aria-current="page">Räume</a>
+        <a href="quartier.html">Quartier</a>
+        <a href="hilfe-kontakt.html">Hilfe &amp; Kontakt</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="theme-toggle" type="button" aria-label="Darstellung wechseln" data-theme-toggle>
+          <span data-theme-label>Hell</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="inhalt">
+    <section class="page-hero" aria-labelledby="partyraum-title">
+      <div class="page-hero-content">
+        <p class="eyebrow">Webermühle · Neuenhof</p>
+        <h1 id="partyraum-title">Partyraum</h1>
+        <p class="lead">Ein Raum für Feiern, Treffen und gemeinsame Momente im Quartier.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="mailto:michal.jancovic@gmail.com">Partyraum anfragen</a>
+          <a class="button button-secondary" href="#belegung">Belegung ansehen</a>
+        </div>
+      </div>
+      <div class="page-hero-media">
+        <img src="../partyraum01.jpg" alt="Partyraum in der Webermühle">
+      </div>
+    </section>
+
+    <section class="section section-tight" aria-labelledby="partyraum-kontakt-title">
+      <div class="section-inner">
+        <article class="info-card party-contact-card">
+          <div>
+            <p class="eyebrow">Kontakt</p>
+            <h2 id="partyraum-kontakt-title">Fragen zum Partyraum?</h2>
+            <p><strong>Michal Jančovič</strong></p>
+          </div>
+          <div class="contact-actions">
+            <a class="button button-secondary" href="tel:+41767090801">Telefon: 076 709 08 01</a>
+            <a class="button button-secondary" href="mailto:michal.jancovic@gmail.com">E-Mail: michal.jancovic@gmail.com</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="belegung" class="section" aria-labelledby="partyraum-calendar-title">
+      <div class="section-inner partyroom-layout">
+        <div class="party-calendar-panel">
+          <div class="section-heading">
+            <p class="eyebrow">Verfügbarkeit</p>
+            <h2 id="partyraum-calendar-title">Belegungsübersicht</h2>
+            <p>Hier siehst du, ob der Partyraum an einem Tag frei oder belegt ist. Persönliche Angaben werden nicht angezeigt.</p>
+          </div>
+
+          <div class="party-calendar" data-partyroom-calendar data-partyroom-data="data/partyraum-belegung.json">
+            <div class="party-calendar-head">
+              <button type="button" class="calendar-nav-button" data-calendar-prev aria-label="Vorherigen Monat anzeigen">Zurück</button>
+              <h3 data-calendar-title aria-live="polite">Monat wird geladen</h3>
+              <button type="button" class="calendar-nav-button" data-calendar-next aria-label="Nächsten Monat anzeigen">Weiter</button>
+            </div>
+            <p class="calendar-status-message" data-calendar-message>
+              Die aktuelle Belegungsübersicht wird vorbereitet. Für verbindliche Fragen zur Verfügbarkeit wende dich bitte direkt an Michal Jančovič.
+            </p>
+            <div class="calendar-legend" aria-label="Legende">
+              <span><i class="status-dot status-free" aria-hidden="true"></i>Frei</span>
+              <span><i class="status-dot status-booked" aria-hidden="true"></i>Belegt</span>
+              <span><i class="status-dot status-unavailable" aria-hidden="true"></i>Nicht verfügbar</span>
+              <span><i class="status-dot status-unknown" aria-hidden="true"></i>Keine Angabe</span>
+            </div>
+            <div class="calendar-grid" data-calendar-grid aria-label="Monatskalender"></div>
+          </div>
+        </div>
+
+        <aside class="party-side-panel" aria-labelledby="partyraum-kosten-title">
+          <article class="info-card">
+            <p class="eyebrow">Miete</p>
+            <h2 id="partyraum-kosten-title">Kosten</h2>
+            <ul class="plain-list">
+              <li>CHF 40 für Mitglieder des Quartiervereins</li>
+              <li>CHF 60 für Nichtmitglieder</li>
+            </ul>
+          </article>
+
+          <article class="info-card">
+            <p class="eyebrow">Wichtig</p>
+            <h2>Schlüsselübergabe</h2>
+            <p>Ist der Partyraum am Vortag belegt, erfolgt die Schlüsselübergabe am Tag der Nutzung frühestens um 10:00 Uhr.</p>
+          </article>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section section-muted" aria-labelledby="partyraum-regeln-title">
+      <div class="section-inner">
+        <div class="section-heading">
+          <p class="eyebrow">Wichtig</p>
+          <h2 id="partyraum-regeln-title">Nutzung und Rückgabe</h2>
+          <p>Der Partyraum soll nach der Nutzung sauber und ordentlich an die nächste Person übergeben werden.</p>
+        </div>
+
+        <div class="rule-grid">
+          <article class="rule-card">
+            <h3>Boden</h3>
+            <p>Der Boden muss zweimal nass gewischt werden.</p>
+          </article>
+          <article class="rule-card">
+            <h3>Küche</h3>
+            <p>Die Küche muss sauber und fleckenfrei hinterlassen werden.</p>
+          </article>
+          <article class="rule-card">
+            <h3>Geschirrspüler</h3>
+            <p>Der Geschirrspüler muss vollständig geleert sein. Es darf kein Restwasser zurückbleiben.</p>
+          </article>
+          <article class="rule-card">
+            <h3>Kühlschrank</h3>
+            <p>Der Kühlschrank muss vollständig geleert und sauber hinterlassen werden.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="partyraum-bilder-title">
+      <div class="section-inner">
+        <div class="section-heading">
+          <p class="eyebrow">Einblick</p>
+          <h2 id="partyraum-bilder-title">Bilder vom Partyraum</h2>
+        </div>
+        <div class="detail-gallery-grid">
+          <button class="gallery-item" type="button" data-gallery-group="partyraum-detail" data-gallery-src="../partyraum01.jpg" data-gallery-alt="Partyraum in der Webermühle" data-gallery-title="Partyraum">
+            <img src="../partyraum01.jpg" alt="Partyraum in der Webermühle">
+            <span>Partyraum</span>
+          </button>
+          <button class="gallery-item" type="button" data-gallery-group="partyraum-detail" data-gallery-src="../partyraum02.jpg" data-gallery-alt="Weitere Ansicht des Partyraums" data-gallery-title="Weitere Ansicht">
+            <img src="../partyraum02.jpg" alt="Weitere Ansicht des Partyraums">
+            <span>Weitere Ansicht</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-tight" aria-labelledby="partyraum-abschluss-title">
+      <div class="section-inner">
+        <article class="info-card">
+          <p class="eyebrow">Gemeinsam nutzen</p>
+          <h2 id="partyraum-abschluss-title">Gut vorbereitet feiern</h2>
+          <p>Mit einer frühzeitigen Anfrage und einer sauberen Rückgabe bleibt der Partyraum für alle gut nutzbar.</p>
+          <a class="button button-secondary" href="raeume.html">Zu den gemeinsamen Räumen</a>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer id="intern" class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="../logo-qv-weiss.png" alt="Logo Quartierverein Webermühle-Klosterrüti">
+        <div>
+          <strong>Webermühle / Quartierverein</strong>
+          <p>Ruhig, klar, verbunden.</p>
+        </div>
+      </div>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="veranstaltungen.html">Veranstaltungen</a>
+        <a href="raeume.html" aria-current="page">Räume</a>
+        <a href="quartier.html">Quartier</a>
+        <a href="hilfe-kontakt.html">Hilfe &amp; Kontakt</a>
+        <a href="sponsoren.html">Partner &amp; Sponsoren</a>
+        <a href="downloads.html">Downloads &amp; Formulare</a>
+        <a href="intern.html">Interner Bereich</a>
+      </nav>
+    </div>
+  </footer>
+
+  <dialog class="photo-dialog" data-photo-dialog aria-labelledby="photo-title">
+    <div class="photo-dialog-inner">
+      <div class="photo-dialog-head">
+        <h2 id="photo-title">Fotoansicht</h2>
+        <button class="dialog-close" type="button" data-gallery-close>Schliessen</button>
+      </div>
+      <figure>
+        <img src="../partyraum01.jpg" alt="" data-gallery-image>
+        <figcaption data-gallery-caption></figcaption>
+      </figure>
+      <div class="photo-dialog-actions">
+        <button type="button" data-gallery-prev>Zurück</button>
+        <button type="button" data-gallery-next>Weiter</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="assets/js/webi-v2.js"></script>
+</body>
+</html>
