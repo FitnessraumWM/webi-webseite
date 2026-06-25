@@ -98,10 +98,11 @@
   const prevButton = document.querySelector("[data-gallery-prev]");
   const nextButton = document.querySelector("[data-gallery-next]");
   let activeGalleryIndex = 0;
+  let activeGalleryItems = galleryItems;
   let lastFocusedElement = null;
 
   function setGalleryImage(index) {
-    const item = galleryItems[index];
+    const item = activeGalleryItems[index];
     if (!item || !dialogImage || !dialogCaption) {
       return;
     }
@@ -117,8 +118,14 @@
       return;
     }
 
+    const item = galleryItems[index];
+    const group = item?.dataset.galleryGroup || "";
+    activeGalleryItems = galleryItems.filter(function (galleryItem) {
+      return (galleryItem.dataset.galleryGroup || "") === group;
+    });
+    const groupedIndex = activeGalleryItems.indexOf(item);
     lastFocusedElement = document.activeElement;
-    setGalleryImage(index);
+    setGalleryImage(groupedIndex >= 0 ? groupedIndex : 0);
     dialog.showModal();
     closeButton?.focus();
   }
@@ -144,12 +151,12 @@
     closeButton?.addEventListener("click", closeGallery);
 
     prevButton?.addEventListener("click", function () {
-      const nextIndex = (activeGalleryIndex - 1 + galleryItems.length) % galleryItems.length;
+      const nextIndex = (activeGalleryIndex - 1 + activeGalleryItems.length) % activeGalleryItems.length;
       setGalleryImage(nextIndex);
     });
 
     nextButton?.addEventListener("click", function () {
-      const nextIndex = (activeGalleryIndex + 1) % galleryItems.length;
+      const nextIndex = (activeGalleryIndex + 1) % activeGalleryItems.length;
       setGalleryImage(nextIndex);
     });
 

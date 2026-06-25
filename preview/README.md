@@ -7,6 +7,7 @@ Lokal öffnen:
 ```text
 preview/index.html
 preview/veranstaltungen.html
+preview/raeume.html
 preview/rueckblicke/gemeinsam-unterwegs.html
 ```
 
