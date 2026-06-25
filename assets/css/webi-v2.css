@@ -645,14 +645,24 @@ h3 {
   margin-bottom: 16px;
 }
 
+.shop-brand-frame {
+  width: fit-content;
+  max-width: 100%;
+  display: grid;
+  place-items: center;
+  padding: 10px;
+  margin-bottom: 16px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: calc(var(--radius) - 4px);
+}
+
 .shop-brand {
-  width: min(180px, 58vw);
+  width: min(112px, 34vw);
   max-width: 100%;
   height: auto;
-  max-height: 96px;
   object-fit: contain;
-  margin-bottom: 16px;
-  border-radius: calc(var(--radius) - 4px);
+  border-radius: calc(var(--radius) - 6px);
 }
 
 .event-card p {
