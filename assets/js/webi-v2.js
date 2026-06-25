@@ -201,7 +201,11 @@
     const calendarMessage = partyroomCalendar.querySelector("[data-calendar-message]");
     const prevMonthButton = partyroomCalendar.querySelector("[data-calendar-prev]");
     const nextMonthButton = partyroomCalendar.querySelector("[data-calendar-next]");
-    const dataUrl = partyroomCalendar.dataset.partyroomData;
+    const localDataUrl = partyroomCalendar.dataset.partyroomData;
+    const liveDataUrl = "https://belegung.webi.family/partyraum-belegung.json";
+    const productionHosts = new Set(["webi.family", "www.webi.family"]);
+    const isProductionHost = productionHosts.has(window.location.hostname);
+    const dataUrl = isProductionHost ? liveDataUrl : localDataUrl;
     const weekdays = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
     const statusLabels = {
       frei: "Frei",
@@ -215,6 +219,8 @@
     visibleMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 1);
     let bookedDays = new Set();
     let updatedAt = null;
+    let hasCalendarData = false;
+    let dataUnavailable = false;
 
     function toIsoDate(date) {
       const year = date.getFullYear();
@@ -244,6 +250,19 @@
         return "";
       }
 
+      const now = new Date();
+      const isToday = date.getFullYear() === now.getFullYear()
+        && date.getMonth() === now.getMonth()
+        && date.getDate() === now.getDate();
+      const time = new Intl.DateTimeFormat("de-CH", {
+        hour: "2-digit",
+        minute: "2-digit"
+      }).format(date);
+
+      if (isToday) {
+        return `heute, ${time} Uhr`;
+      }
+
       return new Intl.DateTimeFormat("de-CH", {
         dateStyle: "medium",
         timeStyle: "short"
@@ -259,14 +278,34 @@
         return;
       }
 
+      if (dataUnavailable && !hasCalendarData) {
+        calendarMessage.textContent = "Die aktuelle Belegung ist momentan nicht abrufbar. Für eine verbindliche Anfrage wende dich bitte direkt an Michal Jančovič.";
+        return;
+      }
+
       const label = updatedAt ? updatedAtLabel(updatedAt) : "";
       calendarMessage.textContent = label
-        ? `Aktualisiert: ${label}`
+        ? `Letzte Aktualisierung: ${label}`
         : "Die Belegungsübersicht wird laufend aktualisiert. Für eine verbindliche Anfrage wende dich bitte direkt an Michal Jančovič.";
+    }
+
+    function renderCalendarUnavailable() {
+      if (!calendarGrid || !calendarTitle) {
+        return;
+      }
+
+      calendarTitle.textContent = monthTitle(visibleMonth);
+      calendarGrid.innerHTML = "";
+      setCalendarMessage();
     }
 
     function renderCalendar() {
       if (!calendarGrid || !calendarTitle) {
+        return;
+      }
+
+      if (!hasCalendarData) {
+        renderCalendarUnavailable();
         return;
       }
 
@@ -322,10 +361,51 @@
       changeMonth(1);
     });
 
-    renderCalendar();
+    if (!isProductionHost) {
+      renderCalendar();
+    } else {
+      renderCalendarUnavailable();
+    }
+
+    function validateCalendarData(data) {
+      if (!data || data.schemaVersion !== 1 || !Array.isArray(data.bookedDays)) {
+        throw new Error("calendar data unavailable");
+      }
+
+      const validDayPattern = /^\d{4}-\d{2}-\d{2}$/;
+      const validDays = data.bookedDays.filter(function (day) {
+        return typeof day === "string" && validDayPattern.test(day);
+      });
+      const nextUpdatedAt = typeof data.updatedAt === "string" && updatedAtLabel(data.updatedAt)
+        ? data.updatedAt
+        : null;
+
+      return {
+        bookedDays: new Set(validDays),
+        updatedAt: nextUpdatedAt
+      };
+    }
+
+    function fetchCalendarData(url) {
+      const controller = new AbortController();
+      const timeout = window.setTimeout(function () {
+        controller.abort();
+      }, 8000);
+      const requestUrl = isProductionHost
+        ? `${url}?t=${Date.now()}`
+        : url;
+
+      return fetch(requestUrl, {
+        cache: "no-store",
+        signal: controller.signal
+      })
+        .finally(function () {
+          window.clearTimeout(timeout);
+        });
+    }
 
     if (dataUrl) {
-      fetch(dataUrl, { cache: "no-store" })
+      fetchCalendarData(dataUrl)
         .then(function (response) {
           if (!response.ok) {
             throw new Error("calendar data unavailable");
@@ -333,17 +413,20 @@
           return response.json();
         })
         .then(function (data) {
-          const days = Array.isArray(data?.bookedDays) ? data.bookedDays : [];
-          bookedDays = new Set(days.filter(function (day) {
-            return typeof day === "string" && /^\d{4}-\d{2}-\d{2}$/.test(day);
-          }));
-          updatedAt = typeof data?.updatedAt === "string" ? data.updatedAt : null;
+          const validatedData = validateCalendarData(data);
+          bookedDays = validatedData.bookedDays;
+          updatedAt = validatedData.updatedAt;
+          hasCalendarData = true;
+          dataUnavailable = false;
           renderCalendar();
         })
         .catch(function () {
-          bookedDays = new Set();
-          updatedAt = null;
-          renderCalendar();
+          dataUnavailable = true;
+          if (hasCalendarData) {
+            setCalendarMessage();
+          } else {
+            renderCalendarUnavailable();
+          }
         });
     }
   }
