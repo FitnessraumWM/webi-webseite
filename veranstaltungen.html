@@ -52,19 +52,19 @@
     </section>
 
     <nav class="anchor-nav" aria-label="Schnelle Orientierung">
-      <a href="#kommend">Kommende Veranstaltungen</a>
+      <a href="#kommend">Aktuelle Veranstaltungen</a>
       <a href="#rueckblicke">Rückblicke</a>
     </nav>
 
-    <section id="kommend" class="section section-tight" aria-labelledby="kommend-title">
+    <section id="kommend" class="section section-tight" aria-labelledby="kommend-title" data-events-feed data-events-data="data/veranstaltungen.json">
       <div class="section-inner">
-        <article class="empty-event-card" data-event-state="empty">
-          <p class="eyebrow">Kommende Veranstaltungen</p>
-          <h2 id="kommend-title">Der nächste Anlass wird hier veröffentlicht.</h2>
-          <p>Sobald ein Anlass bestätigt ist, erscheinen hier Datum, Ort und alle wichtigen Informationen.</p>
-          <p class="hint">Aktuelle Hinweise und kommende Termine werden künftig direkt an dieser Stelle gepflegt.</p>
-          <a class="button button-secondary" href="index.html">Zur Startseite</a>
-        </article>
+        <div class="section-heading">
+          <p class="eyebrow">Aktuelle Veranstaltungen</p>
+          <h2 id="kommend-title">Aktuelle Veranstaltungen</h2>
+          <p data-events-message>Veranstaltungen werden geladen.</p>
+        </div>
+        <div class="quick-grid" data-events-list aria-live="polite"></div>
+        <p class="hint" data-events-updated hidden></p>
       </div>
     </section>
 

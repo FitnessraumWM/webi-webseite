@@ -28,6 +28,46 @@
 
   redirectLegacyIndexHash();
 
+  const heroSlogan = document.querySelector("[data-hero-slogan]");
+  const heroSloganMain = document.querySelector("[data-hero-slogan-main]");
+  const heroSloganSub = document.querySelector("[data-hero-slogan-sub]");
+
+  if (heroSlogan && heroSloganMain && heroSloganSub) {
+    const heroSloganOptions = [
+      { weight: 175, main: "Wo Nachbarschaft zu Gemeinschaft wird." },
+      { weight: 175, main: "Dein Quartier. Deine Räume. Deine Gemeinschaft." },
+      { weight: 175, main: "Ein Quartier, in dem Menschen, Ideen und gute Momente zusammenkommen." },
+      {
+        weight: 175,
+        main: "Offen für Menschen. Klar in unseren Werten.",
+        sub: "Respekt, Sicherheit und ein fairer Dialog gehören für uns zusammen."
+      },
+      { weight: 30, main: "Gemeinsam wohnen. Gemeinsam erleben. Gemeinsam zuhause sein." },
+      { weight: 30, main: "Ein Quartier voller Leben, Ideen und Begegnungen." },
+      { weight: 30, main: "Räume für Menschen. Platz für Gemeinschaft." },
+      { weight: 30, main: "Hier treffen Menschen, Ideen und gute Momente zusammen." },
+      { weight: 30, main: "Mehr als ein Zuhause – ein Quartier, das verbindet." },
+      { weight: 30, main: "Vielfalt verbindet – Respekt macht Gemeinschaft möglich." },
+      { weight: 30, main: "Offen für Vielfalt. Klar gegen Gewalt und Ausgrenzung." },
+      { weight: 30, main: "Gemeinschaft heisst: einander respektieren, Verantwortung übernehmen und miteinander reden." },
+      { weight: 30, main: "Ein Zuhause für viele Menschen – getragen von Respekt, Sicherheit und Zusammenhalt." },
+      { weight: 30, main: "Offen im Herzen. Klar in der Haltung. Gemeinsam im Quartier." }
+    ];
+    const totalWeight = heroSloganOptions.reduce(function (sum, option) {
+      return sum + option.weight;
+    }, 0);
+    let pick = Math.random() * totalWeight;
+    const selectedSlogan = heroSloganOptions.find(function (option) {
+      pick -= option.weight;
+      return pick < 0;
+    }) || heroSloganOptions[0];
+
+    heroSloganMain.textContent = selectedSlogan.main;
+    heroSloganSub.textContent = selectedSlogan.sub || "";
+    heroSloganSub.hidden = !selectedSlogan.sub;
+    heroSlogan.classList.add("is-ready");
+  }
+
   function preferredTheme() {
     const stored = localStorage.getItem(storageKey);
     if (stored === "dark" || stored === "light") {
@@ -191,6 +231,278 @@
       event.preventDefault();
       closeGallery();
     });
+  }
+
+  const eventsFeed = document.querySelector("[data-events-feed]");
+
+  if (eventsFeed) {
+    const eventsList = eventsFeed.querySelector("[data-events-list]");
+    const eventsMessage = eventsFeed.querySelector("[data-events-message]");
+    const eventsUpdated = eventsFeed.querySelector("[data-events-updated]");
+    const localEventsUrl = eventsFeed.dataset.eventsData;
+    const liveEventsUrl = "https://events.webi.family/veranstaltungen.json";
+    const eventProductionHosts = new Set(["webi.family", "www.webi.family"]);
+    const isEventProductionHost = eventProductionHosts.has(window.location.hostname);
+    const eventsUrl = isEventProductionHost ? liveEventsUrl : localEventsUrl;
+    const validOrganisers = new Set([
+      "Quartierverein Webermühle-Klosterrüti",
+      "Verein SOFE Webi"
+    ]);
+    let hasEventData = false;
+    let eventDataUnavailable = false;
+    let currentEvents = [];
+    let eventsUpdatedAt = null;
+
+    function validIsoDate(value) {
+      if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+        return false;
+      }
+
+      const date = new Date(`${value}T00:00:00`);
+      return !Number.isNaN(date.getTime()) && value === [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, "0"),
+        String(date.getDate()).padStart(2, "0")
+      ].join("-");
+    }
+
+    function validEventTime(value) {
+      return typeof value === "string" && /^([01]\d|2[0-3]):[0-5]\d$/.test(value);
+    }
+
+    function optionalText(value) {
+      return typeof value === "string" ? value.trim() : "";
+    }
+
+    function updatedAtLabel(value) {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) {
+        return "";
+      }
+
+      const now = new Date();
+      const isToday = date.getFullYear() === now.getFullYear()
+        && date.getMonth() === now.getMonth()
+        && date.getDate() === now.getDate();
+      const time = new Intl.DateTimeFormat("de-CH", {
+        hour: "2-digit",
+        minute: "2-digit"
+      }).format(date);
+
+      if (isToday) {
+        return `heute, ${time} Uhr`;
+      }
+
+      return new Intl.DateTimeFormat("de-CH", {
+        dateStyle: "medium",
+        timeStyle: "short"
+      }).format(date);
+    }
+
+    function formatEventDate(value) {
+      const date = new Date(`${value}T00:00:00`);
+      return new Intl.DateTimeFormat("de-CH", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      }).format(date);
+    }
+
+    function setEventsMessage(text) {
+      if (eventsMessage) {
+        eventsMessage.textContent = text;
+      }
+    }
+
+    function setEventsUpdated() {
+      if (!eventsUpdated) {
+        return;
+      }
+
+      const label = eventsUpdatedAt ? updatedAtLabel(eventsUpdatedAt) : "";
+      eventsUpdated.hidden = !label;
+      eventsUpdated.textContent = label ? `Letzte Aktualisierung: ${label}` : "";
+    }
+
+    function clearEventsList() {
+      if (eventsList) {
+        eventsList.innerHTML = "";
+      }
+    }
+
+    function renderEventCard(event) {
+      const article = document.createElement("article");
+      article.className = "event-card";
+
+      const organiser = document.createElement("p");
+      organiser.className = "event-kicker";
+      organiser.textContent = event.organiser;
+      article.appendChild(organiser);
+
+      const title = document.createElement("h3");
+      title.textContent = event.title;
+      article.appendChild(title);
+
+      const date = document.createElement("p");
+      date.textContent = formatEventDate(event.date);
+      article.appendChild(date);
+
+      if (event.time) {
+        const time = document.createElement("p");
+        time.textContent = `${event.time} Uhr`;
+        article.appendChild(time);
+      }
+
+      if (event.location) {
+        const location = document.createElement("p");
+        location.textContent = event.location;
+        article.appendChild(location);
+      }
+
+      if (event.description) {
+        const description = document.createElement("p");
+        description.textContent = event.description;
+        article.appendChild(description);
+      }
+
+      return article;
+    }
+
+    function renderEvents() {
+      clearEventsList();
+
+      if (eventDataUnavailable && !hasEventData) {
+        setEventsMessage("Die aktuellen Veranstaltungen sind momentan nicht abrufbar. Bitte versuche es später erneut oder melde dich direkt beim Quartierverein.");
+        if (eventsUpdated) {
+          eventsUpdated.hidden = true;
+          eventsUpdated.textContent = "";
+        }
+        return;
+      }
+
+      if (!currentEvents.length) {
+        setEventsMessage("Zurzeit sind keine neuen Veranstaltungen angekündigt. Schau bald wieder vorbei.");
+        setEventsUpdated();
+        return;
+      }
+
+      setEventsMessage("");
+      currentEvents.forEach(function (event) {
+        eventsList?.appendChild(renderEventCard(event));
+      });
+      setEventsUpdated();
+    }
+
+    function validateEventsData(data) {
+      if (!data || data.schemaVersion !== 1 || !Array.isArray(data.events)) {
+        throw new Error("event data unavailable");
+      }
+
+      const seenIds = new Set();
+      const validEvents = [];
+
+      data.events.forEach(function (rawEvent) {
+        if (!rawEvent || typeof rawEvent !== "object") {
+          return;
+        }
+
+        const id = typeof rawEvent.id === "string" ? rawEvent.id.trim() : "";
+        if (id && seenIds.has(id)) {
+          return;
+        }
+
+        const title = optionalText(rawEvent.title);
+        const organiser = optionalText(rawEvent.organiser);
+        const date = rawEvent.date;
+        const time = rawEvent.time === null || rawEvent.time === undefined ? "" : optionalText(rawEvent.time);
+        const location = rawEvent.location === null || rawEvent.location === undefined ? "" : optionalText(rawEvent.location);
+        const description = rawEvent.description === null || rawEvent.description === undefined ? "" : optionalText(rawEvent.description);
+
+        if (!title || !validOrganisers.has(organiser) || !validIsoDate(date)) {
+          return;
+        }
+
+        if (time && !validEventTime(time)) {
+          return;
+        }
+
+        if (id) {
+          seenIds.add(id);
+        }
+
+        validEvents.push({
+          title,
+          organiser,
+          date,
+          time,
+          location,
+          description
+        });
+      });
+
+      validEvents.sort(function (a, b) {
+        const aTime = a.time || "00:00";
+        const bTime = b.time || "00:00";
+        return `${a.date}T${aTime}`.localeCompare(`${b.date}T${bTime}`);
+      });
+
+      return {
+        events: validEvents,
+        updatedAt: typeof data.updatedAt === "string" && updatedAtLabel(data.updatedAt)
+          ? data.updatedAt
+          : null
+      };
+    }
+
+    function fetchEventsData(url) {
+      const controller = new AbortController();
+      const timeout = window.setTimeout(function () {
+        controller.abort();
+      }, 8000);
+      const requestUrl = isEventProductionHost
+        ? `${url}?t=${Date.now()}`
+        : url;
+
+      return fetch(requestUrl, {
+        cache: "no-store",
+        signal: controller.signal
+      })
+        .finally(function () {
+          window.clearTimeout(timeout);
+        });
+    }
+
+    renderEvents();
+
+    if (eventsUrl) {
+      fetchEventsData(eventsUrl)
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error("event data unavailable");
+          }
+          return response.json();
+        })
+        .then(function (data) {
+          const validatedData = validateEventsData(data);
+          currentEvents = validatedData.events;
+          eventsUpdatedAt = validatedData.updatedAt;
+          hasEventData = true;
+          eventDataUnavailable = false;
+          renderEvents();
+        })
+        .catch(function () {
+          eventDataUnavailable = true;
+          if (hasEventData) {
+            setEventsMessage("");
+            setEventsUpdated();
+          } else {
+            currentEvents = [];
+            eventsUpdatedAt = null;
+            renderEvents();
+          }
+        });
+    }
   }
 
   const partyroomCalendar = document.querySelector("[data-partyroom-calendar]");
