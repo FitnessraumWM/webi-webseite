@@ -595,6 +595,10 @@ h3 {
   box-shadow: var(--shadow);
 }
 
+.event-card.is-cancelled {
+  border-left: 4px solid var(--warm);
+}
+
 .empty-event-card,
 .info-card {
   max-width: 840px;
@@ -667,6 +671,22 @@ h3 {
 
 .event-card p {
   margin-bottom: 0;
+}
+
+.event-status-badge {
+  width: fit-content;
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  margin: 0 0 12px;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+  font-size: 0.88rem;
+  font-weight: 780;
+  line-height: 1.2;
 }
 
 .event-kicker {
