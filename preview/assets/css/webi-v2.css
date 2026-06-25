@@ -554,6 +554,13 @@ h3 {
   font-weight: 780;
 }
 
+.mini-brand {
+  width: min(132px, 48vw);
+  max-height: 72px;
+  object-fit: contain;
+  margin-bottom: 16px;
+}
+
 .event-card p {
   margin-bottom: 0;
 }
@@ -867,6 +874,460 @@ h3 {
   margin-top: 24px;
 }
 
+.room-note {
+  margin-top: 18px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: calc(var(--radius) - 4px);
+  background: var(--surface-soft);
+  color: var(--text);
+  font-weight: 660;
+}
+
+.room-contact {
+  display: grid;
+  gap: 6px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.room-contact h3 {
+  font-size: 1.05rem;
+}
+
+.room-contact p {
+  margin: 0;
+  color: var(--text);
+  font-weight: 760;
+}
+
+.room-contact a {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  color: var(--accent-dark);
+  font-weight: 760;
+  text-underline-offset: 4px;
+}
+
+.quartier-intro {
+  max-width: 920px;
+}
+
+.quartier-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(18px, 3vw, 30px);
+}
+
+.quartier-card {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.quartier-card-wide {
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+}
+
+.quartier-card-media {
+  min-width: 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--surface-soft);
+}
+
+.quartier-card-media img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+
+.quartier-card-logo {
+  display: grid;
+  place-items: center;
+  padding: clamp(28px, 5vw, 58px);
+  background: #fff;
+}
+
+.quartier-card-logo img {
+  max-width: 240px;
+  aspect-ratio: auto;
+  object-fit: contain;
+}
+
+.quartier-card-body {
+  padding: clamp(22px, 3vw, 32px);
+}
+
+.quartier-card-body p {
+  color: var(--muted);
+  font-size: clamp(1.04rem, 0.4vw + 0.96rem, 1.16rem);
+}
+
+.quartier-card-body .text-link {
+  margin-top: 4px;
+}
+
+.quartier-history-images {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: clamp(12px, 2vw, 16px);
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(18px, 3vw, 30px);
+  align-items: stretch;
+}
+
+.contact-card {
+  min-width: 0;
+  padding: clamp(22px, 3vw, 32px);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.contact-card-priority {
+  background: linear-gradient(135deg, var(--surface), var(--accent-soft));
+}
+
+.contact-logo {
+  width: min(180px, 56vw);
+  margin-bottom: 18px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.contact-logo img {
+  width: 100%;
+  max-height: 76px;
+  object-fit: contain;
+}
+
+.contact-logo-ceba {
+  width: min(150px, 52vw);
+  padding: 12px 14px;
+}
+
+.contact-logo-ceba img {
+  max-height: 54px;
+}
+
+.contact-brand:empty {
+  display: none;
+}
+
+.contact-card-notice {
+  border-color: color-mix(in srgb, var(--warm) 52%, var(--line));
+}
+
+.contact-card p {
+  color: var(--muted);
+  font-size: clamp(1.04rem, 0.4vw + 0.96rem, 1.16rem);
+}
+
+.room-card-body .room-note,
+.contact-card .room-note {
+  color: var(--text);
+  font-weight: 660;
+}
+
+.contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 13px 18px;
+  align-items: center;
+  margin-top: 24px;
+}
+
+.contact-actions-stack {
+  align-items: flex-start;
+}
+
+.contact-list {
+  display: grid;
+  gap: 14px;
+  margin: 22px 0 0;
+}
+
+.compact-contact-list {
+  margin-top: 18px;
+}
+
+.contact-list div {
+  display: grid;
+  gap: 4px;
+}
+
+.contact-list dt {
+  color: var(--muted);
+  font-weight: 720;
+}
+
+.contact-list dd {
+  margin: 0;
+  color: var(--text);
+  font-weight: 760;
+}
+
+.contact-list a,
+.direct-contact-grid a,
+.emergency-list a {
+  color: var(--accent-dark);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.opening-hours {
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+
+.opening-hours h3 {
+  margin-bottom: 12px;
+}
+
+.opening-hours p {
+  margin: 4px 0;
+}
+
+.emergency-card {
+  max-width: none;
+}
+
+.emergency-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.emergency-list a {
+  min-height: 72px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-content: center;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-soft);
+  text-decoration: none;
+}
+
+.emergency-icon {
+  grid-column: 2;
+  grid-row: 2;
+  align-self: center;
+  justify-self: end;
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: var(--accent-dark);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.emergency-list span {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  color: var(--muted);
+  font-weight: 720;
+}
+
+.emergency-list strong {
+  grid-column: 1;
+  grid-row: 2;
+  color: var(--text);
+  font-size: clamp(1.25rem, 2vw, 1.6rem);
+}
+
+.history-body {
+  display: grid;
+  gap: clamp(26px, 4vw, 42px);
+}
+
+.contact-details {
+  margin-top: 24px;
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+
+.contact-details summary {
+  min-height: 44px;
+  cursor: pointer;
+  color: var(--accent-dark);
+  font-weight: 780;
+}
+
+.role-list {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.role-list li {
+  color: var(--text);
+}
+
+.role-list span {
+  display: inline-block;
+  min-width: 108px;
+  color: var(--muted);
+  font-weight: 760;
+}
+
+.committee-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.committee-list section {
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.committee-list h3 {
+  font-size: 1rem;
+}
+
+.committee-list a {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  color: var(--accent-dark);
+  font-weight: 760;
+  text-underline-offset: 4px;
+}
+
+.direct-contact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.direct-contact-grid section {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.direct-contact-grid p {
+  margin: 8px 0 12px;
+}
+
+.direct-contact-grid a {
+  display: flex;
+  align-items: center;
+  min-height: 38px;
+  font-weight: 760;
+}
+
+.sponsor-context {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 20px;
+  align-items: center;
+  margin-bottom: clamp(22px, 4vw, 34px);
+  padding: clamp(16px, 3vw, 22px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-soft);
+}
+
+.sponsor-context img {
+  width: 74px;
+  height: 74px;
+  object-fit: contain;
+}
+
+.sponsor-context p {
+  flex: 1 1 260px;
+  margin: 0;
+  color: var(--muted);
+}
+
+.sponsor-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(14px, 2vw, 22px);
+}
+
+.sponsor-card {
+  min-width: 0;
+  min-height: 174px;
+  display: grid;
+  grid-template-rows: minmax(92px, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: clamp(18px, 3vw, 24px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.sponsor-card:hover,
+.sponsor-card:focus-visible {
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--line));
+  transform: translateY(-1px);
+}
+
+.sponsor-logo-frame {
+  min-width: 0;
+  min-height: 92px;
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  border-radius: calc(var(--radius) - 4px);
+  background: #fff;
+}
+
+.sponsor-logo-frame img {
+  width: 100%;
+  max-width: 220px;
+  max-height: 82px;
+  object-fit: contain;
+}
+
+.sponsor-name {
+  color: var(--text);
+  font-weight: 780;
+  line-height: 1.25;
+}
+
 .neighbourhood-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1015,6 +1476,7 @@ h3 {
   .retrospective-layout,
   .help-panel,
   .fitness-panel,
+  .quartier-card-wide,
   .footer-inner {
     grid-template-columns: 1fr;
   }
@@ -1039,6 +1501,24 @@ h3 {
   }
 
   .room-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quartier-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sponsor-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .emergency-list,
+  .committee-list,
+  .direct-contact-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1093,7 +1573,8 @@ h3 {
   }
 
   .hero-actions .button,
-  .help-links a {
+  .help-links a,
+  .contact-actions .button {
     width: 100%;
   }
 
@@ -1111,6 +1592,18 @@ h3 {
 
   .room-gallery {
     grid-template-columns: 1fr;
+  }
+
+  .quartier-history-images {
+    grid-template-columns: 1fr;
+  }
+
+  .sponsor-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sponsor-context {
+    align-items: flex-start;
   }
 
   .photo-dialog-actions {
