@@ -334,11 +334,21 @@
     function renderEventCard(event) {
       const article = document.createElement("article");
       article.className = "event-card";
+      if (event.status === "cancelled") {
+        article.classList.add("is-cancelled");
+      }
 
       const organiser = document.createElement("p");
       organiser.className = "event-kicker";
       organiser.textContent = event.organiser;
       article.appendChild(organiser);
+
+      if (event.status === "cancelled") {
+        const status = document.createElement("span");
+        status.className = "event-status-badge";
+        status.textContent = "Abgesagt";
+        article.appendChild(status);
+      }
 
       const title = document.createElement("h3");
       title.textContent = event.title;
@@ -418,12 +428,17 @@
         const time = rawEvent.time === null || rawEvent.time === undefined ? "" : optionalText(rawEvent.time);
         const location = rawEvent.location === null || rawEvent.location === undefined ? "" : optionalText(rawEvent.location);
         const description = rawEvent.description === null || rawEvent.description === undefined ? "" : optionalText(rawEvent.description);
+        const status = rawEvent.status === undefined || rawEvent.status === null ? "published" : optionalText(rawEvent.status);
 
         if (!title || !validOrganisers.has(organiser) || !validIsoDate(date)) {
           return;
         }
 
         if (time && !validEventTime(time)) {
+          return;
+        }
+
+        if (status !== "published" && status !== "cancelled") {
           return;
         }
 
@@ -437,7 +452,8 @@
           date,
           time,
           location,
-          description
+          description,
+          status
         });
       });
 
