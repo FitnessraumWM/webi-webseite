@@ -184,20 +184,16 @@
     const weekdays = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
     const statusLabels = {
       frei: "Frei",
-      belegt: "Belegt",
-      "nicht verfügbar": "Nicht verfügbar",
-      "keine angabe": "Keine Angabe"
+      belegt: "Belegt"
     };
     const statusClasses = {
       frei: "frei",
-      belegt: "belegt",
-      "nicht verfügbar": "nicht-verfuegbar",
-      "keine angabe": "keine-angabe"
+      belegt: "belegt"
     };
     let visibleMonth = new Date();
     visibleMonth = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 1);
-    let occupancyDays = {};
-    let hasCurrentData = false;
+    let bookedDays = new Set();
+    let updatedAt = null;
 
     function toIsoDate(date) {
       const year = date.getFullYear();
@@ -221,9 +217,20 @@
       }).format(date);
     }
 
-    function publicStatus(rawStatus) {
-      const status = typeof rawStatus === "string" ? rawStatus.trim().toLowerCase() : "";
-      return Object.prototype.hasOwnProperty.call(statusLabels, status) ? status : "keine angabe";
+    function updatedAtLabel(value) {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) {
+        return "";
+      }
+
+      return new Intl.DateTimeFormat("de-CH", {
+        dateStyle: "medium",
+        timeStyle: "short"
+      }).format(date);
+    }
+
+    function publicStatus(isoDate) {
+      return bookedDays.has(isoDate) ? "belegt" : "frei";
     }
 
     function setCalendarMessage() {
@@ -231,9 +238,10 @@
         return;
       }
 
-      calendarMessage.textContent = hasCurrentData
-        ? ""
-        : "Die aktuelle Belegungsübersicht wird vorbereitet. Für verbindliche Fragen zur Verfügbarkeit wende dich bitte direkt an Michal Jančovič.";
+      const label = updatedAt ? updatedAtLabel(updatedAt) : "";
+      calendarMessage.textContent = label
+        ? `Aktualisiert: ${label}`
+        : "Die Belegungsübersicht wird laufend aktualisiert. Für eine verbindliche Anfrage wende dich bitte direkt an Michal Jančovič.";
     }
 
     function renderCalendar() {
@@ -266,7 +274,7 @@
       for (let day = 1; day <= daysInMonth; day += 1) {
         const date = new Date(year, month, day);
         const isoDate = toIsoDate(date);
-        const status = publicStatus(occupancyDays[isoDate]);
+        const status = publicStatus(isoDate);
         const dayElement = document.createElement("div");
         const statusText = statusLabels[status];
         dayElement.className = "calendar-day";
@@ -304,14 +312,16 @@
           return response.json();
         })
         .then(function (data) {
-          const days = data && typeof data.days === "object" && data.days ? data.days : {};
-          occupancyDays = days;
-          hasCurrentData = Boolean(data?.updatedAt) && Object.keys(days).length > 0;
+          const days = Array.isArray(data?.bookedDays) ? data.bookedDays : [];
+          bookedDays = new Set(days.filter(function (day) {
+            return typeof day === "string" && /^\d{4}-\d{2}-\d{2}$/.test(day);
+          }));
+          updatedAt = typeof data?.updatedAt === "string" ? data.updatedAt : null;
           renderCalendar();
         })
         .catch(function () {
-          occupancyDays = {};
-          hasCurrentData = false;
+          bookedDays = new Set();
+          updatedAt = null;
           renderCalendar();
         });
     }
