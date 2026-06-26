@@ -234,12 +234,22 @@
   }
 
   const eventsFeed = document.querySelector("[data-events-feed]");
+  const homeEvents = document.querySelector("[data-home-events]")
+    || document.getElementById("heute-title")?.closest("section");
+  const eventsSource = eventsFeed || homeEvents;
 
-  if (eventsFeed) {
-    const eventsList = eventsFeed.querySelector("[data-events-list]");
-    const eventsMessage = eventsFeed.querySelector("[data-events-message]");
-    const eventsUpdated = eventsFeed.querySelector("[data-events-updated]");
-    const localEventsUrl = eventsFeed.dataset.eventsData;
+  if (eventsSource) {
+    const eventsList = eventsFeed?.querySelector("[data-events-list]");
+    const eventsMessage = eventsFeed?.querySelector("[data-events-message]");
+    const eventsUpdated = eventsFeed?.querySelector("[data-events-updated]");
+    const todayEventsList = ensureTodayEventsList();
+    const nextEventTitle = document.querySelector("[data-next-event-title]")
+      || document.getElementById("event-title");
+    const nextEventIntro = document.querySelector("[data-next-event-intro]")
+      || nextEventTitle?.nextElementSibling;
+    const nextEventCard = document.querySelector("[data-next-event-card]")
+      || document.querySelector("#event .event-card");
+    const localEventsUrl = eventsSource.dataset.eventsData || "data/veranstaltungen.json";
     const liveEventsUrl = "https://events.webi.family/veranstaltungen.json";
     const eventProductionHosts = new Set(["webi.family", "www.webi.family"]);
     const isEventProductionHost = eventProductionHosts.has(window.location.hostname);
@@ -311,6 +321,56 @@
       }).format(date);
     }
 
+    function todayIsoDate() {
+      const today = new Date();
+      return [
+        today.getFullYear(),
+        String(today.getMonth() + 1).padStart(2, "0"),
+        String(today.getDate()).padStart(2, "0")
+      ].join("-");
+    }
+
+    function eventAnchorId(event) {
+      if (!event.id) {
+        return "";
+      }
+
+      return `event-${event.id.replace(/[^A-Za-z0-9_-]/g, "-")}`;
+    }
+
+    function eventDetailsHref(event) {
+      const anchorId = eventAnchorId(event);
+      return anchorId ? `veranstaltungen.html#${anchorId}` : "veranstaltungen.html";
+    }
+
+    function compareEventsForHomepage(a, b) {
+      const aTime = a.time || "23:59";
+      const bTime = b.time || "23:59";
+      return `${a.date}T${aTime}`.localeCompare(`${b.date}T${bTime}`);
+    }
+
+    function appendTextElement(parent, tagName, className, text) {
+      if (!text) {
+        return null;
+      }
+
+      const element = document.createElement(tagName);
+      if (className) {
+        element.className = className;
+      }
+      element.textContent = text;
+      parent.appendChild(element);
+      return element;
+    }
+
+    function eventMetaText(event) {
+      return [
+        formatEventDate(event.date),
+        event.time ? `${event.time} Uhr` : "",
+        event.location
+      ].filter(Boolean).join(" · ");
+    }
+
     function setEventsMessage(text) {
       if (eventsMessage) {
         eventsMessage.textContent = text;
@@ -333,9 +393,46 @@
       }
     }
 
+    function ensureTodayEventsList() {
+      if (!homeEvents) {
+        return null;
+      }
+
+      const existingList = homeEvents.querySelector("[data-today-events-list]");
+      if (existingList) {
+        return existingList;
+      }
+
+      const title = homeEvents.querySelector("#heute-title");
+      const container = title?.parentElement;
+      if (!title || !container) {
+        return null;
+      }
+
+      Array.from(container.children).forEach(function (child) {
+        if (child !== title && !child.classList.contains("eyebrow")) {
+          child.remove();
+        }
+      });
+
+      const list = document.createElement("div");
+      list.className = "today-events-list";
+      list.dataset.todayEventsList = "";
+
+      const loading = document.createElement("p");
+      loading.textContent = "Veranstaltungen werden geladen.";
+      list.appendChild(loading);
+      title.insertAdjacentElement("afterend", list);
+      return list;
+    }
+
     function renderEventCard(event) {
       const article = document.createElement("article");
       article.className = "event-card";
+      const anchorId = eventAnchorId(event);
+      if (anchorId) {
+        article.id = anchorId;
+      }
       if (event.status === "cancelled") {
         article.classList.add("is-cancelled");
       }
@@ -379,6 +476,115 @@
       }
 
       return article;
+    }
+
+    function renderTodayEvents(todayEvents) {
+      if (!todayEventsList) {
+        return;
+      }
+
+      todayEventsList.innerHTML = "";
+
+      if (eventDataUnavailable && !hasEventData) {
+        appendTextElement(todayEventsList, "p", "hint", "Die aktuellen Veranstaltungen sind momentan nicht abrufbar.");
+        return;
+      }
+
+      if (!todayEvents.length) {
+        appendTextElement(todayEventsList, "p", "hint", "Heute ist keine Veranstaltung geplant.");
+        return;
+      }
+
+      todayEvents.forEach(function (event) {
+        const item = document.createElement("div");
+        item.className = "home-event-mini";
+        appendTextElement(item, "p", "event-kicker", event.organiser);
+        appendTextElement(item, "h3", "", event.title);
+        appendTextElement(item, "p", "", eventMetaText(event));
+        appendTextElement(item, "p", "", event.description);
+        todayEventsList.appendChild(item);
+      });
+    }
+
+    function renderNextEventPlaceholder(message) {
+      if (nextEventTitle) {
+        nextEventTitle.textContent = "Der nächste Anlass wird hier veröffentlicht.";
+      }
+      if (nextEventIntro) {
+        nextEventIntro.textContent = "Sobald ein Anlass bestätigt ist, erscheinen hier Datum, Ort und alle wichtigen Informationen.";
+      }
+      if (!nextEventCard) {
+        return;
+      }
+
+      nextEventCard.replaceChildren();
+      appendTextElement(nextEventCard, "p", "event-kicker", "Vorschau");
+      appendTextElement(nextEventCard, "h3", "", "Zurzeit ist kein nächster Anlass veröffentlicht.");
+      appendTextElement(nextEventCard, "p", "", message || "Sobald ein neuer Anlass feststeht, erscheint er hier.");
+      const link = document.createElement("a");
+      link.className = "button button-primary";
+      link.href = "veranstaltungen.html";
+      link.textContent = "Zu den Veranstaltungen";
+      nextEventCard.appendChild(link);
+    }
+
+    function renderNextEvent(event) {
+      if (nextEventTitle) {
+        nextEventTitle.textContent = "Der nächste Anlass";
+      }
+      if (nextEventIntro) {
+        nextEventIntro.textContent = "Der nächste veröffentlichte Anlass in der Webermühle.";
+      }
+      if (!nextEventCard) {
+        return;
+      }
+
+      nextEventCard.replaceChildren();
+      appendTextElement(nextEventCard, "p", "event-kicker", event.organiser);
+      appendTextElement(nextEventCard, "h3", "", event.title);
+      appendTextElement(nextEventCard, "p", "", formatEventDate(event.date));
+      appendTextElement(nextEventCard, "p", "", event.time ? `${event.time} Uhr` : "");
+      appendTextElement(nextEventCard, "p", "", event.location);
+      appendTextElement(nextEventCard, "p", "", event.description);
+
+      const link = document.createElement("a");
+      link.className = "button button-primary";
+      link.href = eventDetailsHref(event);
+      link.textContent = "Zur Veranstaltung";
+      nextEventCard.appendChild(link);
+    }
+
+    function renderHomeEvents() {
+      if (!homeEvents) {
+        return;
+      }
+
+      if (eventDataUnavailable && !hasEventData) {
+        renderTodayEvents([]);
+        renderNextEventPlaceholder("Die aktuellen Veranstaltungen sind momentan nicht abrufbar.");
+        return;
+      }
+
+      const today = todayIsoDate();
+      const publishedEvents = currentEvents.filter(function (event) {
+        return event.status === "published";
+      });
+      const todayEvents = publishedEvents.filter(function (event) {
+        return event.date === today;
+      });
+      const nextEvent = publishedEvents
+        .filter(function (event) {
+          return event.date >= today;
+        })
+        .slice()
+        .sort(compareEventsForHomepage)[0];
+
+      renderTodayEvents(todayEvents);
+      if (nextEvent) {
+        renderNextEvent(nextEvent);
+      } else {
+        renderNextEventPlaceholder("Sobald ein neuer Anlass feststeht, erscheint er hier.");
+      }
     }
 
     function renderEvents() {
@@ -449,6 +655,7 @@
         }
 
         validEvents.push({
+          id,
           title,
           organiser,
           date,
@@ -491,7 +698,9 @@
         });
     }
 
-    renderEvents();
+    if (eventsFeed) {
+      renderEvents();
+    }
 
     if (eventsUrl) {
       fetchEventsData(eventsUrl)
@@ -508,16 +717,19 @@
           hasEventData = true;
           eventDataUnavailable = false;
           renderEvents();
+          renderHomeEvents();
         })
         .catch(function () {
           eventDataUnavailable = true;
           if (hasEventData) {
             setEventsMessage("");
             setEventsUpdated();
+            renderHomeEvents();
           } else {
             currentEvents = [];
             eventsUpdatedAt = null;
             renderEvents();
+            renderHomeEvents();
           }
         });
     }

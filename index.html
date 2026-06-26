@@ -58,14 +58,15 @@
       </div>
     </section>
 
-    <section class="section section-tight" aria-labelledby="heute-title">
+    <section class="section section-tight" aria-labelledby="heute-title" data-home-events data-events-data="data/veranstaltungen.json">
       <div class="section-inner">
         <article class="today-card">
           <div>
             <p class="eyebrow">Aktuell</p>
             <h2 id="heute-title">Heute in der Webermühle</h2>
-            <p>Aktuell sind keine neuen öffentlichen Veranstaltungen veröffentlicht.</p>
-            <p class="hint">Hier erscheinen künftig aktuelle Informationen und der nächste Anlass.</p>
+            <div class="today-events-list" data-today-events-list>
+              <p data-today-events-message>Veranstaltungen werden geladen.</p>
+            </div>
           </div>
           <a class="text-link" href="veranstaltungen.html">Alle Veranstaltungen ansehen</a>
         </article>
@@ -129,14 +130,14 @@
       </div>
     </section>
 
-    <section id="event" class="section section-muted" aria-labelledby="event-title">
+    <section id="event" class="section section-muted" aria-labelledby="event-title" data-next-event-section>
       <div class="section-inner event-layout">
         <div class="section-heading">
           <p class="eyebrow">Veranstaltungen</p>
-          <h2 id="event-title">Der nächste Anlass wird hier veröffentlicht.</h2>
-          <p>Sobald ein Anlass bestätigt ist, erscheinen hier Datum, Ort und alle wichtigen Informationen.</p>
+          <h2 id="event-title" data-next-event-title>Der nächste Anlass wird hier veröffentlicht.</h2>
+          <p data-next-event-intro>Sobald ein Anlass bestätigt ist, erscheinen hier Datum, Ort und alle wichtigen Informationen.</p>
         </div>
-        <article class="event-card">
+        <article class="event-card" data-next-event-card>
           <p class="event-kicker">Vorschau</p>
           <h3>Bereit für echte Veranstaltungsdaten</h3>
           <p>Diese Karte kann später mit aktuellen Angaben aus einem gepflegten Event- oder Nachrichtenfluss gefüllt werden.</p>

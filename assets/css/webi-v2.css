@@ -526,6 +526,25 @@ h3 {
   font-size: 0.98rem;
 }
 
+.today-events-list {
+  display: grid;
+  gap: 14px;
+}
+
+.home-event-mini {
+  display: grid;
+  gap: 6px;
+}
+
+.home-event-mini h3,
+.home-event-mini p {
+  margin: 0;
+}
+
+.home-event-mini h3 {
+  font-size: clamp(1.08rem, 0.6vw + 1rem, 1.28rem);
+}
+
 .text-link,
 .feature-card a {
   color: var(--accent-dark);
