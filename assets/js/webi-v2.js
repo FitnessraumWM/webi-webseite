@@ -246,7 +246,9 @@
     const eventsUrl = isEventProductionHost ? liveEventsUrl : localEventsUrl;
     const validOrganisers = new Set([
       "Quartierverein Webermühle-Klosterrüti",
-      "Verein SOFE Webi"
+      "Verein SOFE Webi",
+      "Quartierverein Webermühle-Klosterrüti & Verein SOFE Webi",
+      "Persienmarkt"
     ]);
     let hasEventData = false;
     let eventDataUnavailable = false;
