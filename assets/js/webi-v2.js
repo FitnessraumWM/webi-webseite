@@ -242,6 +242,9 @@
     const eventsList = eventsFeed?.querySelector("[data-events-list]");
     const eventsMessage = eventsFeed?.querySelector("[data-events-message]");
     const eventsUpdated = eventsFeed?.querySelector("[data-events-updated]");
+    const eventsArchive = document.querySelector("[data-events-archive]");
+    const eventsArchiveList = eventsArchive?.querySelector("[data-events-archive-list]");
+    const eventsArchiveMessage = eventsArchive?.querySelector("[data-events-archive-message]");
     const todayEventsList = ensureTodayEventsList();
     const nextEventTitle = document.querySelector("[data-next-event-title]")
       || document.getElementById("event-title");
@@ -343,9 +346,60 @@
       return anchorId ? `veranstaltungen.html#${anchorId}` : "veranstaltungen.html";
     }
 
+    function validateEventMedia(media) {
+      if (!media || typeof media !== "object") {
+        return null;
+      }
+
+      if (!Number.isInteger(media.publishedPhotoCount) || media.publishedPhotoCount < 1) {
+        return null;
+      }
+
+      const urlText = typeof media.retrospectiveUrl === "string" ? media.retrospectiveUrl.trim() : "";
+      let url;
+      try {
+        url = new URL(urlText);
+      } catch {
+        return null;
+      }
+
+      if (
+        url.origin !== "https://fotos.webi.family"
+        || !/^\/r\/[A-Za-z0-9_-]+$/.test(url.pathname)
+        || url.search
+        || url.hash
+      ) {
+        return null;
+      }
+
+      return {
+        retrospectiveUrl: url.href,
+        publishedPhotoCount: media.publishedPhotoCount
+      };
+    }
+
+    function appendRetrospectiveLink(parent, event, className) {
+      if (!event.media?.retrospectiveUrl) {
+        return null;
+      }
+
+      const link = document.createElement("a");
+      link.className = className || "button button-secondary";
+      link.href = event.media.retrospectiveUrl;
+      link.textContent = "Rückblick ansehen";
+      parent.appendChild(link);
+      return link;
+    }
+
     function compareEventsForHomepage(a, b) {
       const aTime = a.time || "23:59";
       const bTime = b.time || "23:59";
+      return `${a.date}T${aTime}`.localeCompare(`${b.date}T${bTime}`);
+    }
+
+    function compareEventsChronologically(a, b) {
+      const aTime = a.time || "00:00";
+      const bTime = b.time || "00:00";
       return `${a.date}T${aTime}`.localeCompare(`${b.date}T${bTime}`);
     }
 
@@ -475,6 +529,21 @@
         article.appendChild(description);
       }
 
+      if (event.media?.retrospectiveUrl) {
+        const actions = document.createElement("div");
+        actions.className = "event-card-actions";
+        appendRetrospectiveLink(actions, event);
+        article.appendChild(actions);
+      }
+
+      return article;
+    }
+
+    function renderArchiveEventCard(event) {
+      const article = renderEventCard(event);
+      if (!event.media?.retrospectiveUrl) {
+        appendTextElement(article, "p", "hint", "Rückblick folgt.");
+      }
       return article;
     }
 
@@ -502,6 +571,7 @@
         appendTextElement(item, "h3", "", event.title);
         appendTextElement(item, "p", "", eventMetaText(event));
         appendTextElement(item, "p", "", event.description);
+        appendRetrospectiveLink(item, event, "text-link");
         todayEventsList.appendChild(item);
       });
     }
@@ -552,6 +622,7 @@
       link.href = eventDetailsHref(event);
       link.textContent = "Zur Veranstaltung";
       nextEventCard.appendChild(link);
+      appendRetrospectiveLink(nextEventCard, event);
     }
 
     function renderHomeEvents() {
@@ -588,10 +659,20 @@
     }
 
     function renderEvents() {
+      if (!eventsFeed || !eventsList) {
+        return;
+      }
+
       clearEventsList();
+      if (eventsArchiveList) {
+        eventsArchiveList.innerHTML = "";
+      }
 
       if (eventDataUnavailable && !hasEventData) {
         setEventsMessage("Die aktuellen Veranstaltungen sind momentan nicht abrufbar. Bitte versuche es später erneut oder melde dich direkt beim Quartierverein.");
+        if (eventsArchiveMessage) {
+          eventsArchiveMessage.textContent = "Das Veranstaltungsarchiv ist momentan nicht abrufbar.";
+        }
         if (eventsUpdated) {
           eventsUpdated.hidden = true;
           eventsUpdated.textContent = "";
@@ -599,15 +680,35 @@
         return;
       }
 
-      if (!currentEvents.length) {
+      const today = todayIsoDate();
+      const currentOrUpcomingEvents = currentEvents.filter(function (event) {
+        return event.date >= today;
+      });
+      const archivedEvents = currentEvents
+        .filter(function (event) {
+          return event.status === "published" && event.date < today;
+        })
+        .slice()
+        .sort(function (a, b) {
+          return compareEventsChronologically(b, a);
+        });
+
+      if (!currentOrUpcomingEvents.length) {
         setEventsMessage("Zurzeit sind keine neuen Veranstaltungen angekündigt. Schau bald wieder vorbei.");
-        setEventsUpdated();
-        return;
+      } else {
+        setEventsMessage("");
+        currentOrUpcomingEvents.forEach(function (event) {
+          eventsList.appendChild(renderEventCard(event));
+        });
       }
 
-      setEventsMessage("");
-      currentEvents.forEach(function (event) {
-        eventsList?.appendChild(renderEventCard(event));
+      if (eventsArchiveMessage) {
+        eventsArchiveMessage.textContent = archivedEvents.length
+          ? ""
+          : "Zurzeit sind keine vergangenen Veranstaltungen im Archiv.";
+      }
+      archivedEvents.forEach(function (event) {
+        eventsArchiveList?.appendChild(renderArchiveEventCard(event));
       });
       setEventsUpdated();
     }
@@ -662,15 +763,12 @@
           time,
           location,
           description,
-          status
+          status,
+          media: validateEventMedia(rawEvent.media)
         });
       });
 
-      validEvents.sort(function (a, b) {
-        const aTime = a.time || "00:00";
-        const bTime = b.time || "00:00";
-        return `${a.date}T${aTime}`.localeCompare(`${b.date}T${bTime}`);
-      });
+      validEvents.sort(compareEventsChronologically);
 
       return {
         events: validEvents,
@@ -716,7 +814,9 @@
           eventsUpdatedAt = validatedData.updatedAt;
           hasEventData = true;
           eventDataUnavailable = false;
-          renderEvents();
+          if (eventsFeed) {
+            renderEvents();
+          }
           renderHomeEvents();
         })
         .catch(function () {
@@ -728,7 +828,9 @@
           } else {
             currentEvents = [];
             eventsUpdatedAt = null;
-            renderEvents();
+            if (eventsFeed) {
+              renderEvents();
+            }
             renderHomeEvents();
           }
         });
