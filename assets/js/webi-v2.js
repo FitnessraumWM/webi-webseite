@@ -263,6 +263,8 @@
       "Quartierverein Webermühle-Klosterrüti & Verein SOFE Webi",
       "Persienmarkt"
     ]);
+    const validOrganiserKeys = new Set(["quartierverein", "sofe", "quartierverein_sofe", "persienmarkt", "other"]);
+    const validExternalLabels = new Set(["Website", "Facebook", "Instagram", "Weitere Informationen"]);
     let hasEventData = false;
     let eventDataUnavailable = false;
     let currentEvents = [];
@@ -351,31 +353,65 @@
         return null;
       }
 
-      if (!Number.isInteger(media.publishedPhotoCount) || media.publishedPhotoCount < 1) {
+      if (!Number.isInteger(media.publishedPhotoCount) || media.publishedPhotoCount < 0) {
         return null;
       }
 
       const urlText = typeof media.retrospectiveUrl === "string" ? media.retrospectiveUrl.trim() : "";
-      let url;
-      try {
-        url = new URL(urlText);
-      } catch {
-        return null;
+      const uploadText = typeof media.photo_upload_url === "string" ? media.photo_upload_url.trim() : "";
+      function safeMediaUrl(value, route) {
+        if (!value) { return ""; }
+        try {
+          const url = new URL(value);
+          return url.origin === "https://fotos.webi.family"
+            && new RegExp(`^/${route}/[A-Za-z0-9_-]+$`).test(url.pathname)
+            && !url.search && !url.hash ? url.href : "";
+        } catch { return ""; }
       }
 
-      if (
-        url.origin !== "https://fotos.webi.family"
-        || !/^\/r\/[A-Za-z0-9_-]+$/.test(url.pathname)
-        || url.search
-        || url.hash
-      ) {
-        return null;
+      const startsAt = Date.parse(media.photo_upload_opens_at || "");
+      const closesAt = Date.parse(media.photo_upload_closes_at || "");
+      const retrospectiveUrl = safeMediaUrl(urlText, "r");
+      if (!Number.isFinite(startsAt) || !Number.isFinite(closesAt) || closesAt <= startsAt) {
+        return retrospectiveUrl ? { retrospectiveUrl, publishedPhotoCount: media.publishedPhotoCount } : null;
       }
 
       return {
-        retrospectiveUrl: url.href,
-        publishedPhotoCount: media.publishedPhotoCount
+        retrospectiveUrl,
+        photoUploadUrl: safeMediaUrl(uploadText, "e"),
+        opensAt: startsAt,
+        closesAt: closesAt,
+        publishedPhotoCount: media.publishedPhotoCount,
+        serverState: optionalText(media.photo_upload_state)
       };
+    }
+
+    // Event Media: derive the CTA from absolute timestamps, never from cached state alone.
+    function appendEventMediaAction(parent, event) {
+      const media = event.media;
+      if (!media) { return; }
+      const now = Date.now();
+      const actions = document.createElement("div");
+      actions.className = "event-media-actions";
+      if (media.retrospectiveUrl) {
+        appendRetrospectiveLink(actions, event);
+      } else if (now < media.opensAt) {
+        const button = appendTextElement(actions, "span", "button button-secondary is-disabled", "Fotos hochladen");
+        button.setAttribute("aria-disabled", "true");
+        appendTextElement(actions, "small", "event-media-hint", `Verfügbar ab ${new Date(media.opensAt).toLocaleString("de-CH", { dateStyle: "short", timeStyle: "short", timeZone: "Europe/Zurich" })} Uhr`);
+      } else if (now < media.closesAt && media.photoUploadUrl && media.serverState !== "manuell geschlossen" && media.serverState !== "abgesagt") {
+        const link = document.createElement("a");
+        link.className = "button button-primary";
+        link.href = media.photoUploadUrl;
+        link.textContent = "Fotos hochladen";
+        actions.appendChild(link);
+        if (event.endAt && now >= Date.parse(event.endAt)) {
+          appendTextElement(actions, "small", "event-media-hint", `Noch möglich bis ${new Date(media.closesAt).toLocaleString("de-CH", { dateStyle: "short", timeStyle: "short", timeZone: "Europe/Zurich" })}`);
+        }
+      } else {
+        appendTextElement(actions, "p", "event-media-hint", "Fotos werden geprüft");
+      }
+      parent.appendChild(actions);
     }
 
     function appendRetrospectiveLink(parent, event, className) {
@@ -392,12 +428,18 @@
     }
 
     function compareEventsForHomepage(a, b) {
+      const aStart = Date.parse(a.startAt || "");
+      const bStart = Date.parse(b.startAt || "");
+      if (Number.isFinite(aStart) && Number.isFinite(bStart)) { return aStart - bStart; }
       const aTime = a.time || "23:59";
       const bTime = b.time || "23:59";
       return `${a.date}T${aTime}`.localeCompare(`${b.date}T${bTime}`);
     }
 
     function compareEventsChronologically(a, b) {
+      const aStart = Date.parse(a.startAt || "");
+      const bStart = Date.parse(b.startAt || "");
+      if (Number.isFinite(aStart) && Number.isFinite(bStart)) { return aStart - bStart; }
       const aTime = a.time || "00:00";
       const bTime = b.time || "00:00";
       return `${a.date}T${aTime}`.localeCompare(`${b.date}T${bTime}`);
@@ -423,6 +465,28 @@
         event.time ? `${event.time} Uhr` : "",
         event.location
       ].filter(Boolean).join(" · ");
+    }
+
+    function eventTimeRangeText(event) {
+      const start = Date.parse(event.startAt || "");
+      const end = Date.parse(event.endAt || "");
+      if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) {
+        return event.time ? `${event.time} Uhr` : "";
+      }
+      const dateFormat = new Intl.DateTimeFormat("de-CH", { dateStyle: "short", timeZone: "Europe/Zurich" });
+      const dateKeyFormat = new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Europe/Zurich" });
+      function dateKey(value) {
+        const parts = Object.fromEntries(dateKeyFormat.formatToParts(value).map(function (part) { return [part.type, part.value]; }));
+        return `${parts.year}-${parts.month}-${parts.day}`;
+      }
+      const timeFormat = new Intl.DateTimeFormat("de-CH", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Zurich" });
+      const startDate = dateFormat.format(start);
+      const endDate = dateFormat.format(end);
+      if (startDate === endDate) { return `${timeFormat.format(start)}–${timeFormat.format(end)} Uhr`; }
+      const startKey = dateKey(start);
+      const nextDay = new Date(`${startKey}T12:00:00Z`); nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+      if (dateKey(nextDay) === dateKey(end)) { return `${timeFormat.format(start)} Uhr bis ${timeFormat.format(end)} Uhr am nächsten Tag`; }
+      return `${timeFormat.format(start)} Uhr bis ${dateFormat.format(end)}, ${timeFormat.format(end)} Uhr`;
     }
 
     function setEventsMessage(text) {
@@ -491,15 +555,22 @@
         article.classList.add("is-cancelled");
       }
 
-      const organiser = document.createElement("p");
-      organiser.className = "event-kicker";
-      organiser.textContent = event.organiser;
-      article.appendChild(organiser);
+      if (event.eventScope === "nearby") {
+        appendTextElement(article, "p", "event-kicker", "In der Umgebung");
+        appendTextElement(article, "p", "event-organiser", `Veranstaltet von: ${event.organiserLabel}`);
+      } else {
+        appendTextElement(article, "p", "event-kicker", event.organiserLabel);
+      }
 
       if (event.status === "cancelled") {
         const status = document.createElement("span");
         status.className = "event-status-badge";
         status.textContent = "Abgesagt";
+        article.appendChild(status);
+      } else if (event.timeState === "beendet") {
+        const status = document.createElement("span");
+        status.className = "event-status-badge";
+        status.textContent = "Beendet";
         article.appendChild(status);
       }
 
@@ -511,9 +582,10 @@
       date.textContent = formatEventDate(event.date);
       article.appendChild(date);
 
-      if (event.time) {
+      const timeRange = eventTimeRangeText(event);
+      if (timeRange) {
         const time = document.createElement("p");
-        time.textContent = `${event.time} Uhr`;
+        time.textContent = timeRange;
         article.appendChild(time);
       }
 
@@ -529,12 +601,21 @@
         article.appendChild(description);
       }
 
-      if (event.media?.retrospectiveUrl) {
-        const actions = document.createElement("div");
-        actions.className = "event-card-actions";
-        appendRetrospectiveLink(actions, event);
-        article.appendChild(actions);
+      if (event.externalLinks.length) {
+        const links = document.createElement("div");
+        links.className = "event-external-links";
+        event.externalLinks.forEach(function (externalLink) {
+          const link = document.createElement("a");
+          link.href = externalLink.url;
+          link.textContent = externalLink.label;
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          links.appendChild(link);
+        });
+        article.appendChild(links);
       }
+
+      appendEventMediaAction(article, event);
 
       return article;
     }
@@ -697,8 +778,22 @@
         setEventsMessage("Zurzeit sind keine neuen Veranstaltungen angekündigt. Schau bald wieder vorbei.");
       } else {
         setEventsMessage("");
-        currentOrUpcomingEvents.forEach(function (event) {
-          eventsList.appendChild(renderEventCard(event));
+        [
+          ["own", "Unsere Veranstaltungen"],
+          ["nearby", "In der Umgebung"]
+        ].forEach(function (sectionDefinition) {
+          const sectionEvents = currentOrUpcomingEvents.filter(function (event) {
+            return event.eventScope === sectionDefinition[0];
+          });
+          if (!sectionEvents.length) { return; }
+          const section = document.createElement("section");
+          section.className = "events-scope-section";
+          appendTextElement(section, "h2", "events-scope-title", sectionDefinition[1]);
+          const list = document.createElement("div");
+          list.className = "events-scope-list";
+          sectionEvents.forEach(function (event) { list.appendChild(renderEventCard(event)); });
+          section.appendChild(list);
+          eventsList.appendChild(section);
         });
       }
 
@@ -732,14 +827,22 @@
         }
 
         const title = optionalText(rawEvent.title);
-        const organiser = optionalText(rawEvent.organiser);
+        const organiser = optionalText(rawEvent.organiser_label || rawEvent.organiser);
+        const organiserKey = optionalText(rawEvent.organiser_key) || "quartierverein";
+        const eventScope = rawEvent.event_scope === "nearby" ? "nearby" : "own";
         const date = rawEvent.date;
         const time = rawEvent.time === null || rawEvent.time === undefined ? "" : optionalText(rawEvent.time);
         const location = rawEvent.location === null || rawEvent.location === undefined ? "" : optionalText(rawEvent.location);
         const description = rawEvent.description === null || rawEvent.description === undefined ? "" : optionalText(rawEvent.description);
         const status = rawEvent.status === undefined || rawEvent.status === null ? "published" : optionalText(rawEvent.status);
 
-        if (!title || !validOrganisers.has(organiser) || !validIsoDate(date)) {
+        if (!title || !organiser || !validOrganiserKeys.has(organiserKey) || !validIsoDate(date)) {
+          return;
+        }
+        if ((eventScope === "nearby") !== (organiserKey === "other")) {
+          return;
+        }
+        if (eventScope === "own" && !validOrganisers.has(organiser)) {
           return;
         }
 
@@ -755,15 +858,33 @@
           seenIds.add(id);
         }
 
+        const externalLinks = Array.isArray(rawEvent.external_links) ? rawEvent.external_links.reduce(function (safeLinks, link) {
+          if (!link || !validExternalLabels.has(link.label)) { return safeLinks; }
+          try {
+            const url = new URL(link.url);
+            if (url.protocol === "https:" && url.hostname && !url.username && !url.password) {
+              safeLinks.push({ label: link.label, url: url.href });
+            }
+          } catch { /* Ungültige externe Links werden nicht dargestellt. */ }
+          return safeLinks;
+        }, []) : [];
+
         validEvents.push({
           id,
           title,
-          organiser,
+          organiser: organiser,
+          organiserLabel: organiser,
+          organiserKey,
+          eventScope,
+          externalLinks,
           date,
           time,
           location,
           description,
           status,
+          startAt: typeof rawEvent.start_at === "string" ? rawEvent.start_at : "",
+          endAt: typeof rawEvent.end_at === "string" ? rawEvent.end_at : "",
+          timeState: ["geplant", "läuft gerade", "beendet"].includes(rawEvent.time_state) ? rawEvent.time_state : "",
           media: validateEventMedia(rawEvent.media)
         });
       });
@@ -801,7 +922,8 @@
     }
 
     if (eventsUrl) {
-      fetchEventsData(eventsUrl)
+      function refreshEventFeed(initialLoad) {
+        return fetchEventsData(eventsUrl)
         .then(function (response) {
           if (!response.ok) {
             throw new Error("event data unavailable");
@@ -821,7 +943,7 @@
         })
         .catch(function () {
           eventDataUnavailable = true;
-          if (hasEventData) {
+          if (hasEventData || !initialLoad) {
             setEventsMessage("");
             setEventsUpdated();
             renderHomeEvents();
@@ -834,6 +956,9 @@
             renderHomeEvents();
           }
         });
+      }
+      refreshEventFeed(true);
+      window.setInterval(function () { refreshEventFeed(false); }, 60000);
     }
   }
 

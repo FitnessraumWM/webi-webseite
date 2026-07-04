@@ -618,6 +618,42 @@ h3 {
   border-left: 4px solid var(--warm);
 }
 
+.events-scope-section {
+  display: grid;
+  gap: 18px;
+}
+
+.events-scope-section + .events-scope-section {
+  margin-top: clamp(34px, 6vw, 64px);
+}
+
+.events-scope-title {
+  margin: 0;
+}
+
+.events-scope-list {
+  display: grid;
+  gap: clamp(18px, 3vw, 28px);
+}
+
+.event-organiser {
+  margin-top: -4px;
+  font-weight: 700;
+}
+
+.event-external-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 16px;
+}
+
+.event-external-links a {
+  color: var(--accent-dark);
+  font-weight: 700;
+  text-underline-offset: 4px;
+}
+
 .empty-event-card,
 .info-card {
   max-width: 840px;
@@ -659,6 +695,27 @@ h3 {
   color: var(--accent-dark);
   padding: 6px 12px;
   font-weight: 780;
+}
+
+/* Event Media: zeitabhängige Upload- und Rückblick-Aktion */
+.event-media-actions {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+  margin-top: 14px;
+}
+
+.event-media-actions .is-disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+  pointer-events: none;
+}
+
+.event-media-hint {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin: 0;
 }
 
 .mini-brand {
