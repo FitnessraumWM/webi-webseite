@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Heli Flap Turbo Stars</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<style>
+    body {
+        margin: 0;
+        background: #70c5ce;
+        overflow: hidden;
+        font-family: Arial, sans-serif;
+        touch-action: none;
+    }
+    canvas {
+        display: block;
+        background: linear-gradient(#70c5ce, #ffffff);
+    }
+    .ui, .how-ui, .score-ui {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+        z-index: 10;
+    }
+    .ui {
+        top: 46%;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+    .name-label {
+        font-size: 13px;
+        color: #111;
+    }
+    .name-input {
+        padding: 6px 10px;
+        border-radius: 4px;
+        border: 1px solid #666;
+        font-size: 14px;
+        width: 180px;
+        text-align: center;
+        outline: none;
+    }
+    .how-ui, .score-ui {
+        top: 20%;
+        max-width: 90vw;
+        display: none;
+        flex-direction: column;
+        gap: 8px;
+        padding: 14px;
+        background: rgba(255,255,255,0.97);
+        border-radius: 10px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    }
+    .btn {
+        padding: 10px 22px;
+        background: #444;
+        border: 2px solid #222;
+        cursor: pointer;
+        user-select: none;
+        border-radius: 6px;
+        color: #fff;
+        font-weight: bold;
+        font-size: 16px;
+        min-width: 160px;
+    }
+    .btn.small {
+        font-size: 13px;
+        padding: 6px 14px;
+        min-width: 0;
+    }
+    .btn:hover {
+        background: #666;
+    }
+    .score-list {
+        margin-top: 6px;
+        font-size: 14px;
+        text-align: left;
+    }
+    .score-list table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 13px;
+    }
+    .score-list th, .score-list td {
+        padding: 4px 6px;
+        border-bottom: 1px solid #ddd;
+    }
+    .score-list th {
+        text-align: left;
+        background: #f3f3f3;
+    }
+    .score-empty {
+        font-size: 13px;
+        color: #555;
+        margin-top: 4px;
+    }
+    @media (max-width: 600px) {
+        .ui {
+            top: 50%;
+        }
+        .btn {
+            padding: 10px 16px;
+            font-size: 14px;
+            min-width: 140px;
+        }
+        .name-input {
+            width: 160px;
+        }
+    }
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+
+<div class="ui" id="mainUI">
+    <div style="font-size:32px;font-weight:bold;">Tap or press S to start</div>
+    <div class="name-label">Player name (optional for scoreboard):</div>
+    <input class="name-input" id="playerNameInput" maxlength="20" placeholder="Anonymous" />
+
+    <div class="btn" id="startBtn">Tap / S – Start</div>
+    <div class="btn" id="howBtn">How to Play</div>
+    <div class="btn" id="scoreBtn">Scoreboard</div>
+    <div class="btn" id="exitBtn">Exit</div>
+</div>
+
+<div class="how-ui" id="howUI">
+    <p style="margin:0;color:#000;"><b>PC:</b> SPACE = flap, F = mega flap, D = dive</p>
+    <p style="margin:0;color:#000;"><b>Mobile:</b> Tap = flap, Double-tap = mega flap</p>
+    <p style="margin:0;color:#000;">Hold in the bottom 40% = fast dive</p>
+    <p style="margin:0;color:#000;">Fly through the gaps, collect golden stars ✨ (+5), avoid the pipes.</p>
+    <p style="margin:0;color:#000;">After a crash you get smoke 💨 and your score is stored locally.</p>
+    <div class="btn" id="backBtn">Back</div>
+</div>
+
+<div class="score-ui" id="scoreUI">
+    <div style="font-weight:bold;font-size:18px;margin-bottom:4px;">Scoreboard (this device)</div>
+    <div class="score-list" id="scoreList"></div>
+    <div style="margin-top:8px;font-size:11px;color:#666;">
+        Scores are stored locally in your browser (works online & offline).
+    </div>
+    <div style="margin-top:8px;display:flex;gap:8px;justify-content:center;">
+        <div class="btn small" id="closeScoreBtn">Close</div>
+        <div class="btn small" id="clearScoreBtn">Clear scores</div>
+    </div>
+</div>
+
+<script>
+// ===== Canvas =====
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+
+let scale = 1;
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    scale = canvas.height / 800;
+    if (scale < 0.6) scale = 0.6;
+}
+window.addEventListener('resize', resizeCanvas);
+
+let jumpSound = null;
+try {
+    jumpSound = new Audio("Jump.wav");
+    if (!jumpSound.canPlayType) jumpSound = null;
+} catch {
+    jumpSound = null;
+}
+
+// ===== Game Variables =====
+let gravityBase = 1500;
+let gravity = gravityBase;
+
+let flapImpulse = -520;
+let strongFlapImpulse = -800;
+
+let pipeSpacingBase = 480;
+let pipeSpacing = pipeSpacingBase;
+
+let speedBase = 260;
+let speed = speedBase;
+let maxSpeed = 700;
+
+let pipeWidth = 80;
+let diveBoost = 2600;
+
+let running = false;
+let gameOverFlag = false;
+let hasPlayed = false;
+
+let player = { x: 0, y: 0, w: 0, h: 0, vy: 0 };
+
+let pipes = [];
+let stars = [];
+let particles = [];
+
+let lastPipeX = 0;
+let score = 0;
+let lastScore = 0;
+
+let timeTotal = 0;
+let shakeTime = 0;
+let shakeIntensity = 0;
+
+let lastTapTime = 0;
+let tapTimeout = null;
+let diveActive = false;
+
+// ===== Scoreboard =====
+const SCORE_KEY = "heliFlapScores_v1";
+const MAX_SCORES = 10;
+
+function getPlayerName() {
+    const raw = (document.getElementById("playerNameInput").value || "").trim();
+    return raw || "Anonymous";
+}
+
+function loadScores() {
+    try {
+        const raw = localStorage.getItem(SCORE_KEY);
+        if (!raw) return [];
+        const data = JSON.parse(raw);
+        return Array.isArray(data) ? data.slice(0, MAX_SCORES) : [];
+    } catch {
+        return [];
+    }
+}
+
+function saveScores(scores) {
+    try {
+        localStorage.setItem(SCORE_KEY, JSON.stringify(scores.slice(0, MAX_SCORES)));
+    } catch {}
+}
+
+function addScore(name, value) {
+    if (!value || value <= 0) return;
+    const stamp = new Date().toISOString().slice(0, 10);
+    const scores = loadScores();
+    scores.push({ name, score: value, date: stamp });
+    scores.sort((a, b) => b.score - a.score);
+    saveScores(scores);
+}
+
+function escapeHtml(str) {
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+}
+
+function renderScoreboard() {
+    const container = document.getElementById("scoreList");
+    const scores = loadScores();
+
+    if (!scores.length) {
+        container.innerHTML = "<div class='score-empty'>No scores yet. Play a round to create one.</div>";
+        return;
+    }
+
+    let html = "<table><thead><tr><th>#</th><th>Player</th><th>Score</th><th>Date</th></tr></thead><tbody>";
+    scores.forEach((s, i) => {
+        html += `<tr>
+            <td>${i + 1}</td>
+            <td>${escapeHtml(s.name || "Anonymous")}</td>
+            <td>${s.score}</td>
+            <td>${s.date || ""}</td>
+        </tr>`;
+    });
+    html += "</tbody></table>";
+    container.innerHTML = html;
+}
+
+// ===== Start / Reset / Game Over =====
+function startGame() {
+    hasPlayed = true;
+    reset(false);
+    running = true;
+    gameOverFlag = false;
+    document.getElementById('mainUI').style.display = 'none';
+    document.getElementById('howUI').style.display = 'none';
+    document.getElementById('scoreUI').style.display = 'none';
+}
+
+function reset(keepLastScore) {
+    const centerY = canvas.height / 2;
+    if (!keepLastScore) lastScore = score;
+
+    score = 0;
+    pipes = [];
+    stars = [];
+    particles = [];
+    timeTotal = 0;
+    shakeTime = 0;
+    shakeIntensity = 0;
+    diveActive = false;
+    gameOverFlag = false;
+
+    speed = speedBase;
+    gravity = gravityBase;
+    pipeSpacing = pipeSpacingBase;
+
+    player.w = 70 * scale;
+    player.h = 40 * scale;
+    player.x = 150 * scale;
+    player.y = centerY - player.h / 2;
+    player.vy = 0;
+
+    lastPipeX = canvas.width;
+    addPipe();
+}
+
+function gameOver() {
+    if (gameOverFlag) return;
+    gameOverFlag = true;
+    running = false;
+
+    addShake(12, 0.35);
+
+    const cx = player.x + player.w * 0.6;
+    const cy = player.y + player.h * 0.4;
+    spawnCrashSmoke(cx, cy);
+
+    if (score > 0) addScore(getPlayerName(), score);
+    renderScoreboard();
+    document.getElementById('mainUI').style.display = 'flex';
+}
+
+// ===== Pipes + Stars =====
+function addPipe() {
+    const minGap = 320;
+    const maxGap = 420;
+    const gap = (minGap + Math.random() * (maxGap - minGap)) *
+                (0.9 + (speed / maxSpeed) * 0.2);
+
+    const margin = 40 * scale;
+    const maxTop = canvas.height - gap - margin;
+    const topHeight = Math.random() * (maxTop - margin) + margin;
+
+    const w = pipeWidth * scale;
+
+    pipes.push({ x: canvas.width, y: 0, w, h: topHeight, flipped: false, passed: false });
+    pipes.push({ x: canvas.width, y: topHeight + gap, w, h: canvas.height - (topHeight + gap), flipped: true });
+
+    stars.push({
+        x: canvas.width + w + 40 * scale,
+        y: topHeight + gap / 2,
+        r: 11 * scale,
+        collected: false
+    });
+
+    lastPipeX = canvas.width;
+}
+
+// ===== Input – Keyboard =====
+document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && running) {
+        e.preventDefault();
+        flapNormal();
+    }
+    if (e.code === 'KeyF' && running) {
+        flapStrong();
+    }
+    if (e.code === 'KeyD' && running) {
+        diveActive = true;
+    }
+
+    // Press S to start or restart after crash
+    if (e.code === 'KeyS' && !running) {
+        e.preventDefault();
+        // Reset always, even if gameOverFlag is true
+        gameOverFlag = false;
+        startGame();
+    }
+});
+
+document.addEventListener('keyup', (e) => {
+    if (e.code === 'KeyD') diveActive = false;
+});
+
+// ===== Input – Mobile / Pointer =====
+canvas.addEventListener('pointerdown', (e) => {
+    const now = performance.now();
+    const y = e.clientY;
+
+    if (!running && !gameOverFlag && !hasPlayed) {
+        startGame();
+        lastTapTime = now;
+        return;
+    }
+    if (!running && gameOverFlag) {
+        // After crash: restart via Start button (so smoke is visible).
+        return;
+    }
+
+    if (y > canvas.height * 0.6) {
+        diveActive = true;
+    }
+
+    if (now - lastTapTime < 260) {
+        if (tapTimeout) {
+            clearTimeout(tapTimeout);
+            tapTimeout = null;
+        }
+        flapStrong();
+    } else {
+        tapTimeout = setTimeout(() => {
+            if (!diveActive && running) flapNormal();
+            tapTimeout = null;
+        }, 230);
+    }
+    lastTapTime = now;
+});
+canvas.addEventListener('pointerup', () => { diveActive = false; });
+canvas.addEventListener('pointercancel', () => { diveActive = false; });
+canvas.addEventListener('pointerout', () => { diveActive = false; });
+
+// ===== Actions =====
+function playJump() {
+    if (!jumpSound) return;
+    try {
+        const p = jumpSound.play();
+        if (p && p.catch) p.catch(() => {});
+    } catch {}
+}
+
+function flapNormal() {
+    player.vy = flapImpulse;
+    playJump();
+    spawnSpark(player.x, player.y + player.h / 2, '#ffd800');
+}
+
+function flapStrong() {
+    player.vy = strongFlapImpulse;
+    playJump();
+    addShake(6, 0.18);
+    spawnSpark(player.x, player.y + player.h / 2, '#ff4d00', 16);
+}
+
+// ===== Particles & Shake =====
+function spawnSpark(x, y, color, count = 10) {
+    for (let i = 0; i < count; i++) {
+        particles.push({
+            x,
+            y,
+            vx: (Math.random() - 0.5) * 220 * scale,
+            vy: (Math.random() - 0.5) * 220 * scale,
+            life: 0.25 + Math.random() * 0.25,
+            size: 3 * scale,
+            color,
+            type: 'spark'
+        });
+    }
+}
+
+function spawnCrashSmoke(x, y) {
+    const count = 40;
+    for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = (40 + Math.random() * 120) * scale;
+        particles.push({
+            x,
+            y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed * 0.6,
+            life: 0.7 + Math.random() * 0.9,
+            size: 8 * scale + Math.random() * 10 * scale,
+            color: 'rgba(80,80,80,0.9)',
+            type: 'smoke'
+        });
+    }
+}
+
+function addShake(intensity, duration) {
+    shakeIntensity = Math.max(shakeIntensity, intensity);
+    shakeTime = Math.max(shakeTime, duration);
+}
+
+// ===== Update =====
+function update(dt) {
+    updateParticles(dt); // always
+
+    if (!running) {
+        if (shakeTime > 0) {
+            shakeTime -= dt;
+            if (shakeTime <= 0) {
+                shakeTime = 0;
+                shakeIntensity = 0;
+            }
+        }
+        return;
+    }
+
+    timeTotal += dt;
+    const diffFactor = Math.min(timeTotal / 25, 1);
+
+    speed = speedBase + diffFactor * (maxSpeed - speedBase);
+    gravity = gravityBase + diffFactor * 400;
+    pipeSpacing = pipeSpacingBase - diffFactor * 80;
+
+    player.vy += gravity * dt;
+    if (diveActive) player.vy += diveBoost * dt;
+    player.y += player.vy * dt;
+
+    if (lastPipeX < canvas.width - pipeSpacing) addPipe();
+
+    for (let p of pipes) p.x -= speed * dt;
+    for (let s of stars) s.x -= speed * dt;
+
+    pipes = pipes.filter(p => p.x + p.w > -50);
+    stars = stars.filter(s => s.x + s.r > -50 && !s.collected);
+
+    // collisions: pipes
+    for (let p of pipes) {
+        if (
+            player.x < p.x + p.w &&
+            player.x + player.w > p.x &&
+            player.y < p.y + p.h &&
+            player.y + player.h > p.y
+        ) {
+            gameOver();
+            return;
+        }
+    }
+
+    // collisions: stars
+    for (let s of stars) {
+        if (s.collected) continue;
+        const cx = s.x;
+        const cy = s.y;
+        const closestX = Math.max(player.x, Math.min(cx, player.x + player.w));
+        const closestY = Math.max(player.y, Math.min(cy, player.y + player.h));
+        const dx = cx - closestX;
+        const dy = cy - closestY;
+        if (dx * dx + dy * dy < (s.r * s.r)) {
+            s.collected = true;
+            score += 5;
+            spawnSpark(cx, cy, '#ffd800', 14);
+            addShake(4, 0.12);
+        }
+    }
+
+    // out of bounds
+    if (player.y < -60 || player.y > canvas.height + 60) {
+        gameOver();
+        return;
+    }
+
+    // passed pipes
+    for (let i = 0; i < pipes.length; i += 2) {
+        const p = pipes[i];
+        if (!p.passed && p.x + p.w < player.x) {
+            p.passed = true;
+            score += 1;
+        }
+    }
+
+    lastPipeX -= speed * dt;
+
+    if (shakeTime > 0) {
+        shakeTime -= dt;
+        if (shakeTime <= 0) {
+            shakeTime = 0;
+            shakeIntensity = 0;
+        }
+    }
+}
+
+// ===== Particles Update =====
+function updateParticles(dt) {
+    for (let part of particles) {
+        part.x += part.vx * dt;
+        part.y += part.vy * dt;
+
+        if (part.type === 'smoke') {
+            part.vx *= 0.96;
+            part.vy *= 0.96;
+        }
+
+        part.life -= dt;
+    }
+    particles = particles.filter(p => p.life > 0);
+}
+
+// ===== Pipes Drawing =====
+function drawPipe(p) {
+    const x = p.x;
+    const y = p.y;
+    const w = p.w;
+    const h = p.h;
+
+    // Pure vector metal heli-tunnel
+    const grad = ctx.createLinearGradient(x, y, x, y + h);
+    grad.addColorStop(0, "#4f5e66");
+    grad.addColorStop(0.35, "#7e8b95");
+    grad.addColorStop(0.7, "#364047");
+    grad.addColorStop(1, "#22272b");
+
+    ctx.fillStyle = grad;
+    ctx.fillRect(x, y, w, h);
+
+    // inner shadows
+    ctx.fillStyle = "rgba(0,0,0,0.18)";
+    ctx.fillRect(x, y, w * 0.12, h);
+    ctx.fillRect(x + w * 0.88, y, w * 0.12, h);
+
+    // vertical highlight
+    ctx.fillStyle = "rgba(255,255,255,0.10)";
+    ctx.fillRect(x + w * 0.45, y, w * 0.1, h);
+
+    // ribs
+    ctx.strokeStyle = "rgba(0,0,0,0.2)";
+    ctx.lineWidth = 1;
+    const ribStep = 26 * scale;
+    for (let yy = y + ribStep; yy < y + h - ribStep; yy += ribStep) {
+        ctx.beginPath();
+        ctx.moveTo(x + w * 0.14, yy);
+        ctx.lineTo(x + w * 0.86, yy);
+        ctx.stroke();
+    }
+
+    // outline
+    ctx.strokeStyle = "#111518";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, w, h);
+
+    // hazard cap at gap-facing end
+    const capThickness = 14 * scale;
+    if (p.flipped) {
+        // bottom pipe -> cap at top
+        drawCapWithStripes(x, y, w, capThickness);
+    } else {
+        // top pipe -> cap at bottom
+        drawCapWithStripes(x, y + h - capThickness, w, capThickness);
+    }
+}
+
+function drawCapWithStripes(x, y, w, h) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, w, h);
+    ctx.clip();
+
+    const grad = ctx.createLinearGradient(x, y, x, y + h);
+    grad.addColorStop(0, "#2a3034");
+    grad.addColorStop(1, "#181b1e");
+    ctx.fillStyle = grad;
+    ctx.fillRect(x, y, w, h);
+
+    const stripeW = 8 * scale;
+    for (let sx = x - w; sx < x + w; sx += stripeW * 2) {
+        // yellow
+        ctx.fillStyle = "#f4c542";
+        ctx.beginPath();
+        ctx.moveTo(sx, y + h);
+        ctx.lineTo(sx + stripeW, y);
+        ctx.lineTo(sx + stripeW * 2, y);
+        ctx.lineTo(sx + stripeW, y + h);
+        ctx.closePath();
+        ctx.fill();
+
+        // black
+        ctx.fillStyle = "#1a1a1a";
+        ctx.beginPath();
+        ctx.moveTo(sx + stripeW, y + h);
+        ctx.lineTo(sx + stripeW * 2, y);
+        ctx.lineTo(sx + stripeW * 3, y);
+        ctx.lineTo(sx + stripeW * 2, y + h);
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    ctx.restore();
+
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x, y, w, h);
+}
+
+// ===== Star Drawing (this was missing) =====
+function drawStar(x, y, r, fillColor, strokeColor) {
+    const spikes = 5;
+    const outerRadius = r;
+    const innerRadius = r * 0.45;
+    let rot = Math.PI / 2 * 3;
+    const step = Math.PI / spikes;
+
+    ctx.beginPath();
+    ctx.moveTo(x, y - outerRadius);
+    for (let i = 0; i < spikes; i++) {
+        let x1 = x + Math.cos(rot) * outerRadius;
+        let y1 = y + Math.sin(rot) * outerRadius;
+        ctx.lineTo(x1, y1);
+        rot += step;
+
+        let x2 = x + Math.cos(rot) * innerRadius;
+        let y2 = y + Math.sin(rot) * innerRadius;
+        ctx.lineTo(x2, y2);
+        rot += step;
+    }
+    ctx.closePath();
+    ctx.fillStyle = fillColor;
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = strokeColor;
+    ctx.stroke();
+}
+
+// ===== Helicopter =====
+function drawHelicopter(x, y, w, h) {
+    const bodyH = h * 0.6;
+    const bodyY = y + (h - bodyH) / 2;
+
+    // body
+    ctx.fillStyle = "#2b7cff";
+    ctx.strokeStyle = "#123a73";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(x, bodyY, w * 0.6, bodyH, h * 0.15);
+    else ctx.rect(x, bodyY, w * 0.6, bodyH);
+    ctx.fill();
+    ctx.stroke();
+
+    // cockpit
+    const noseX = x + w * 0.6;
+    const noseW = w * 0.22;
+    ctx.beginPath();
+    ctx.moveTo(noseX, bodyY);
+    ctx.quadraticCurveTo(noseX + noseW, bodyY + bodyH * 0.1, noseX + noseW, bodyY + bodyH * 0.5);
+    ctx.quadraticCurveTo(noseX + noseW, bodyY + bodyH * 0.9, noseX, bodyY + bodyH);
+    ctx.closePath();
+    ctx.fillStyle = "#8fd6ff";
+    ctx.fill();
+    ctx.stroke();
+
+    // window
+    ctx.beginPath();
+    ctx.ellipse(
+        noseX + noseW * 0.35,
+        bodyY + bodyH * 0.45,
+        noseW * 0.18,
+        bodyH * 0.22,
+        0, 0, Math.PI * 2
+    );
+    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    ctx.fill();
+
+    // tail
+    const tailY = bodyY + bodyH * 0.4;
+    ctx.strokeStyle = "#123a73";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(x, tailY);
+    ctx.lineTo(x - w * 0.35, tailY - bodyH * 0.15);
+    ctx.stroke();
+
+    // rear rotor
+    ctx.save();
+    ctx.translate(x - w * 0.35, tailY - bodyH * 0.15);
+    ctx.rotate(Date.now() / 80 % (Math.PI * 2));
+    ctx.strokeStyle = "#222";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(-6 * scale, 0);
+    ctx.lineTo(6 * scale, 0);
+    ctx.moveTo(0, -4 * scale);
+    ctx.lineTo(0, 4 * scale);
+    ctx.stroke();
+    ctx.restore();
+
+    // skids
+    ctx.strokeStyle = "#222";
+    ctx.lineWidth = 2;
+    const skidY = bodyY + bodyH + 4 * scale;
+    ctx.beginPath();
+    ctx.moveTo(x + w * 0.1, skidY);
+    ctx.lineTo(x + w * 0.5, skidY);
+    ctx.moveTo(x + w * 0.18, skidY);
+    ctx.lineTo(x + w * 0.18, skidY - 8 * scale);
+    ctx.moveTo(x + w * 0.42, skidY);
+    ctx.lineTo(x + w * 0.42, skidY - 8 * scale);
+    ctx.stroke();
+
+    // main rotor mast
+    const mastX = x + w * 0.3;
+    const mastY = bodyY - 4 * scale;
+    ctx.strokeStyle = "#222";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(mastX, bodyY + 4 * scale);
+    ctx.lineTo(mastX, mastY);
+    ctx.stroke();
+
+    // main rotor
+    ctx.save();
+    ctx.translate(mastX, mastY);
+    const angle = Date.now() / 40 % (Math.PI * 2);
+    const bladeLen = w * 0.55;
+    ctx.rotate(angle);
+    ctx.strokeStyle = "#111";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(-bladeLen, 0);
+    ctx.lineTo(bladeLen, 0);
+    ctx.stroke();
+    ctx.restore();
+}
+
+// ===== Render =====
+function render() {
+    const bgTop = running ? "#5cc6ff" : "#70c5ce";
+    const bgBottom = "#ffffff";
+    const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    grad.addColorStop(0, bgTop);
+    grad.addColorStop(1, bgBottom);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.save();
+    if (shakeTime > 0 && shakeIntensity > 0) {
+        const s = shakeTime * shakeIntensity;
+        const dx = (Math.random() - 0.5) * s;
+        const dy = (Math.random() - 0.5) * s;
+        ctx.translate(dx, dy);
+    }
+
+    // Draw pipes & stars only when playing or after crash
+    if (running || gameOverFlag) {
+        for (let p of pipes) drawPipe(p);
+        for (let s of stars) {
+            if (!s.collected) drawStar(s.x, s.y, s.r, "#ffd800", "#c79a00");
+        }
+    }
+
+    // particles
+    for (let part of particles) {
+        const life = Math.max(part.life, 0);
+        if (part.type === 'smoke') {
+            ctx.globalAlpha = Math.min(life, 1);
+            ctx.fillStyle = part.color;
+            ctx.beginPath();
+            ctx.arc(part.x, part.y, part.size, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+        } else {
+            ctx.globalAlpha = Math.max(life * 3, 0);
+            ctx.fillStyle = part.color;
+            ctx.fillRect(part.x, part.y, part.size, part.size);
+            ctx.globalAlpha = 1;
+        }
+    }
+
+    // helicopter (always)
+    drawHelicopter(player.x, player.y, player.w, player.h);
+
+    ctx.restore();
+
+    // HUD
+    ctx.fillStyle = "#000";
+    ctx.font = (24 * scale) + "px Arial";
+    ctx.textAlign = "left";
+    ctx.fillText("Score: " + score, 20 * scale, 30 * scale);
+
+    ctx.textAlign = "right";
+    ctx.fillText("Last: " + lastScore, canvas.width - 20 * scale, 30 * scale);
+
+    ctx.textAlign = "left";
+    ctx.font = (16 * scale) + "px Arial";
+    ctx.fillText("Speed: " + speed.toFixed(0), 20 * scale, 55 * scale);
+
+    if (!running) {
+        ctx.font = (16 * scale) + "px Arial";
+        ctx.textAlign = "center";
+        ctx.fillStyle = "#000";
+        ctx.fillText("Stars = +5, pipes = boom + smoke.", canvas.width / 2, canvas.height - 30 * scale);
+    }
+}
+
+// ===== UI Buttons =====
+document.getElementById('howBtn').onclick = () => {
+    document.getElementById('mainUI').style.display = 'none';
+    document.getElementById('scoreUI').style.display = 'none';
+    document.getElementById('howUI').style.display = 'flex';
+};
+document.getElementById('backBtn').onclick = () => {
+    document.getElementById('howUI').style.display = 'none';
+    document.getElementById('mainUI').style.display = 'flex';
+};
+
+document.getElementById('scoreBtn').onclick = () => {
+    renderScoreboard();
+    document.getElementById('mainUI').style.display = 'none';
+    document.getElementById('howUI').style.display = 'none';
+    document.getElementById('scoreUI').style.display = 'flex';
+};
+document.getElementById('closeScoreBtn').onclick = () => {
+    document.getElementById('scoreUI').style.display = 'none';
+    document.getElementById('mainUI').style.display = 'flex';
+};
+document.getElementById('clearScoreBtn').onclick = () => {
+    if (confirm("Clear all local scores on this device?")) {
+        saveScores([]);
+        renderScoreboard();
+    }
+};
+
+document.getElementById('startBtn').onclick = startGame;
+
+document.getElementById('exitBtn').onclick = () => {
+    const ok = confirm("Do you really want to exit the game?");
+    if (!ok) return;
+    window.open('', '_self');
+    window.close();
+    document.body.innerHTML =
+        "<div style='font-family:Arial,sans-serif;padding:20px;text-align:center;'>Game closed.</div>";
+};
+
+// ===== Loop =====
+let last = performance.now();
+function loop(now) {
+    const dt = Math.min((now - last) / 1000, 0.05);
+    update(dt);
+    render();
+    last = now;
+    requestAnimationFrame(loop);
+}
+
+// ===== Init =====
+resizeCanvas();
+reset(true);
+renderScoreboard();
+loop(performance.now());
+</script>
+</body>
+</html>
+

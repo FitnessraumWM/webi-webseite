@@ -1,0 +1,1830 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Fitnessraum</title>
+
+  <!-- OneSignal (optional) -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+
+  <!-- Firebase compat -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+  <style>
+    :root{
+      --bg: #0b1220;
+      --card: rgba(255,255,255,0.06);
+      --card2: rgba(255,255,255,0.08);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.68);
+      --line: rgba(255,255,255,0.10);
+      --ok: #34d399;
+      --warn: #f59e0b;
+      --bad: #fb7185;
+      --chip: rgba(255,255,255,0.08);
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+      --radius: 18px;
+      --radius2: 22px;
+      --pad: 14px;
+      --pad2: 18px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+
+    [data-theme="light"]{
+      --bg: #f4f6fb;
+      --card: rgba(0,0,0,0.04);
+      --card2: rgba(0,0,0,0.06);
+      --text: rgba(0,0,0,0.86);
+      --muted: rgba(0,0,0,0.55);
+      --line: rgba(0,0,0,0.10);
+      --chip: rgba(0,0,0,0.05);
+      --shadow: 0 20px 60px rgba(0,0,0,.12);
+    }
+
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: var(--font);
+      background: radial-gradient(1200px 600px at 20% 0%, rgba(52,211,153,.12), transparent 60%),
+                  radial-gradient(900px 500px at 85% 15%, rgba(99,102,241,.10), transparent 60%),
+                  var(--bg);
+      color: var(--text);
+    }
+
+    .wrap{ max-width: 1220px; margin: 0 auto; padding: 14px; }
+
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between; gap: 10px;
+      padding: 10px 2px 16px;
+    }
+    .brand{ display:flex; align-items:center; gap: 10px; font-weight: 700; letter-spacing: .2px; }
+    .pill{
+      font-size: 12px; padding: 4px 10px; border-radius: 999px;
+      background: var(--chip); border: 1px solid var(--line); color: var(--muted); font-weight: 600;
+    }
+    .btn{
+      border: 1px solid var(--line);
+      background: var(--chip);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 650;
+    }
+    .btn:hover{ filter: brightness(1.06); }
+    .btn.primary{ background: rgba(52,211,153,.18); border-color: rgba(52,211,153,.35); }
+    .btn.danger{ background: rgba(251,113,133,.14); border-color: rgba(251,113,133,.35); }
+    .btn.ghost{ background: transparent; border-color: var(--line); }
+    .btn.small{ padding: 8px 10px; font-size: 13px; }
+    .btn:disabled{ opacity:.55; cursor:not-allowed; }
+
+    .grid{ display:grid; grid-template-columns: 1.15fr .85fr; gap: 14px; }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .cardHead{
+      padding: var(--pad2);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+    .cardTitle{ font-weight: 750; letter-spacing: .2px; }
+    .cardBody{ padding: var(--pad2); }
+
+    .rightCol{ display:flex; flex-direction:column; gap: 12px; }
+    .stickyMobile{ position: sticky; top: 10px; z-index: 2; }
+
+    .loginGrid{ display:grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items:end; }
+    .field label{ display:block; font-size: 12px; color: var(--muted); margin: 0 0 6px; }
+    .field input, .field textarea, .field select{
+      width:100%;
+      box-sizing:border-box;
+      padding: 11px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.12);
+      color: var(--text);
+      outline:none;
+    }
+    [data-theme="light"] .field input,
+    [data-theme="light"] .field textarea,
+    [data-theme="light"] .field select{ background: rgba(255,255,255,0.65); }
+
+    .calControls{ display:flex; gap: 8px; align-items:center; flex-wrap:wrap; }
+    .seg{
+      display:inline-flex;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      overflow:hidden;
+      background: transparent;
+    }
+    .seg button{
+      border:0;
+      background: transparent;
+      color: var(--muted);
+      padding: 9px 12px;
+      cursor:pointer;
+      font-weight: 700;
+    }
+    .seg button.active{ color: var(--text); background: rgba(52,211,153,.16); }
+
+    .calNav{ display:flex; align-items:center; gap: 8px; }
+
+    /* Month */
+    .monthGrid{
+      display:grid;
+      grid-template-columns: 62px repeat(7, minmax(0, 1fr));
+      gap: 8px;
+      align-items:stretch;
+    }
+    .monthHeadCell{
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.06);
+      border-radius: 16px;
+      padding: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 900;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    [data-theme="light"] .monthHeadCell{ background: rgba(255,255,255,0.55); }
+
+    .kwCell{
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.08);
+      border-radius: 16px;
+      padding: 10px;
+      font-weight: 900;
+      color: var(--muted);
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+    }
+    [data-theme="light"] .kwCell{ background: rgba(255,255,255,0.55); }
+
+    .dayCard{
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.10);
+      border-radius: 16px;
+      padding: 10px;
+      cursor:pointer;
+      min-height: 72px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      position:relative;
+    }
+    [data-theme="light"] .dayCard{ background: rgba(255,255,255,0.55); }
+    .dayCard:hover{ filter: brightness(1.04); }
+    .dayCard .d{ font-weight:900; font-size: 16px; }
+    .dayCard .meta{ margin-top: 8px; font-size: 12px; color: var(--muted); display:flex; flex-direction:column; gap:3px; }
+    .dayCard.dim{ opacity:.20; cursor:default; filter: grayscale(.3); }
+    /* past + future month (bledy) */
+    .dayCard.past{ opacity:.35; cursor:default; filter: grayscale(.25); }
+    .dayCard.futureOther{ opacity:.60; }
+
+    /* Week view */
+    .weekGrid{
+      display:grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 6px;
+    }
+    .weekCol{
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow:hidden;
+      background: rgba(0,0,0,0.08);
+      min-width: 0;
+    }
+    [data-theme="light"] .weekCol{ background: rgba(255,255,255,0.55); }
+    .weekColHead{
+      padding: 10px 10px;
+      border-bottom: 1px solid var(--line);
+      font-weight: 900;
+      font-size: 12px;
+      color: var(--muted);
+      display:flex;
+      justify-content:space-between;
+      gap: 6px;
+    }
+    .weekSlots{ max-height: 520px; overflow:auto; }
+    .slotRow{
+      display:flex;
+      justify-content:space-between;
+      gap: 8px;
+      padding: 9px 10px;
+      font-size: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    [data-theme="light"] .slotRow{ border-bottom: 1px solid rgba(0,0,0,0.06); }
+    .slotRow.free{ cursor:pointer; }
+    .slotRow.free:hover{ background: rgba(52,211,153,.10); }
+    .slotRow.busy{ color: var(--muted); background: rgba(251,113,133,.06); }
+    .slotRow.part{ cursor:pointer; background: rgba(245,158,11,.08); }
+    .slotRow.part:hover{ background: rgba(245,158,11,.12); }
+
+    /* Day list */
+    .dayList{
+      display:flex;
+      flex-direction:column;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow:hidden;
+      background: rgba(0,0,0,0.08);
+    }
+    [data-theme="light"] .dayList{ background: rgba(255,255,255,0.55); }
+    .dayList .slotRow{ font-size: 13px; }
+    .dayList .slotRow .time{ font-weight: 900; }
+
+    /* Right panel */
+    .hero{
+      padding: var(--pad2);
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(52,211,153,.12), rgba(99,102,241,.08));
+    }
+    .heroTitle{ font-size: 14px; color: var(--muted); font-weight: 900; letter-spacing: .2px; }
+    .heroMain{ margin-top: 6px; font-size: 20px; font-weight: 900; letter-spacing: .2px; }
+    .heroSub{
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .heroActions{ margin-top: 12px; display:flex; gap: 8px; flex-wrap:wrap; }
+
+    .resList{ display:flex; flex-direction:column; gap: 10px; padding: var(--pad2); }
+    .resItem{
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+      background: rgba(0,0,0,0.10);
+    }
+    [data-theme="light"] .resItem{ background: rgba(255,255,255,0.55); }
+    .resTop{ display:flex; justify-content:space-between; gap: 10px; align-items:flex-start; }
+    .resWhen{ font-weight: 900; letter-spacing: .2px; }
+    .resMeta{ margin-top: 4px; color: var(--muted); font-size: 12px; }
+    .badge{
+      font-size: 11px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--chip);
+      color: var(--muted);
+      font-weight: 900;
+      white-space:nowrap;
+    }
+    .badge.admin{
+      background: rgba(99,102,241,.16);
+      border-color: rgba(99,102,241,.30);
+      color: rgba(255,255,255,.90);
+    }
+
+    /* Menu modal */
+    .menuOverlay{
+      position: fixed;
+      inset:0;
+      background: rgba(0,0,0,.40);
+      display:none;
+      align-items:flex-start;
+      justify-content:flex-end;
+      padding: 12px;
+      z-index: 50;
+    }
+    @media (min-width: 980px){
+      .menuOverlay{ justify-content:center; align-items:center; }
+    }
+    .menuPanel{
+      width:min(420px, calc(100vw - 24px));
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .menuPanel .row{
+      display:flex;
+      justify-content:space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--line);
+      align-items:center;
+    }
+    .menuPanel .row:last-child{ border-bottom:0; }
+    .kv{ color: var(--muted); font-size: 12px; font-weight: 900; letter-spacing:.2px; }
+    .vv{ font-weight: 900; font-size: 13px; }
+
+    .tog{ display:inline-flex; align-items:center; gap: 10px; }
+    .switch{
+      width: 46px;
+      height: 26px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.10);
+      position:relative;
+      cursor:pointer;
+      flex: 0 0 auto;
+    }
+    .switch::after{
+      content:"";
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.85);
+      position:absolute;
+      top: 2px; left: 2px;
+      transition: all .18s ease;
+    }
+    .switch.on{
+      background: rgba(52,211,153,.20);
+      border-color: rgba(52,211,153,.35);
+    }
+    .switch.on::after{ left: 24px; background: rgba(255,255,255,0.95); }
+
+    .langPills{ display:flex; gap: 8px; }
+    .langPills button{
+      border:1px solid var(--line);
+      background: var(--chip);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-weight: 900;
+      cursor:pointer;
+    }
+    .langPills button.active{
+      background: rgba(52,211,153,.18);
+      border-color: rgba(52,211,153,.35);
+      color: var(--text);
+    }
+
+    /* Booking modal */
+    .modalOverlay{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.45);
+      display:none;
+      align-items:center; justify-content:center;
+      padding: 12px;
+      z-index: 60;
+    }
+    .modal{
+      width:min(540px, calc(100vw - 24px));
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .modalHead{
+      padding: 14px 16px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      border-bottom: 1px solid var(--line);
+      gap: 10px;
+    }
+    .modalBody{ padding: 16px; }
+    .row2{ display:grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .help{ color: var(--muted); font-size: 12px; margin-top: 8px; line-height:1.35; }
+
+    /* Toast */
+    .toastWrap{
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 16px;
+      z-index: 80;
+      width: min(520px, calc(100vw - 24px));
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      pointer-events:none;
+    }
+    .toast{
+      pointer-events:auto;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      background: var(--bg);
+      box-shadow: var(--shadow);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 12px;
+    }
+    .toast.ok{ border-color: rgba(52,211,153,.35); }
+    .toast.err{ border-color: rgba(251,113,133,.35); }
+    .toast .msg{ font-weight: 900; }
+    .toast .x{
+      cursor:pointer;
+      border:1px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 6px 10px;
+    }
+
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr; }
+      .rightCol{ order: -1; }
+      .stickyMobile{ top: 8px; }
+      .loginGrid{ grid-template-columns: 1fr; }
+      .weekSlots{ max-height: 430px; }
+    }
+    @media (max-width: 520px){
+      .monthGrid{ gap: 6px; }
+      .dayCard{ padding: 9px; min-height: 70px; }
+      .heroMain{ font-size: 18px; }
+      .weekColHead{ font-size: 11px; }
+      .slotRow{ padding: 8px 9px; }
+      .monthGrid{ grid-template-columns: 56px repeat(7, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div style="font-size:18px">Fitnessraum</div>
+        <span id="statusPill" class="pill">offline</span>
+      </div>
+      <button id="menuBtn" class="btn">☰ <span data-i18n="menu">Menu</span></button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="loginCard" class="card" style="margin-bottom:14px;">
+      <div class="cardHead">
+        <div class="cardTitle" data-i18n="login_title">Anmelden</div>
+        <div class="pill" data-i18n="login_hint">E-Mail/Passwort</div>
+      </div>
+      <div class="cardBody">
+        <div class="loginGrid">
+          <div class="field">
+            <label for="email" data-i18n="email">E-Mail</label>
+            <input id="email" type="email" autocomplete="email" placeholder="email">
+          </div>
+          <div class="field">
+            <label for="pass" data-i18n="password">Passwort</label>
+            <input id="pass" type="password" autocomplete="current-password" placeholder="passwort">
+          </div>
+          <div>
+            <button id="loginBtn" class="btn primary" style="width:100%" data-i18n="login_btn">Anmelden</button>
+          </div>
+        </div>
+        <div class="help" data-i18n="login_help">
+          Nach dem Login siehst du Kalender und deine Reservierungen. Admins können optional “Admin Mode” aktivieren.
+        </div>
+      </div>
+    </div>
+
+    <!-- APP -->
+    <div id="app" class="grid" style="display:none;">
+      <!-- CALENDAR -->
+      <div id="calendarCard" class="card">
+        <div class="cardHead">
+          <div>
+            <div class="cardTitle" data-i18n="calendar_title">Kalender</div>
+            <div style="margin-top:10px" class="calControls">
+              <div class="seg" aria-label="view">
+                <button id="viewMonth" class="active" data-i18n="month">Monat</button>
+                <button id="viewWeek" data-i18n="week">Woche</button>
+                <button id="viewDay" data-i18n="day">Tag</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="calNav">
+            <button id="prevBtn" class="btn small ghost" title="prev">◀</button>
+            <button id="todayBtn" class="btn small" data-i18n="today">Heute</button>
+            <button id="nextBtn" class="btn small ghost" title="next">▶</button>
+          </div>
+        </div>
+
+        <div class="cardBody">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px;">
+            <div id="calLabel" class="pill">—</div>
+            <div class="pill"><span data-i18n="backend">Backend</span>: <span id="backendMs">—</span></div>
+          </div>
+
+          <div id="calMonth" class="monthGrid"></div>
+          <div id="calWeek" class="weekGrid" style="display:none;"></div>
+          <div id="calDay" class="dayList" style="display:none;"></div>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="rightCol">
+        <div class="card stickyMobile">
+          <div class="hero">
+            <div class="heroTitle" data-i18n="your_booking">Deine Buchung</div>
+            <div id="heroMain" class="heroMain">—</div>
+            <div id="heroSub" class="heroSub">—</div>
+            <div class="heroActions">
+              <button id="heroBookToday" class="btn primary" data-i18n="book_today">Heute buchen</button>
+              <button id="heroOpenDay" class="btn" data-i18n="open_day">Tag öffnen</button>
+              <button id="heroCancel" class="btn danger" style="display:none;" data-i18n="cancel">Stornieren</button>
+            </div>
+          </div>
+
+          <div class="cardHead" style="border-bottom:0; padding-bottom: 10px;">
+            <div>
+              <div class="cardTitle" data-i18n="my_reservations">Meine Reservierungen</div>
+              <div class="help" style="margin:6px 0 0;" id="resCount">—</div>
+            </div>
+            <button id="bookBtn" class="btn primary small" data-i18n="book">Buchen</button>
+          </div>
+
+          <div id="resList" class="resList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MENU -->
+  <div id="menuOverlay" class="menuOverlay" role="dialog" aria-modal="true">
+    <div class="menuPanel">
+      <div class="row">
+        <div>
+          <div class="kv" data-i18n="status">Status</div>
+          <div class="vv" id="menuStatus">—</div>
+        </div>
+        <button class="btn small" id="menuClose">✕</button>
+      </div>
+
+      <div class="row">
+        <div>
+          <div class="kv" data-i18n="email">E-Mail</div>
+          <div class="vv" id="menuEmail">—</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <div class="kv" data-i18n="role">Rolle</div>
+          <div class="vv" id="menuRole">—</div>
+        </div>
+        <span id="menuRoleBadge" class="badge" style="display:none;">admin</span>
+      </div>
+
+      <div class="row" id="adminModeRow" style="display:none;">
+        <div>
+          <div class="kv">Admin Mode</div>
+          <div class="vv" data-i18n="admin_mode_hint">Admin kann alle Reservierungen sehen/stornieren (nur wenn ON)</div>
+        </div>
+        <div class="tog">
+          <div id="adminAllSwitch" class="switch" role="switch" aria-checked="false"></div>
+        </div>
+      </div>
+
+      <!-- Favorite time -->
+      <div class="row">
+        <div style="width:100%;">
+          <div class="kv">Beliebte Zeit</div>
+          <div style="display:flex; gap:10px; margin-top:8px;">
+            <div style="flex:1;">
+              <div class="vv" style="margin-bottom:6px; font-size:12px; color:var(--muted);">Start</div>
+              <select id="favStartSel"></select>
+            </div>
+            <div style="flex:1;">
+              <div class="vv" style="margin-bottom:6px; font-size:12px; color:var(--muted);">Länge</div>
+              <select id="favDurSel"></select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <div class="kv">Push</div>
+          <div class="vv" id="pushText">off</div>
+        </div>
+        <div class="tog">
+          <div id="pushSwitch" class="switch" role="switch" aria-checked="false"></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <div class="kv">Theme</div>
+          <div class="vv" id="themeText">auto</div>
+        </div>
+        <div class="langPills">
+          <button id="themeAuto">auto</button>
+          <button id="themeLight">light</button>
+          <button id="themeDark">dark</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <div class="kv" data-i18n="language">Sprache</div>
+          <div class="vv" id="langText">DE</div>
+        </div>
+        <div class="langPills">
+          <button id="langDE">DE</button>
+          <button id="langEN">EN</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <button id="logoutBtn" class="btn danger" style="width:100%" data-i18n="logout">Abmelden</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOOKING MODAL -->
+  <div id="modalOverlay" class="modalOverlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modalHead">
+        <div style="font-weight:900" data-i18n="booking_title">Reservierung</div>
+        <button id="modalClose" class="btn small">✕</button>
+      </div>
+      <div class="modalBody">
+        <div class="help" id="bookingInfo">—</div>
+
+        <div style="height:10px"></div>
+
+        <div class="row2">
+          <div class="field">
+            <label for="bookFrom" data-i18n="from">Von</label>
+            <input id="bookFrom" readonly>
+          </div>
+          <div class="field">
+            <label for="bookTo" data-i18n="to">Bis</label>
+            <select id="bookTo"></select>
+          </div>
+        </div>
+
+        <div style="height:10px"></div>
+
+        <div class="field">
+          <label for="bookTitle" data-i18n="title">Titel</label>
+          <input id="bookTitle" placeholder="Fitnessraum Booking">
+        </div>
+
+        <div style="height:10px"></div>
+
+        <div class="field">
+          <label for="bookNote" data-i18n="note_optional">Notiz (optional)</label>
+          <textarea id="bookNote" rows="2"></textarea>
+        </div>
+
+        <div class="help" data-i18n="booking_help">
+          Klicke im Tag- oder Wochen-View auf einen freien Slot (Start). Danach wählst du “Bis” und buchst.
+        </div>
+
+        <div style="height:12px"></div>
+
+        <!-- !!! žiadny inline onclick !!! -->
+        <button id="bookConfirm" class="btn primary" style="width:100%" data-i18n="book_confirm">Buchen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOASTS -->
+  <div id="toastWrap" class="toastWrap"></div>
+
+<script>
+/* ===========================
+   CONFIG
+=========================== */
+const BACKEND_URL = "https://script.google.com/macros/s/AKfycbyqMOFEywa32j-ALJ9OzWpfZI2vftY9hw9Do4Oc9DZGNuApSr55V2ywUxozqn5lfvRX/exec";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCY2nmL9I9TjxB0rlVPMCmcl4WKna21IJE",
+  authDomain: "fitnessraumwm-app.firebaseapp.com",
+  projectId: "fitnessraumwm-app",
+  storageBucket: "fitnessraumwm-app.firebasestorage.app",
+  messagingSenderId: "130435754352",
+  appId: "1:130435754352:web:a8a38eeeee7c25867e47b5",
+  measurementId: "G-B629775N63"
+};
+
+const ONESIGNAL_APP_ID = "61b4fca3-7bbd-4556-973d-0a589623e89b";
+
+/* ===========================
+   STATE
+=========================== */
+const state = {
+  user: null,
+  view: "month",
+  anchor: new Date(),
+
+  daySlots: [],
+  weekDays: [],
+  monthBusy: {},
+
+  reservations: [],
+
+  adminAll: false,
+  loadingCancel: false,
+
+  selectedStartISO: null,
+  selectedDayISO: null,
+
+  token: null,
+  tokenExp: 0,
+  inflight: new Map(),
+
+  lang: localStorage.getItem("fr_lang") || "de",
+  theme: localStorage.getItem("fr_theme") || "auto",
+  pushEnabled: (localStorage.getItem("fr_push") || "0") === "1",
+
+  favStart: localStorage.getItem("fr_fav_start") || "18:00",
+  favDur: parseInt(localStorage.getItem("fr_fav_dur") || "60", 10),
+};
+
+const I18N = {
+  de: {
+    menu: "Menu",
+    login_title: "Anmelden",
+    login_hint: "E-Mail/Passwort",
+    login_btn: "Anmelden",
+    login_help: "Nach dem Login siehst du Kalender und deine Reservierungen. Admins können optional “Admin Mode” aktivieren.",
+    email: "E-Mail",
+    password: "Passwort",
+    status: "Status",
+    role: "Rolle",
+    language: "Sprache",
+    logout: "Abmelden",
+    backend: "Backend",
+    calendar_title: "Kalender",
+    month: "Monat",
+    week: "Woche",
+    day: "Tag",
+    today: "Heute",
+    your_booking: "Deine Buchung",
+    my_reservations: "Meine Reservierungen",
+    book: "Buchen",
+    book_today: "Heute buchen",
+    open_day: "Tag öffnen",
+    cancel: "Stornieren",
+    booking_title: "Reservierung",
+    from: "Von",
+    to: "Bis",
+    title: "Titel",
+    note_optional: "Notiz (optional)",
+    book_confirm: "Buchen",
+    booking_help: "Klicke im Tag- oder Wochen-View auf einen freien Slot (Start). Danach wählst du “Bis” und buchst.",
+    admin_mode_hint: "Admin kann alle Reservierungen sehen/stornieren (nur wenn ON)",
+
+    toast_login_ok: "Erfolgreich angemeldet.",
+    toast_login_fail: "Login fehlgeschlagen.",
+    toast_fetch_fail: "Daten konnten nicht geladen werden.",
+    toast_book_ok: "Reservierung bestätigt.",
+    toast_book_fail: "Buchung fehlgeschlagen.",
+    toast_cancel_ok: "Reservierung storniert.",
+    toast_cancel_admin_ok: "Reservierung storniert (Admin).",
+    err_cancel_fail: "Storno fehlgeschlagen.",
+
+    hero_active: "Jetzt aktiv",
+    hero_next: "Nächste",
+    hero_none_today: "Heute noch nichts – möchtest du buchen?",
+    hero_none_sub: "Wähle eine Zeit im Kalender oder nutze den Button.",
+    hero_countdown: "Noch {m} min",
+    hero_owner: "Besitzer: {email}",
+    res_none: "Keine zukünftigen Reservierungen.",
+    res_future_count: "Zukünftig: {n}",
+  },
+  en: {
+    menu: "Menu",
+    login_title: "Sign in",
+    login_hint: "Email/Password",
+    login_btn: "Sign in",
+    login_help: "After login you see the calendar and your reservations. Admins can optionally enable “Admin Mode”.",
+    email: "Email",
+    password: "Password",
+    status: "Status",
+    role: "Role",
+    language: "Language",
+    logout: "Logout",
+    backend: "Backend",
+    calendar_title: "Calendar",
+    month: "Month",
+    week: "Week",
+    day: "Day",
+    today: "Today",
+    your_booking: "Your booking",
+    my_reservations: "My reservations",
+    book: "Book",
+    book_today: "Book today",
+    open_day: "Open day",
+    cancel: "Cancel",
+    booking_title: "Reservation",
+    from: "From",
+    to: "To",
+    title: "Title",
+    note_optional: "Note (optional)",
+    book_confirm: "Book",
+    booking_help: "Click a free slot (Start) in Day/Week view. Then choose “To” and book.",
+    admin_mode_hint: "Admin can see/cancel all reservations (only when ON)",
+
+    toast_login_ok: "Signed in.",
+    toast_login_fail: "Login failed.",
+    toast_fetch_fail: "Could not load data.",
+    toast_book_ok: "Reservation confirmed.",
+    toast_book_fail: "Booking failed.",
+    toast_cancel_ok: "Reservation cancelled.",
+    toast_cancel_admin_ok: "Reservation cancelled (Admin).",
+    err_cancel_fail: "Cancel failed.",
+
+    hero_active: "Active now",
+    hero_next: "Next",
+    hero_none_today: "Nothing booked today — want to book?",
+    hero_none_sub: "Pick a time in the calendar or use the button.",
+    hero_countdown: "{m} min left",
+    hero_owner: "Owner: {email}",
+    res_none: "No upcoming reservations.",
+    res_future_count: "Upcoming: {n}",
+  }
+};
+
+function t(key, vars={}){
+  const lang = state.lang in I18N ? state.lang : "de";
+  let s = (I18N[lang] && I18N[lang][key]) || (I18N.de[key]) || key;
+  for (const k of Object.keys(vars)) s = s.replaceAll(`{${k}}`, String(vars[k]));
+  return s;
+}
+
+/* ===========================
+   DOM helpers
+=========================== */
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+function show(el, v=true){ if(el) el.style.display = v ? "" : "none"; }
+function setText(el, txt){ if(el) el.textContent = txt; }
+
+/* ===========================
+   Theme + Lang
+=========================== */
+function applyTheme(){
+  const pref = state.theme;
+  let mode = pref;
+  if (pref === "auto"){
+    mode = (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+  }
+  document.documentElement.setAttribute("data-theme", mode);
+  setText($("#themeText"), pref);
+  $("#themeAuto")?.classList.toggle("active", state.theme==="auto");
+  $("#themeLight")?.classList.toggle("active", state.theme==="light");
+  $("#themeDark")?.classList.toggle("active", state.theme==="dark");
+}
+
+function applyLang(){
+  document.documentElement.lang = state.lang === "en" ? "en" : "de";
+  $$("[data-i18n]").forEach(el=>{
+    const k = el.getAttribute("data-i18n");
+    if (!k) return;
+    el.textContent = t(k);
+  });
+
+  $("#langDE")?.classList.toggle("active", state.lang==="de");
+  $("#langEN")?.classList.toggle("active", state.lang==="en");
+  setText($("#langText"), state.lang.toUpperCase());
+
+  renderHero();
+  renderReservations();
+  renderMonth();
+  renderWeek();
+}
+
+/* ===========================
+   Toast
+=========================== */
+function toast(type, msg){
+  const wrap = $("#toastWrap");
+  if(!wrap) return;
+  const el = document.createElement("div");
+  el.className = `toast ${type}`;
+  el.innerHTML = `<div class="msg">${escapeHtml(msg)}</div><button class="x">✕</button>`;
+  el.querySelector(".x").onclick = ()=> el.remove();
+  wrap.appendChild(el);
+  setTimeout(()=>{ if(el.isConnected) el.remove(); }, 4200);
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+
+/* ===========================
+   Utils
+=========================== */
+function parseISO(s){ const d = new Date(s); return isNaN(d.getTime()) ? null : d; }
+function isSameDay(a,b){ return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
+function addDays(d, n){ const x = new Date(d); x.setDate(x.getDate()+n); return x; }
+
+function fmtMonthLabel(d){
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  return `${y}-${m}`;
+}
+function fmtDayLabel(d){
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const dd = String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${dd}`;
+}
+function formatDateLabel(d){
+  return d.toLocaleDateString("de-CH", { day:"2-digit", month:"2-digit", year:"numeric" });
+}
+function minutesToTime(mins){
+  const hh = String(Math.floor(mins/60)).padStart(2,"0");
+  const mm = String(mins%60).padStart(2,"0");
+  return `${hh}:${mm}`;
+}
+function timeToMinutes(hhmm){
+  const [h,m] = String(hhmm||"00:00").split(":").map(x=>parseInt(x,10));
+  return (h*60) + (m||0);
+}
+function addMinutesISO(startISO, minutes){
+  const d = new Date(startISO);
+  return new Date(d.getTime() + minutes*60000).toISOString();
+}
+function scrollToCalendar(){
+  const el = $("#calendarCard");
+  if(!el) return;
+  el.scrollIntoView({ behavior:"smooth", block:"start" });
+}
+
+/* ISO week number (KW) */
+function isoWeek(d){
+  const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay()||7));
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
+  const weekNo = Math.ceil((((date - yearStart) / 86400000) + 1)/7);
+  return weekNo;
+}
+function weekdayNames(){
+  return state.lang==="en"
+    ? ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
+    : ["Mo","Di","Mi","Do","Fr","Sa","So"];
+}
+
+/* favorite start */
+function findBestSlotForTime(daySlots, dateISO, favStartHHMM){
+  if(!Array.isArray(daySlots) || daySlots.length===0) return null;
+  const targetMins = timeToMinutes(favStartHHMM);
+
+  // exact
+  const exact = daySlots.find(s => s.start && s.start.startsWith(dateISO) && s.start.slice(11,16)===favStartHHMM && s.level!=="block" && (s.count||0)<3);
+  if(exact) return exact.start;
+
+  for(const s of daySlots){
+    if(!s.start || !s.start.startsWith(dateISO)) continue;
+    const mm = timeToMinutes(s.start.slice(11,16));
+    if(mm < targetMins) continue;
+    if(s.level === "block") continue;
+    if((s.count||0) >= 3) continue;
+    return s.start;
+  }
+  const f = daySlots.find(s => s.level !== "block" && (s.count||0)<3);
+  return f ? f.start : null;
+}
+
+/* ===========================
+   Firebase init + auth
+=========================== */
+firebase.initializeApp(firebaseConfig);
+
+async function loginEmail(){
+  const email = ($("#email")?.value || "").trim();
+  const pass = ($("#pass")?.value || "").trim();
+  if(!email || !pass) return toast("err", t("toast_login_fail"));
+  try{
+    await firebase.auth().signInWithEmailAndPassword(email, pass);
+    toast("ok", t("toast_login_ok"));
+  }catch(e){
+    toast("err", t("toast_login_fail"));
+  }
+}
+async function logout(){
+  try{ await firebase.auth().signOut(); }catch(_){}
+}
+
+firebase.auth().onAuthStateChanged(async (user)=>{
+  if(!user){
+    state.user = null;
+    setOnline(false);
+    show($("#loginCard"), true);
+    show($("#app"), false);
+    return;
+  }
+  show($("#loginCard"), false);
+  show($("#app"), true);
+  setOnline(true);
+  await bootAfterLogin();
+});
+
+/* ===========================
+   API (token cache + dedupe)
+=========================== */
+async function getIdTokenCached(){
+  const u = firebase.auth().currentUser;
+  if(!u) throw new Error("no_user");
+  const now = Date.now();
+  if(state.token && now < state.tokenExp - 60_000) return state.token;
+  const token = await u.getIdToken(false);
+  try{
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    state.tokenExp = (payload.exp || 0) * 1000;
+  }catch(_){
+    state.tokenExp = now + 30 * 60_000;
+  }
+  state.token = token;
+  return token;
+}
+
+async function api(action, payload={}){
+  const token = await getIdTokenCached();
+  const body = JSON.stringify({ action, idToken: token, ...payload });
+  const key = action + ":" + body;
+  if(state.inflight.has(key)) return state.inflight.get(key);
+
+  const p = (async ()=>{
+    const t0 = performance.now();
+    const resp = await fetch(BACKEND_URL, {
+      method: "POST",
+      headers: { "Content-Type":"text/plain;charset=UTF-8" },
+      body
+    });
+    const json = await resp.json().catch(()=> ({}));
+    const ms = Math.round(performance.now() - t0);
+    setText($("#backendMs"), `${ms} ms`);
+    if(!json || json.ok !== true) throw json || { error: "api_failed" };
+    return json;
+  })();
+
+  state.inflight.set(key, p);
+  try{ return await p; }
+  finally { state.inflight.delete(key); }
+}
+
+/* ===========================
+   Online status
+=========================== */
+function setOnline(v){
+  setText($("#statusPill"), v ? "online" : "offline");
+  setText($("#menuStatus"), v ? "online" : "offline");
+}
+
+/* ===========================
+   Favorites selectors
+=========================== */
+function fillFavoriteSelectors(){
+  const sSel = $("#favStartSel");
+  const dSel = $("#favDurSel");
+  if(!sSel || !dSel) return;
+
+  sSel.innerHTML = "";
+  for(let mins = 5*60; mins <= 22*60; mins += 15){
+    const hhmm = minutesToTime(mins);
+    const opt = document.createElement("option");
+    opt.value = hhmm;
+    opt.textContent = hhmm;
+    sSel.appendChild(opt);
+  }
+
+  dSel.innerHTML = "";
+  for(let dur = 30; dur <= 180; dur += 15){
+    const opt = document.createElement("option");
+    opt.value = String(dur);
+    opt.textContent = `${dur} min`;
+    dSel.appendChild(opt);
+  }
+
+  sSel.value = state.favStart;
+  dSel.value = String(state.favDur);
+
+  sSel.onchange = ()=>{ state.favStart = sSel.value; localStorage.setItem("fr_fav_start", state.favStart); };
+  dSel.onchange = ()=>{ state.favDur = parseInt(dSel.value,10); localStorage.setItem("fr_fav_dur", String(state.favDur)); };
+}
+
+/* ===========================
+   Boot
+=========================== */
+async function bootAfterLogin(){
+  try{
+    const p = await api("ping", {});
+    state.user = p.user;
+
+    setText($("#menuEmail"), state.user.email || "—");
+    setText($("#menuRole"), state.user.role || (state.user.isAdmin ? "admin" : "user"));
+    show($("#menuRoleBadge"), !!state.user.isAdmin);
+    $("#menuRoleBadge") && ($("#menuRoleBadge").textContent = "admin");
+    show($("#adminModeRow"), !!state.user.isAdmin);
+
+    applyTheme();
+    applyLang();
+    fillFavoriteSelectors();
+
+    await initOneSignalMaybe();
+
+    await Promise.all([
+      refreshCalendar(),
+      refreshMyReservations(),
+    ]);
+
+    startHeroTimer();
+  }catch(e){
+    toast("err", t("toast_fetch_fail"));
+  }
+}
+
+/* ===========================
+   OneSignal
+=========================== */
+async function initOneSignalMaybe(){
+  setText($("#pushText"), state.pushEnabled ? "on" : "off");
+  $("#pushSwitch")?.classList.toggle("on", state.pushEnabled);
+
+  if(!ONESIGNAL_APP_ID) return;
+  if(!window.OneSignalDeferred) window.OneSignalDeferred = [];
+  window.OneSignalDeferred.push(async function(OneSignal){
+    try{
+      await OneSignal.init({ appId: ONESIGNAL_APP_ID });
+      if(state.pushEnabled && state.user?.uid){
+        await OneSignal.login(state.user.uid);
+      }
+    }catch(_){}
+  });
+}
+
+async function setPushEnabled(v){
+  state.pushEnabled = !!v;
+  localStorage.setItem("fr_push", state.pushEnabled ? "1" : "0");
+  setText($("#pushText"), state.pushEnabled ? "on" : "off");
+  $("#pushSwitch")?.classList.toggle("on", state.pushEnabled);
+
+  if(!ONESIGNAL_APP_ID) return;
+  try{
+    const OneSignal = window.OneSignal;
+    if(!OneSignal) return;
+    if(state.pushEnabled) await OneSignal.login(state.user.uid);
+    else await OneSignal.logout();
+  }catch(_){}
+}
+
+/* ===========================
+   Loaders
+=========================== */
+async function refreshCalendar(){
+  if(state.view === "month") return refreshMonth();
+  if(state.view === "week") return refreshWeek();
+  return refreshDay();
+}
+
+async function refreshMonth(){
+  const monthKey = fmtMonthLabel(state.anchor);
+  setText($("#calLabel"), monthKey);
+  const res = await api("availability_month", { date: monthKey });
+  state.monthBusy = res.busyCountByDay || {};
+  renderMonth();
+}
+
+async function refreshWeek(){
+  const dayKey = fmtDayLabel(state.anchor);
+  setText($("#calLabel"), formatDateLabel(state.anchor));
+  const res = await api("availability_week", { date: dayKey });
+  state.weekDays = res.days || [];
+  renderWeek();
+}
+
+async function refreshDay(){
+  const dayKey = fmtDayLabel(state.anchor);
+  setText($("#calLabel"), formatDateLabel(state.anchor));
+  const res = await api("availability_day", { date: dayKey });
+  state.daySlots = res.slots || [];
+  renderDay();
+}
+
+/* ===========================
+   Month render
+=========================== */
+function renderMonth(){
+  const cont = $("#calMonth");
+  if(!cont) return;
+  cont.innerHTML = "";
+
+  const y = state.anchor.getFullYear();
+  const m = state.anchor.getMonth();
+  const first = new Date(y, m, 1);
+
+  const startDow = (first.getDay()+6)%7; // Mon=0
+  const gridStart = addDays(first, -startDow);
+
+  const wds = weekdayNames();
+
+  const kwHead = document.createElement("div");
+  kwHead.className = "monthHeadCell";
+  kwHead.textContent = "KW";
+  cont.appendChild(kwHead);
+
+  for(let i=0;i<7;i++){
+    const h = document.createElement("div");
+    h.className = "monthHeadCell";
+    h.textContent = wds[i];
+    cont.appendChild(h);
+  }
+
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  for(let week=0; week<6; week++){
+    const rowStart = addDays(gridStart, week*7);
+    const kw = isoWeek(rowStart);
+
+    const kwCell = document.createElement("div");
+    kwCell.className = "kwCell";
+    kwCell.textContent = String(kw);
+    cont.appendChild(kwCell);
+
+    for(let i=0;i<7;i++){
+      const d = addDays(rowStart, i);
+      const inMonth = d.getMonth()===m;
+      const isPast = d < today;
+      const dd = String(d.getDate()).padStart(2,"0");
+      const ddmm = d.toLocaleDateString("de-CH", { day:"2-digit", month:"2-digit" });
+
+      const card = document.createElement("div");
+      card.className = "dayCard";
+      if(!inMonth) card.classList.add("dim");
+      else if(isPast) card.classList.add("past");
+
+      // "Mo 25.12 · KW 52" (KW je aj vľavo fixne)
+      card.innerHTML = `
+        <div class="d">${dd}</div>
+        <div class="meta">
+          <div><strong>${escapeHtml(wds[i])}</strong> ${escapeHtml(ddmm)}</div>
+          <div>KW ${escapeHtml(String(kw))}</div>
+        </div>
+      `;
+
+      card.onclick = ()=>{
+        if(!inMonth) return;
+        if(isPast) return;
+        state.anchor = new Date(d);
+        setView("day");
+        scrollToCalendar();
+      };
+
+      cont.appendChild(card);
+    }
+  }
+}
+
+/* ===========================
+   Hour status helper (frei/teilweise/voll/block)
+   - uses slot.count if present (0..3)
+=========================== */
+function slotCount(s){
+  if(!s) return 0;
+  if(typeof s.count === "number") return s.count;
+  // fallback from level (ak backend count neposiela)
+  if(s.level === "voll") return 3;
+  if(s.level === "teilweise") return 1;
+  return 0;
+}
+function hourStatus(chunk){
+  if(chunk.some(s => s.level === "block")) return { status:"block", count:999 };
+
+  // ✅ správne: zoberieme MAX obsadenosť v rámci hodiny (nie sumu)
+  const maxC = chunk.reduce((m,s)=> Math.max(m, slotCount(s)), 0);
+
+  if(maxC >= 3) return { status:"voll", count:maxC };
+  if(maxC >= 1) return { status:"teilweise", count:maxC };
+  return { status:"frei", count:0 };
+}
+
+/* ===========================
+   Week render (click opens booking modal)
+=========================== */
+function renderWeek(){
+  const cont = $("#calWeek");
+  if(!cont) return;
+  cont.innerHTML = "";
+
+  const dayNames = weekdayNames();
+
+  state.weekDays.forEach((dayAvail, idx)=>{
+    const date = dayAvail?.date || "—";
+    const col = document.createElement("div");
+    col.className = "weekCol";
+
+    const ddmm = (()=>{
+      const d = new Date(date+"T00:00:00");
+      if(isNaN(d.getTime())) return date;
+      return d.toLocaleDateString("de-CH", { day:"2-digit", month:"2-digit" });
+    })();
+
+    col.innerHTML = `
+      <div class="weekColHead">
+        <span>${dayNames[idx]}</span>
+        <span style="font-weight:900; color: var(--text)">${escapeHtml(ddmm)}</span>
+      </div>
+      <div class="weekSlots"></div>
+    `;
+
+    const slotsWrap = col.querySelector(".weekSlots");
+    const slots15 = (dayAvail?.slots || []);
+
+    for(let i=0;i<slots15.length;i+=4){
+      const chunk = slots15.slice(i, i+4);
+      if(chunk.length < 4) break;
+
+      const startISO = chunk[0].start;
+      const endISO   = chunk[3].end;
+
+      const hs = hourStatus(chunk);
+
+      const row = document.createElement("div");
+      const t1 = startISO.slice(11,16);
+      const t2 = endISO.slice(11,16);
+
+      let cls = "slotRow";
+      let right = "";
+      if(hs.status==="block"){ cls += " busy"; right = "block"; }
+      else if(hs.status==="voll"){ cls += " busy"; right = "voll"; }
+      else if(hs.status==="teilweise"){ cls += " part"; right = "teilweise"; }
+      else { cls += " free"; right = ""; }
+
+      row.className = cls;
+      row.innerHTML = `<span class="time">${t1}–${t2}</span><span>${right}</span>`;
+
+      if(hs.status !== "block" && hs.status !== "voll"){
+        row.onclick = async ()=>{
+          try{
+            const res = await api("availability_day", { date });
+            state.daySlots = res.slots || [];
+            openBookingFromSlot(startISO);
+          }catch(e){
+            toast("err", t("toast_fetch_fail"));
+          }
+        };
+      }
+
+      slotsWrap.appendChild(row);
+    }
+
+    cont.appendChild(col);
+  });
+}
+
+/* ===========================
+   Day render (hour blocks)
+=========================== */
+function renderDay(){
+  const cont = $("#calDay");
+  if(!cont) return;
+  cont.innerHTML = "";
+
+  const slots = state.daySlots || [];
+
+  for(let i=0;i<slots.length;i+=4){
+    const chunk = slots.slice(i, i+4);
+    if(chunk.length < 4) break;
+
+    const startISO = chunk[0].start;
+    const endISO   = chunk[3].end;
+
+    const hs = hourStatus(chunk);
+
+    const row = document.createElement("div");
+    const t1 = startISO.slice(11,16);
+    const t2 = endISO.slice(11,16);
+
+    let cls = "slotRow";
+    let right = "";
+    if(hs.status==="block"){ cls += " busy"; right = "block"; }
+    else if(hs.status==="voll"){ cls += " busy"; right = "voll"; }
+    else if(hs.status==="teilweise"){ cls += " part"; right = "teilweise"; }
+    else { cls += " free"; right = ""; }
+
+    row.className = cls;
+    row.innerHTML = `<span class="time">${t1}–${t2}</span><span>${right}</span>`;
+
+    if(hs.status !== "block" && hs.status !== "voll"){
+      row.onclick = ()=> openBookingFromSlot(startISO);
+    }
+
+    cont.appendChild(row);
+  }
+}
+
+/* ===========================
+   View switching
+=========================== */
+function setView(v){
+  state.view = v;
+  $("#viewMonth")?.classList.toggle("active", v==="month");
+  $("#viewWeek")?.classList.toggle("active", v==="week");
+  $("#viewDay")?.classList.toggle("active", v==="day");
+
+  show($("#calMonth"), v==="month");
+  show($("#calWeek"), v==="week");
+  show($("#calDay"), v==="day");
+
+  refreshCalendar().catch(()=> toast("err", t("toast_fetch_fail")));
+}
+
+/* ===========================
+   Reservations
+=========================== */
+async function refreshMyReservations(){
+  const from = new Date().toISOString();
+  const to = new Date(Date.now() + 60*24*60*60*1000).toISOString();
+  const res = await api("my_reservations", { from, to, all: state.adminAll });
+  state.reservations = res.reservations || [];
+  state.user = res.user || state.user;
+  renderHero();
+  renderReservations();
+}
+
+function computeHero(){
+  const now = new Date();
+  const list = (state.reservations || []).map(r=>({
+    ...r,
+    s: parseISO(r.start),
+    e: parseISO(r.end),
+  })).filter(r=>r.s && r.e).sort((a,b)=>a.s-b.s);
+
+  const active = list.find(r=> r.s<=now && now<r.e) || null;
+  const next = list.find(r=> now<r.s) || null;
+  const anyToday = list.some(r=> isSameDay(r.s, now) && r.e>now);
+  return { active, next, anyToday };
+}
+
+function renderHero(){
+  const { active, next, anyToday } = computeHero();
+  const heroMain = $("#heroMain");
+  const heroSub = $("#heroSub");
+  const btnBook = $("#heroBookToday");
+  const btnOpenDay = $("#heroOpenDay");
+  const btnCancel = $("#heroCancel");
+
+  show(btnCancel, false);
+  btnCancel.dataset.eventId = "";
+
+  const now = new Date();
+
+  if(active){
+    const s = active.start.slice(11,16);
+    const e = active.end.slice(11,16);
+    setText(heroMain, `${t("hero_active")}: ${s}–${e}`);
+
+    const minsLeft = Math.max(0, Math.ceil((new Date(active.end) - now)/60000));
+    const parts = [ t("hero_countdown", { m: minsLeft }) ];
+    if(state.adminAll && state.user?.isAdmin && active.ownerEmail){
+      parts.push(t("hero_owner", { email: active.ownerEmail }));
+    }
+    setText(heroSub, parts.join(" · "));
+
+    show(btnBook, false);
+    show(btnOpenDay, true);
+
+    const canCancel = state.adminAll ? !!state.user?.isAdmin : (active.ownerUid === state.user?.uid);
+    if(canCancel){
+      show(btnCancel, true);
+      btnCancel.dataset.eventId = active.id;
+    }
+    return;
+  }
+
+  show(btnCancel, false);
+  show(btnOpenDay, true);
+
+  if(next){
+    const d = new Date(next.start);
+    const isToday = isSameDay(d, now);
+    const dayTxt = isToday
+      ? (state.lang==="en" ? "Today" : "Heute")
+      : d.toLocaleDateString(state.lang==="en" ? "en-US" : "de-CH", { weekday:"short", day:"2-digit", month:"2-digit" });
+
+    const s = next.start.slice(11,16);
+    const e = next.end.slice(11,16);
+
+    setText(heroMain, `${t("hero_next")}: ${dayTxt} ${s}–${e}`);
+
+    const parts = [];
+    if(state.adminAll && state.user?.isAdmin && next.ownerEmail){
+      parts.push(t("hero_owner", { email: next.ownerEmail }));
+    }
+    setText(heroSub, parts.join(" · ") || " ");
+
+    show(btnBook, false);
+
+    const canCancel = state.adminAll ? !!state.user?.isAdmin : (next.ownerUid === state.user?.uid);
+    if(canCancel){
+      show(btnCancel, true);
+      btnCancel.dataset.eventId = next.id;
+    }
+    return;
+  }
+
+  setText(heroMain, t("hero_none_today"));
+  setText(heroSub, t("hero_none_sub"));
+  show(btnBook, true);
+}
+
+function renderReservations(){
+  const list = $("#resList");
+  if(!list) return;
+
+  const now = new Date();
+  const future = (state.reservations||[]).filter(r => new Date(r.end) > now).sort((a,b)=>new Date(a.start)-new Date(b.start));
+
+  setText($("#resCount"), t("res_future_count", { n: future.length }));
+
+  if(future.length === 0){
+    list.innerHTML = `<div class="help">${escapeHtml(t("res_none"))}</div>`;
+    return;
+  }
+
+  list.innerHTML = "";
+  future.forEach(r=>{
+    const s = new Date(r.start);
+    const day = s.toLocaleDateString(state.lang==="en" ? "en-US" : "de-CH", { weekday:"short", day:"2-digit", month:"2-digit", year:"numeric" });
+    const time = `${r.start.slice(11,16)}–${r.end.slice(11,16)}`;
+
+    const canCancel = state.adminAll ? !!state.user?.isAdmin : (r.ownerUid === state.user?.uid);
+
+    const item = document.createElement("div");
+    item.className = "resItem";
+
+    const badge = (state.adminAll && state.user?.isAdmin && r.ownerEmail && r.ownerUid !== state.user?.uid)
+      ? `<span class="badge admin">${escapeHtml(r.ownerEmail)}</span>`
+      : "";
+
+    item.innerHTML = `
+      <div class="resTop">
+        <div>
+          <div class="resWhen">${escapeHtml(day)} ${escapeHtml(time)}</div>
+          <div class="resMeta">Fitnessraum · ${escapeHtml(r.ownerEmail || state.user?.email || "")}</div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
+          ${badge}
+          ${canCancel ? `<button class="btn danger small" data-cancel="${escapeHtml(r.id)}">${escapeHtml(t("cancel"))}</button>` : ``}
+        </div>
+      </div>
+    `;
+
+    const btn = item.querySelector("[data-cancel]");
+    if(btn){
+      btn.onclick = ()=> cancelById(btn.getAttribute("data-cancel"));
+    }
+
+    list.appendChild(item);
+  });
+}
+
+/* ===========================
+   Cancel
+=========================== */
+async function cancelById(eventId){
+  if(state.loadingCancel) return;
+  state.loadingCancel = true;
+  try{
+    await api("cancel_reservation", { eventId, all: state.adminAll });
+    toast("ok", state.adminAll ? t("toast_cancel_admin_ok") : t("toast_cancel_ok"));
+    await Promise.all([ refreshCalendar(), refreshMyReservations() ]);
+  }catch(e){
+    toast("err", t("err_cancel_fail"));
+  }finally{
+    state.loadingCancel = false;
+  }
+}
+
+/* ===========================
+   Booking modal (ROBUST)
+=========================== */
+function openBookingFromSlot(startISO, preferredEndISO = null){
+  state.selectedStartISO = startISO;
+  state.selectedDayISO = startISO.slice(0,10);
+
+  $("#bookFrom").value = startISO.slice(11,16);
+  $("#bookTitle").value = "Fitnessraum Booking";
+  $("#bookNote").value = "";
+
+  const daySlots = state.daySlots || [];
+
+  // ✅ robustný matching: presne, potom YYYY-MM-DDTHH:MM
+  let idx = daySlots.findIndex(s => s?.start === startISO);
+  if (idx < 0){
+    const key = startISO.slice(0,16);
+    idx = daySlots.findIndex(s => (s?.start || "").slice(0,16) === key);
+  }
+
+  const options = [];
+  if (idx >= 0){
+    for (let i = idx + 1; i < daySlots.length; i++){
+      const lev = daySlots[i]?.level;
+      const cnt = slotCount(daySlots[i]);
+      if (lev === "block") break;
+      if (cnt >= 3) break; // voll
+      if (daySlots[i]?.end) options.push(daySlots[i].end);
+    }
+  } else {
+    console.warn("openBookingFromSlot: start not found in daySlots", {
+      startISO,
+      key: startISO.slice(0,16),
+      sampleFirst: daySlots[0]?.start,
+      sampleLast: daySlots[daySlots.length-1]?.start,
+      count: daySlots.length
+    });
+  }
+
+  const sel = $("#bookTo");
+  sel.innerHTML = "";
+  options.forEach(endISO=>{
+    const opt = document.createElement("option");
+    opt.value = endISO;
+    opt.textContent = endISO.slice(11,16);
+    sel.appendChild(opt);
+  });
+
+  setText($("#bookingInfo"),
+    `${formatDateLabel(new Date(state.selectedDayISO+"T00:00:00"))} · ${t("from")} ${startISO.slice(11,16)}`
+  );
+
+  if (options.length === 0){
+    $("#bookConfirm").disabled = true;
+    toast("err", "Pre tento start nie je mozne vybrat 'Bis'. Skus iny start.");
+  } else {
+    $("#bookConfirm").disabled = false;
+
+    let pick = null;
+    if (preferredEndISO && options.includes(preferredEndISO)){
+      pick = preferredEndISO;
+    } else {
+      const wantEnd = addMinutesISO(startISO, state.favDur);
+      const wantMs = new Date(wantEnd).getTime();
+      const leq = options.filter(x => new Date(x).getTime() <= wantMs);
+      pick = leq.length ? leq[leq.length - 1] : options[0];
+    }
+    sel.value = pick;
+  }
+
+  show($("#modalOverlay"), true);
+}
+
+async function confirmBooking(){
+  const startISO = state.selectedStartISO;
+  const endISO = $("#bookTo")?.value;
+  const title = ($("#bookTitle")?.value || "Fitnessraum Booking").trim();
+  const note = ($("#bookNote")?.value || "").trim();
+
+  if(!startISO || !endISO){
+    toast("err", "Chyba: chyba start alebo end cas.");
+    return;
+  }
+
+  $("#bookConfirm").disabled = true;
+
+  try{
+    await api("reserve_slot", { start: startISO, end: endISO, title, note });
+    toast("ok", t("toast_book_ok"));
+    show($("#modalOverlay"), false);
+    await Promise.all([ refreshCalendar(), refreshMyReservations() ]);
+  }catch(e){
+    const err = (e && (e.error || e.message)) ? (e.error || e.message) : "unknown_error";
+    console.error("reserve_slot failed:", e);
+    toast("err", `Buchung fehlgeschlagen: ${err}`);
+  }finally{
+    $("#bookConfirm").disabled = false;
+  }
+}
+
+/* ===========================
+   Heute buchen
+=========================== */
+async function openBookingToday(){
+  state.anchor = new Date();
+  setView("day");
+  scrollToCalendar();
+
+  try{ await refreshDay(); }
+  catch(e){ toast("err", t("toast_fetch_fail")); return; }
+
+  const dateISO = fmtDayLabel(state.anchor);
+  const startISO = findBestSlotForTime(state.daySlots || [], dateISO, state.favStart);
+
+  if(!startISO){
+    toast("err", t("toast_book_fail"));
+    return;
+  }
+  openBookingFromSlot(startISO);
+}
+
+/* ===========================
+   Hero timer
+=========================== */
+let heroTimer = null;
+function startHeroTimer(){
+  if(heroTimer) clearInterval(heroTimer);
+  heroTimer = setInterval(()=> renderHero(), 60 * 1000);
+}
+
+/* ===========================
+   Menu
+=========================== */
+function openMenu(v=true){ $("#menuOverlay").style.display = v ? "flex" : "none"; }
+
+/* ===========================
+   Wire events
+=========================== */
+$("#loginBtn")?.addEventListener("click", loginEmail);
+
+$("#menuBtn")?.addEventListener("click", ()=> openMenu(true));
+$("#menuClose")?.addEventListener("click", ()=> openMenu(false));
+$("#menuOverlay")?.addEventListener("click", (e)=>{ if(e.target === $("#menuOverlay")) openMenu(false); });
+
+$("#logoutBtn")?.addEventListener("click", async ()=>{
+  openMenu(false);
+  await logout();
+});
+
+$("#pushSwitch")?.addEventListener("click", ()=> setPushEnabled(!state.pushEnabled));
+
+$("#themeAuto")?.addEventListener("click", ()=>{ state.theme="auto"; localStorage.setItem("fr_theme","auto"); applyTheme(); });
+$("#themeLight")?.addEventListener("click", ()=>{ state.theme="light"; localStorage.setItem("fr_theme","light"); applyTheme(); });
+$("#themeDark")?.addEventListener("click", ()=>{ state.theme="dark"; localStorage.setItem("fr_theme","dark"); applyTheme(); });
+
+$("#langDE")?.addEventListener("click", ()=>{ state.lang="de"; localStorage.setItem("fr_lang","de"); applyLang(); });
+$("#langEN")?.addEventListener("click", ()=>{ state.lang="en"; localStorage.setItem("fr_lang","en"); applyLang(); });
+
+$("#adminAllSwitch")?.addEventListener("click", async ()=>{
+  if(!state.user?.isAdmin) return;
+  state.adminAll = !state.adminAll;
+  $("#adminAllSwitch")?.classList.toggle("on", state.adminAll);
+  $("#adminAllSwitch")?.setAttribute("aria-checked", state.adminAll ? "true" : "false");
+  try{ await refreshMyReservations(); }catch(_){}
+});
+
+$("#viewMonth")?.addEventListener("click", ()=> setView("month"));
+$("#viewWeek")?.addEventListener("click", ()=> setView("week"));
+$("#viewDay")?.addEventListener("click", ()=> setView("day"));
+
+$("#prevBtn")?.addEventListener("click", ()=>{
+  if(state.view==="month") state.anchor = new Date(state.anchor.getFullYear(), state.anchor.getMonth()-1, 1);
+  else if(state.view==="week") state.anchor = addDays(state.anchor, -7);
+  else state.anchor = addDays(state.anchor, -1);
+  refreshCalendar();
+});
+$("#nextBtn")?.addEventListener("click", ()=>{
+  if(state.view==="month") state.anchor = new Date(state.anchor.getFullYear(), state.anchor.getMonth()+1, 1);
+  else if(state.view==="week") state.anchor = addDays(state.anchor, 7);
+  else state.anchor = addDays(state.anchor, 1);
+  refreshCalendar();
+});
+$("#todayBtn")?.addEventListener("click", ()=>{
+  state.anchor = new Date();
+  refreshCalendar();
+  scrollToCalendar();
+});
+
+$("#bookBtn")?.addEventListener("click", openBookingToday);
+$("#heroBookToday")?.addEventListener("click", openBookingToday);
+
+$("#heroOpenDay")?.addEventListener("click", async ()=>{
+  state.anchor = new Date();
+  setView("day");
+  scrollToCalendar();
+  try{ await refreshDay(); }catch(_){}
+});
+
+$("#heroCancel")?.addEventListener("click", ()=>{
+  const id = $("#heroCancel")?.dataset?.eventId;
+  if(id) cancelById(id);
+});
+
+$("#modalClose")?.addEventListener("click", ()=> show($("#modalOverlay"), false));
+$("#modalOverlay")?.addEventListener("click", (e)=>{ if(e.target === $("#modalOverlay")) show($("#modalOverlay"), false); });
+
+/* !!! priamo bind na button (žiadny inline) !!! */
+$("#bookConfirm")?.addEventListener("click", confirmBooking);
+
+if(window.matchMedia){
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ()=>{
+    if(state.theme === "auto") applyTheme();
+  });
+}
+
+/* EXTRA SAFETY: aby nikdy nepadlo "confirmBooking not defined" ani pri starom inline */
+window.confirmBooking = confirmBooking;
+window.openBookingFromSlot = openBookingFromSlot;
+
+/* initial */
+applyTheme();
+applyLang();
+</script>
+</body>
+</html>
