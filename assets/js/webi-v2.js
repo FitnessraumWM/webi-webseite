@@ -1199,4 +1199,79 @@
         });
     }
   }
+
+  // ---------------------------------------------------------------------------
+  // Newsletter-Anmeldeformular
+  // ---------------------------------------------------------------------------
+  (function initNewsletterForm() {
+    var form = document.querySelector("[data-newsletter-form]");
+    if (!form) { return; }
+
+    var resultEl = form.querySelector(".newsletter-result");
+    var submitBtn = form.querySelector(".newsletter-submit");
+
+    var newsletterProductionHosts = new Set(["webi.family", "www.webi.family"]);
+    var isNewsletterProd = newsletterProductionHosts.has(window.location.hostname);
+    var apiUrl = isNewsletterProd
+      ? "https://newsletter.webi.family/api/subscribe"
+      : "http://127.0.0.1:8095/api/subscribe";
+
+    function showResult(message, isError) {
+      resultEl.textContent = message;
+      resultEl.removeAttribute("hidden");
+      if (isError) {
+        resultEl.setAttribute("data-status", "error");
+      } else {
+        resultEl.removeAttribute("data-status");
+      }
+    }
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      var emailInput = form.querySelector("[name='email']");
+      var consentInput = form.querySelector("[name='consent']");
+      var honeypotInput = form.querySelector("[name='company']");
+
+      if (!emailInput || !consentInput) { return; }
+
+      if (!consentInput.checked) {
+        showResult("Bitte stimme der Verarbeitung deiner E-Mail-Adresse zu.", true);
+        consentInput.focus();
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Wird gesendet …";
+      if (resultEl) { resultEl.setAttribute("hidden", ""); }
+
+      var payload = {
+        email: emailInput.value,
+        consent: consentInput.checked,
+        company: honeypotInput ? honeypotInput.value : ""
+      };
+
+      fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+        .then(function (response) { return response.json(); })
+        .then(function (data) {
+          if (data.ok) {
+            showResult(data.message || "Bitte prüfe deine E-Mail und bestätige deine Anmeldung.", false);
+            form.reset();
+          } else {
+            showResult(data.message || "Ein Fehler ist aufgetreten. Bitte versuche es erneut.", true);
+          }
+        })
+        .catch(function () {
+          showResult("Der Server ist gerade nicht erreichbar. Bitte versuche es später erneut.", true);
+        })
+        .finally(function () {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Anmelden";
+        });
+    });
+  })();
 })();

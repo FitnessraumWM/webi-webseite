@@ -340,12 +340,32 @@
             </div>
           </article>
 
-          <aside id="newsletter" class="contact-card newsletter-preview" data-newsletter-state="planned">
+          <aside id="newsletter" class="contact-card newsletter-card">
             <p class="eyebrow">Newsletter</p>
             <h2 id="angebote-title">Newsletter</h2>
-            <p>Neue Veranstaltungen, wichtige Hinweise und Rückblicke aus der Webermühle werden künftig auch per E-Mail angekündigt.</p>
-            <p class="status-badge">Newsletter wird vorbereitet.</p>
-            <p>Die Anmeldung wird aktiviert, sobald Versand und Bestätigung per E-Mail zuverlässig eingerichtet sind.</p>
+            <p>Neue Veranstaltungen, wichtige Hinweise und Rückblicke aus der Webermühle – bequem per E-Mail.</p>
+            <form class="newsletter-form" data-newsletter-form novalidate>
+              <div class="newsletter-field">
+                <label for="newsletter-email">E-Mail-Adresse</label>
+                <input
+                  type="email"
+                  id="newsletter-email"
+                  name="email"
+                  autocomplete="email"
+                  required
+                  placeholder="deine@email.ch"
+                  maxlength="254"
+                >
+              </div>
+              <!-- Honigtopf – bitte leer lassen -->
+              <input type="text" name="company" aria-hidden="true" tabindex="-1" autocomplete="off" class="newsletter-honeypot">
+              <label class="newsletter-consent">
+                <input type="checkbox" name="consent" required>
+                <span>Ich bin einverstanden, dass meine E-Mail-Adresse für den Newsletter der Webermühle Wittenbach gespeichert und verwendet wird. Die Anmeldung wird per E-Mail bestätigt. Abmeldung jederzeit möglich.</span>
+              </label>
+              <button type="submit" class="button button-primary newsletter-submit">Anmelden</button>
+              <p class="newsletter-result" aria-live="polite" hidden></p>
+            </form>
           </aside>
         </div>
       </div>
