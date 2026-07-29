@@ -1,4 +1,65 @@
-(function () {
+function compareEventsForHomepage(a, b) {
+  const aStart = Date.parse(a.startAt || "");
+  const bStart = Date.parse(b.startAt || "");
+  if (Number.isFinite(aStart) && Number.isFinite(bStart)) { return aStart - bStart; }
+  const aTime = a.time || "23:59";
+  const bTime = b.time || "23:59";
+  return `${a.date}T${aTime}`.localeCompare(`${b.date}T${bTime}`);
+}
+
+function compareEventsChronologically(a, b) {
+  const aStart = Date.parse(a.startAt || "");
+  const bStart = Date.parse(b.startAt || "");
+  if (Number.isFinite(aStart) && Number.isFinite(bStart)) { return aStart - bStart; }
+  const aTime = a.time || "00:00";
+  const bTime = b.time || "00:00";
+  return `${a.date}T${aTime}`.localeCompare(`${b.date}T${bTime}`);
+}
+
+// Homepage teaser: prefer today's published event(s); otherwise fall back to the
+// nearest future one so a real event is never hidden behind the "no event today" copy.
+// Past events never qualify as "today" or "next" here (date comparisons are >= today only).
+function selectHomeEventPresentation(events, todayIso) {
+  const publishedEvents = (events || []).filter(function (event) {
+    return event.status === "published";
+  });
+  const todayEvents = publishedEvents.filter(function (event) {
+    return event.date === todayIso;
+  });
+  const nextEvent = publishedEvents
+    .filter(function (event) {
+      return event.date >= todayIso;
+    })
+    .slice()
+    .sort(compareEventsForHomepage)[0] || null;
+
+  if (todayEvents.length) {
+    return { heading: "Heute in der Webermühle", todayEvents: todayEvents, nextEvent: nextEvent };
+  }
+  if (nextEvent) {
+    return { heading: "Nächste Veranstaltung", todayEvents: [nextEvent], nextEvent: nextEvent };
+  }
+  return { heading: "Heute in der Webermühle", todayEvents: [], nextEvent: null };
+}
+
+function selectCurrentOrUpcomingEvents(events, todayIso) {
+  return (events || []).filter(function (event) {
+    return event.date >= todayIso;
+  });
+}
+
+function selectArchivedEvents(events, todayIso) {
+  return (events || [])
+    .filter(function (event) {
+      return event.status === "published" && event.date < todayIso;
+    })
+    .slice()
+    .sort(function (a, b) {
+      return compareEventsChronologically(b, a);
+    });
+}
+
+function initWebiV2() {
   const root = document.documentElement;
   const header = document.querySelector("[data-header]");
   const menuToggle = document.querySelector("[data-menu-toggle]");
@@ -246,6 +307,7 @@
     const eventsArchiveList = eventsArchive?.querySelector("[data-events-archive-list]");
     const eventsArchiveMessage = eventsArchive?.querySelector("[data-events-archive-message]");
     const todayEventsList = ensureTodayEventsList();
+    const heuteTitle = homeEvents?.querySelector("#heute-title");
     const nextEventTitle = document.querySelector("[data-next-event-title]")
       || document.getElementById("event-title");
     const nextEventIntro = document.querySelector("[data-next-event-intro]")
@@ -425,24 +487,6 @@
       link.textContent = "Rückblick ansehen";
       parent.appendChild(link);
       return link;
-    }
-
-    function compareEventsForHomepage(a, b) {
-      const aStart = Date.parse(a.startAt || "");
-      const bStart = Date.parse(b.startAt || "");
-      if (Number.isFinite(aStart) && Number.isFinite(bStart)) { return aStart - bStart; }
-      const aTime = a.time || "23:59";
-      const bTime = b.time || "23:59";
-      return `${a.date}T${aTime}`.localeCompare(`${b.date}T${bTime}`);
-    }
-
-    function compareEventsChronologically(a, b) {
-      const aStart = Date.parse(a.startAt || "");
-      const bStart = Date.parse(b.startAt || "");
-      if (Number.isFinite(aStart) && Number.isFinite(bStart)) { return aStart - bStart; }
-      const aTime = a.time || "00:00";
-      const bTime = b.time || "00:00";
-      return `${a.date}T${aTime}`.localeCompare(`${b.date}T${bTime}`);
     }
 
     function appendTextElement(parent, tagName, className, text) {
@@ -712,28 +756,23 @@
       }
 
       if (eventDataUnavailable && !hasEventData) {
+        if (heuteTitle) {
+          heuteTitle.textContent = "Heute in der Webermühle";
+        }
         renderTodayEvents([]);
         renderNextEventPlaceholder("Die aktuellen Veranstaltungen sind momentan nicht abrufbar.");
         return;
       }
 
       const today = todayIsoDate();
-      const publishedEvents = currentEvents.filter(function (event) {
-        return event.status === "published";
-      });
-      const todayEvents = publishedEvents.filter(function (event) {
-        return event.date === today;
-      });
-      const nextEvent = publishedEvents
-        .filter(function (event) {
-          return event.date >= today;
-        })
-        .slice()
-        .sort(compareEventsForHomepage)[0];
+      const presentation = selectHomeEventPresentation(currentEvents, today);
 
-      renderTodayEvents(todayEvents);
-      if (nextEvent) {
-        renderNextEvent(nextEvent);
+      if (heuteTitle) {
+        heuteTitle.textContent = presentation.heading;
+      }
+      renderTodayEvents(presentation.todayEvents);
+      if (presentation.nextEvent) {
+        renderNextEvent(presentation.nextEvent);
       } else {
         renderNextEventPlaceholder("Sobald ein neuer Anlass feststeht, erscheint er hier.");
       }
@@ -762,17 +801,8 @@
       }
 
       const today = todayIsoDate();
-      const currentOrUpcomingEvents = currentEvents.filter(function (event) {
-        return event.date >= today;
-      });
-      const archivedEvents = currentEvents
-        .filter(function (event) {
-          return event.status === "published" && event.date < today;
-        })
-        .slice()
-        .sort(function (a, b) {
-          return compareEventsChronologically(b, a);
-        });
+      const currentOrUpcomingEvents = selectCurrentOrUpcomingEvents(currentEvents, today);
+      const archivedEvents = selectArchivedEvents(currentEvents, today);
 
       if (!currentOrUpcomingEvents.length) {
         setEventsMessage("Zurzeit sind keine neuen Veranstaltungen angekündigt. Schau bald wieder vorbei.");
@@ -1274,4 +1304,18 @@
         });
     });
   })();
-})();
+}
+
+if (typeof document !== "undefined") {
+  initWebiV2();
+}
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    selectHomeEventPresentation: selectHomeEventPresentation,
+    selectCurrentOrUpcomingEvents: selectCurrentOrUpcomingEvents,
+    selectArchivedEvents: selectArchivedEvents,
+    compareEventsForHomepage: compareEventsForHomepage,
+    compareEventsChronologically: compareEventsChronologically
+  };
+}
