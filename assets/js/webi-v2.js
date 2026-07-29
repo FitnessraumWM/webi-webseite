@@ -59,6 +59,27 @@ function selectArchivedEvents(events, todayIso) {
     });
 }
 
+// Telegram-sourced descriptions use a blank line to mean "new paragraph" and a
+// single line break to mean a soft wrap within one. Only blank lines (one or
+// more, optionally with trailing whitespace) split the text; a lone line break
+// stays inside its paragraph. Unicode/emoji pass through untouched (plain string
+// slicing, no encoding involved).
+function splitDescriptionIntoParagraphs(description) {
+  if (typeof description !== "string") {
+    return [];
+  }
+
+  return description
+    .replace(/\r\n/g, "\n")
+    .split(/\n[ \t]*\n+/)
+    .map(function (paragraph) {
+      return paragraph.trim();
+    })
+    .filter(function (paragraph) {
+      return paragraph.length > 0;
+    });
+}
+
 function initWebiV2() {
   const root = document.documentElement;
   const header = document.querySelector("[data-header]");
@@ -503,6 +524,16 @@ function initWebiV2() {
       return element;
     }
 
+    // Renders one <p> per paragraph (never innerHTML, so nothing in the text is
+    // ever interpreted as markup) and appends them all to parent.
+    function renderEventDescription(parent, description) {
+      splitDescriptionIntoParagraphs(description).forEach(function (paragraphText) {
+        const paragraph = document.createElement("p");
+        paragraph.textContent = paragraphText;
+        parent.appendChild(paragraph);
+      });
+    }
+
     function eventMetaText(event) {
       return [
         formatEventDate(event.date),
@@ -639,11 +670,7 @@ function initWebiV2() {
         article.appendChild(location);
       }
 
-      if (event.description) {
-        const description = document.createElement("p");
-        description.textContent = event.description;
-        article.appendChild(description);
-      }
+      renderEventDescription(article, event.description);
 
       if (event.externalLinks.length) {
         const links = document.createElement("div");
@@ -695,7 +722,7 @@ function initWebiV2() {
         appendTextElement(item, "p", "event-kicker", event.organiser);
         appendTextElement(item, "h3", "", event.title);
         appendTextElement(item, "p", "", eventMetaText(event));
-        appendTextElement(item, "p", "", event.description);
+        renderEventDescription(item, event.description);
         appendRetrospectiveLink(item, event, "text-link");
         todayEventsList.appendChild(item);
       });
@@ -740,7 +767,7 @@ function initWebiV2() {
       appendTextElement(nextEventCard, "p", "", formatEventDate(event.date));
       appendTextElement(nextEventCard, "p", "", event.time ? `${event.time} Uhr` : "");
       appendTextElement(nextEventCard, "p", "", event.location);
-      appendTextElement(nextEventCard, "p", "", event.description);
+      renderEventDescription(nextEventCard, event.description);
 
       const link = document.createElement("a");
       link.className = "button button-primary";
@@ -1316,6 +1343,7 @@ if (typeof module !== "undefined" && module.exports) {
     selectCurrentOrUpcomingEvents: selectCurrentOrUpcomingEvents,
     selectArchivedEvents: selectArchivedEvents,
     compareEventsForHomepage: compareEventsForHomepage,
-    compareEventsChronologically: compareEventsChronologically
+    compareEventsChronologically: compareEventsChronologically,
+    splitDescriptionIntoParagraphs: splitDescriptionIntoParagraphs
   };
 }
